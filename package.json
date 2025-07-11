@@ -1,0 +1,41 @@
+{
+  "name": "bethelper-app",
+  "version": "1.0.0",
+  "description": "Smart Football Predictions App - BetHelper provides intelligent betting predictions and analysis for football matches",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -c-1 -o",
+    "dev": "npx live-server",
+    "build": "echo 'Build process - ready for production'",
+    "test": "echo 'No tests specified yet'"
+  },
+  "keywords": [
+    "football",
+    "betting",
+    "predictions",
+    "sports",
+    "analysis",
+    "mobile-app",
+    "web-app"
+  ],
+  "author": "BetHelper Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bethelper/bethelper-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bethelper/bethelper-app/issues"
+  },
+  "homepage": "https://github.com/bethelper/bethelper-app#readme",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+} 

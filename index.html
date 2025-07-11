@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AreBet - Smart Football Predictions</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#00a651", secondary: "#2d3748" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-gray-50">
+    <!-- Nav Bar -->
+    <nav class="fixed top-0 w-full bg-white shadow-sm z-50">
+      <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center">
+          <span class="text-primary font-['Pacifico'] text-xl">AreBet</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
+            <i class="ri-search-line ri-lg"></i>
+          </div>
+          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
+            <i class="ri-notification-3-line ri-lg"></i>
+          </div>
+          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
+            <i class="ri-user-3-line ri-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Tabs -->
+      <div class="px-4 pb-2">
+        <div class="flex bg-gray-100 p-1 rounded-full">
+          <button
+            class="flex-1 py-1.5 px-3 rounded-full bg-primary text-white text-sm font-medium"
+          >
+            Today
+          </button>
+          <button
+            class="flex-1 py-1.5 px-3 rounded-full text-gray-700 text-sm font-medium"
+          >
+            Tomorrow
+          </button>
+          <button
+            class="flex-1 py-1.5 px-3 rounded-full text-gray-700 text-sm font-medium"
+          >
+            Weekend
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-20 px-4">
+      <!-- Featured Match -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-5">
+        <div
+          class="bg-primary bg-opacity-10 px-4 py-2 flex items-center justify-between"
+        >
+          <div class="flex items-center">
+            <img
+              src="https://readdy.ai/api/search-image?query=Premier%20League%20logo%2C%20minimalist%20design%2C%20isolated%20on%20white%20background%2C%20high%20quality%2C%20professional%20sports%20logo&width=24&height=24&seq=1&orientation=squarish"
+              alt="Premier League"
+              class="w-5 h-5 mr-2"
+            />
+            <span class="text-sm font-medium">Premier League</span>
+          </div>
+          <span class="text-xs text-gray-600">Today • 20:45</span>
+        </div>
+
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Arsenal%20FC%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=64&height=64&seq=2&orientation=squarish"
+                alt="Arsenal"
+                class="w-16 h-16 mb-2"
+              />
+              <span class="font-medium text-center">Arsenal</span>
+              <div class="flex mt-2 space-x-1">
+                <span class="form-indicator form-win"></span>
+                <span class="form-indicator form-win"></span>
+                <span class="form-indicator form-draw"></span>
+                <span class="form-indicator form-win"></span>
+                <span class="form-indicator form-win"></span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <span class="text-sm text-gray-500 mb-1">VS</span>
+              <div class="text-xs bg-gray-100 rounded-full px-3 py-1">
+                <i class="ri-fire-line text-primary mr-1"></i>
+                <span>Hot Match</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Manchester%20United%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=64&height=64&seq=3&orientation=squarish"
+                alt="Manchester United"
+                class="w-16 h-16 mb-2"
+              />
+              <span class="font-medium text-center">Man United</span>
+              <div class="flex mt-2 space-x-1">
+                <span class="form-indicator form-win"></span>
+                <span class="form-indicator form-loss"></span>
+                <span class="form-indicator form-draw"></span>
+                <span class="form-indicator form-loss"></span>
+                <span class="form-indicator form-win"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-lg p-3 mb-4">
+            <div class="flex justify-between items-center mb-3">
+              <div class="text-sm font-medium">Win Probability</div>
+              <div class="text-xs text-gray-500">Based on 24 factors</div>
+            </div>
+
+            <div class="flex items-center mb-2">
+              <div class="w-1/4 text-sm">Arsenal</div>
+              <div class="w-1/2">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-primary rounded-full"
+                    style="width: 72%"
+                  ></div>
+                </div>
+              </div>
+              <div class="w-1/4 text-right text-sm font-medium text-primary">
+                72%
+              </div>
+            </div>
+
+            <div class="flex items-center mb-2">
+              <div class="w-1/4 text-sm">Draw</div>
+              <div class="w-1/2">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-yellow-500 rounded-full"
+                    style="width: 18%"
+                  ></div>
+                </div>
+              </div>
+              <div class="w-1/4 text-right text-sm font-medium text-yellow-500">
+                18%
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-1/4 text-sm">Man United</div>
+              <div class="w-1/2">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-red-500 rounded-full"
+                    style="width: 10%"
+                  ></div>
+                </div>
+              </div>
+              <div class="w-1/4 text-right text-sm font-medium text-red-500">
+                10%
+              </div>
+            </div>
+          </div>
+
+          <div class="flex mb-4">
+            <div class="w-1/3 bg-gray-50 rounded-lg p-3 mr-2">
+              <div class="text-xs text-gray-500 mb-1">Expected Goals</div>
+              <div class="text-sm font-medium">2.4 - 0.8</div>
+            </div>
+            <div class="w-1/3 bg-gray-50 rounded-lg p-3 mr-2">
+              <div class="text-xs text-gray-500 mb-1">Recommended</div>
+              <div class="text-sm font-medium">Home Win</div>
+            </div>
+            <div class="w-1/3 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs text-gray-500 mb-1">Best Odds</div>
+              <div class="text-sm font-medium">1.65</div>
+            </div>
+          </div>
+
+          <div class="flex">
+            <button
+              class="flex-1 bg-primary text-white py-2.5 rounded-button mr-3 flex items-center justify-center cursor-pointer"
+            >
+              <i class="ri-external-link-line mr-1"></i>
+              <span>Bet Now</span>
+            </button>
+            <button
+              class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
+            >
+              <i class="ri-bookmark-line ri-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Matches -->
+      <h2 class="text-lg font-semibold mb-3">Today's Predictions</h2>
+
+      <!-- Match 1 -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+        <div class="bg-gray-50 px-4 py-2 flex items-center justify-between">
+          <div class="flex items-center">
+            <img
+              src="https://readdy.ai/api/search-image?query=La%20Liga%20logo%2C%20minimalist%20design%2C%20isolated%20on%20white%20background%2C%20high%20quality%2C%20professional%20sports%20logo&width=24&height=24&seq=4&orientation=squarish"
+              alt="La Liga"
+              class="w-5 h-5 mr-2"
+            />
+            <span class="text-sm font-medium">La Liga</span>
+          </div>
+          <span class="text-xs text-gray-600">Today • 18:00</span>
+        </div>
+
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Barcelona%20FC%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=5&orientation=squarish"
+                alt="Barcelona"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">Barcelona</span>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-gray-500">VS</span>
+            </div>
+
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Sevilla%20FC%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=6&orientation=squarish"
+                alt="Sevilla"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">Sevilla</span>
+            </div>
+          </div>
+
+          <div class="flex bg-gray-50 rounded-lg p-2 mb-3">
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-primary">81%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-yellow-500">12%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-red-500">7%</span>
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <div class="flex-1">
+              <span
+                class="text-xs bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-full"
+              >
+                <i class="ri-check-line text-primary"></i>
+                Home Win
+              </span>
+            </div>
+            <div class="flex items-center">
+              <button
+                class="bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-button mr-2 cursor-pointer"
+              >
+                <i class="ri-bookmark-line mr-1"></i>
+                Save
+              </button>
+              <button
+                class="bg-primary text-white text-xs px-3 py-1.5 rounded-button cursor-pointer"
+              >
+                <i class="ri-external-link-line mr-1"></i>
+                Bet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Match 2 -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+        <div class="bg-gray-50 px-4 py-2 flex items-center justify-between">
+          <div class="flex items-center">
+            <img
+              src="https://readdy.ai/api/search-image?query=Serie%20A%20logo%2C%20minimalist%20design%2C%20isolated%20on%20white%20background%2C%20high%20quality%2C%20professional%20sports%20logo&width=24&height=24&seq=7&orientation=squarish"
+              alt="Serie A"
+              class="w-5 h-5 mr-2"
+            />
+            <span class="text-sm font-medium">Serie A</span>
+          </div>
+          <span class="text-xs text-gray-600">Today • 20:45</span>
+        </div>
+
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=AC%20Milan%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=8&orientation=squarish"
+                alt="AC Milan"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">AC Milan</span>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-gray-500">VS</span>
+            </div>
+
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Juventus%20FC%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=9&orientation=squarish"
+                alt="Juventus"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">Juventus</span>
+            </div>
+          </div>
+
+          <div class="flex bg-gray-50 rounded-lg p-2 mb-3">
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-primary">45%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-yellow-500">33%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-red-500">22%</span>
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <div class="flex-1">
+              <span
+                class="text-xs bg-yellow-500 bg-opacity-10 text-yellow-600 px-2 py-1 rounded-full"
+              >
+                <i class="ri-check-line text-yellow-600"></i>
+                Draw or Home
+              </span>
+            </div>
+            <div class="flex items-center">
+              <button
+                class="bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-button mr-2 cursor-pointer"
+              >
+                <i class="ri-bookmark-line mr-1"></i>
+                Save
+              </button>
+              <button
+                class="bg-primary text-white text-xs px-3 py-1.5 rounded-button cursor-pointer"
+              >
+                <i class="ri-external-link-line mr-1"></i>
+                Bet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Match 3 -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+        <div class="bg-gray-50 px-4 py-2 flex items-center justify-between">
+          <div class="flex items-center">
+            <img
+              src="https://readdy.ai/api/search-image?query=Bundesliga%20logo%2C%20minimalist%20design%2C%20isolated%20on%20white%20background%2C%20high%20quality%2C%20professional%20sports%20logo&width=24&height=24&seq=10&orientation=squarish"
+              alt="Bundesliga"
+              class="w-5 h-5 mr-2"
+            />
+            <span class="text-sm font-medium">Bundesliga</span>
+          </div>
+          <span class="text-xs text-gray-600">Today • 19:30</span>
+        </div>
+
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Bayern%20Munich%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=11&orientation=squarish"
+                alt="Bayern Munich"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">Bayern Munich</span>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-gray-500">VS</span>
+            </div>
+
+            <div class="flex flex-col items-center w-2/5">
+              <img
+                src="https://readdy.ai/api/search-image?query=Borussia%20Dortmund%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=48&height=48&seq=12&orientation=squarish"
+                alt="Dortmund"
+                class="w-12 h-12 mb-1"
+              />
+              <span class="text-sm font-medium">Dortmund</span>
+            </div>
+          </div>
+
+          <div class="flex bg-gray-50 rounded-lg p-2 mb-3">
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-primary">68%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-yellow-500">20%</span>
+            </div>
+            <div class="flex-1 flex items-center justify-center">
+              <span class="text-sm font-medium text-red-500">12%</span>
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <div class="flex-1">
+              <span
+                class="text-xs bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-full"
+              >
+                <i class="ri-check-line text-primary"></i>
+                Over 2.5 Goals
+              </span>
+            </div>
+            <div class="flex items-center">
+              <button
+                class="bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-button mr-2 cursor-pointer"
+              >
+                <i class="ri-bookmark-line mr-1"></i>
+                Save
+              </button>
+              <button
+                class="bg-primary text-white text-xs px-3 py-1.5 rounded-button cursor-pointer"
+              >
+                <i class="ri-external-link-line mr-1"></i>
+                Bet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fixed right-4 bottom-20">
+      <button
+        class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer"
+      >
+        <i class="ri-add-line ri-xl text-white"></i>
+      </button>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
+      <div class="grid grid-cols-5 h-16">
+        <a
+          href="#"
+          class="flex flex-col items-center justify-center cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-home-5-fill ri-lg text-primary"></i>
+          </div>
+          <span class="text-xs mt-1 text-primary font-medium">Home</span>
+        </a>
+        <a
+          href="#"
+          class="flex flex-col items-center justify-center cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-bar-chart-line ri-lg text-gray-500"></i>
+          </div>
+          <span class="text-xs mt-1 text-gray-500">Stats</span>
+        </a>
+        <a
+          href="#"
+          class="flex flex-col items-center justify-center cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-history-line ri-lg text-gray-500"></i>
+          </div>
+          <span class="text-xs mt-1 text-gray-500">History</span>
+        </a>
+        <a
+          href="#"
+          class="flex flex-col items-center justify-center cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-trophy-line ri-lg text-gray-500"></i>
+          </div>
+          <span class="text-xs mt-1 text-gray-500">Leagues</span>
+        </a>
+        <a
+          href="#"
+          class="flex flex-col items-center justify-center cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-user-3-line ri-lg text-gray-500"></i>
+          </div>
+          <span class="text-xs mt-1 text-gray-500">Profile</span>
+        </a>
+      </div>
+    </nav>
+
+    <script src="js/app.js"></script>
+  </body>
+</html> 
