@@ -165,15 +165,15 @@
     </nav>
 
     <!-- Floating Action Button -->
-    <button class="fixed bottom-20 right-4 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors z-20">
-        <i class="ri-add-line text-xl"></i>
+    <button class="fixed bottom-24 right-4 bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors z-20 border-2 border-white">
+        <i class="ri-add-line text-lg sm:text-xl"></i>
     </button>
 
     <!-- Success Toast -->
-    <div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+    <div id="successToast" class="fixed top-20 right-4 bg-green-500 text-white px-4 sm:px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50 border border-green-600">
         <div class="flex items-center">
-            <i class="ri-check-line mr-2"></i>
-            <span id="successMessage">Action completed successfully!</span>
+            <i class="ri-check-line mr-2 text-lg"></i>
+            <span id="successMessage" class="text-sm sm:text-base font-medium">Action completed successfully!</span>
         </div>
     </div>
 

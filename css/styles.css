@@ -21,6 +21,28 @@ body {
     display: none;  /* Safari and Chrome */
 }
 
+/* Floating Action Button improvements */
+.fixed.bottom-24 {
+    bottom: 6rem; /* 96px - ensures it's above bottom navigation */
+}
+
+/* Ensure FAB is always visible */
+.fixed.bottom-24.right-4 {
+    box-shadow: 0 4px 12px rgba(0, 166, 81, 0.3);
+    border: 2px solid white;
+}
+
+.fixed.bottom-24.right-4:hover {
+    box-shadow: 0 6px 16px rgba(0, 166, 81, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Success toast improvements */
+#successToast {
+    max-width: calc(100vw - 2rem);
+    word-wrap: break-word;
+}
+
 /* Ensure proper spacing for fixed elements */
 body {
     padding-top: 0; /* Remove any default padding */
@@ -53,6 +75,12 @@ body {
     
     .space-x-4 > * + * {
         margin-left: 1rem;
+    }
+    
+    /* Mobile FAB positioning */
+    .fixed.bottom-24.right-4 {
+        bottom: 5.5rem; /* Slightly higher on mobile */
+        right: 1rem;
     }
 }
 
