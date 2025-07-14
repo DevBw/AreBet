@@ -605,6 +605,287 @@ class BetHelperApp {
                 this.forceRefresh();
             }
         });
+
+        // Setup search modal handlers
+        this.setupSearchModalHandlers();
+    }
+
+    // Search Modal
+    showSearchModal() {
+        const modal = document.getElementById('searchModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            // Focus on search input
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }, 100);
+        }
+        
+        this.setupSearchModalHandlers();
+    }
+
+    hideSearchModal() {
+        const modal = document.getElementById('searchModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    setupSearchModalHandlers() {
+        const searchButton = document.getElementById('searchButton');
+        const closeButton = document.getElementById('closeSearchModal');
+        const searchInput = document.getElementById('searchInput');
+        const filterButtons = document.querySelectorAll('.search-filter-btn');
+
+        if (searchButton) {
+            searchButton.onclick = () => this.showSearchModal();
+        }
+
+        if (closeButton) {
+            closeButton.onclick = () => this.hideSearchModal();
+        }
+
+        if (searchInput) {
+            // Debounced search
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.performSearch(e.target.value);
+                }, 300);
+            });
+
+            // Search on Enter key
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.performSearch(e.target.value);
+                }
+            });
+        }
+
+        // Filter buttons
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-green-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                button.classList.add('active', 'bg-green-500', 'text-white');
+                button.classList.remove('bg-gray-200', 'text-gray-700');
+                
+                // Re-search with current filter
+                const currentSearch = searchInput?.value || '';
+                this.performSearch(currentSearch, button.textContent.trim());
+            });
+        });
+    }
+
+    async performSearch(query, filter = 'All') {
+        if (!query.trim()) {
+            this.showSearchPlaceholder();
+            return;
+        }
+
+        this.showSearchLoading();
+        
+        try {
+            let results = [];
+            
+            if (filter === 'All' || filter === 'Teams') {
+                const teamResults = await this.searchTeams(query);
+                results = results.concat(teamResults);
+            }
+            
+            if (filter === 'All' || filter === 'Leagues') {
+                const leagueResults = await this.searchLeagues(query);
+                results = results.concat(leagueResults);
+            }
+            
+            if (filter === 'All' || filter === 'Matches') {
+                const matchResults = await this.searchMatches(query);
+                results = results.concat(matchResults);
+            }
+            
+            this.displaySearchResults(results, query);
+            
+        } catch (error) {
+            console.error('Search error:', error);
+            this.showSearchError('Search failed. Please try again.');
+        }
+    }
+
+    async searchTeams(query) {
+        // For demo purposes, return mock team data
+        const mockTeams = [
+            { id: 50, name: 'Manchester City', logo: 'https://media.api-sports.io/football/teams/50.png', type: 'team' },
+            { id: 42, name: 'Arsenal', logo: 'https://media.api-sports.io/football/teams/42.png', type: 'team' },
+            { id: 40, name: 'Liverpool', logo: 'https://media.api-sports.io/football/teams/40.png', type: 'team' },
+            { id: 47, name: 'Tottenham', logo: 'https://media.api-sports.io/football/teams/47.png', type: 'team' },
+            { id: 33, name: 'Manchester United', logo: 'https://media.api-sports.io/football/teams/33.png', type: 'team' }
+        ];
+        
+        return mockTeams.filter(team => 
+            team.name.toLowerCase().includes(query.toLowerCase())
+        );
+    }
+
+    async searchLeagues(query) {
+        // For demo purposes, return mock league data
+        const mockLeagues = [
+            { id: 39, name: 'Premier League', logo: 'https://media.api-sports.io/football/leagues/39.png', type: 'league' },
+            { id: 140, name: 'La Liga', logo: 'https://media.api-sports.io/football/leagues/140.png', type: 'league' },
+            { id: 78, name: 'Bundesliga', logo: 'https://media.api-sports.io/football/leagues/78.png', type: 'league' },
+            { id: 61, name: 'Ligue 1', logo: 'https://media.api-sports.io/football/leagues/61.png', type: 'league' },
+            { id: 135, name: 'Serie A', logo: 'https://media.api-sports.io/football/leagues/135.png', type: 'league' }
+        ];
+        
+        return mockLeagues.filter(league => 
+            league.name.toLowerCase().includes(query.toLowerCase())
+        );
+    }
+
+    async searchMatches(query) {
+        // For demo purposes, return mock match data
+        const mockMatches = [
+            { 
+                id: 1, 
+                homeTeam: 'Manchester City', 
+                awayTeam: 'Arsenal',
+                date: new Date().toISOString(),
+                league: 'Premier League',
+                type: 'match'
+            },
+            { 
+                id: 2, 
+                homeTeam: 'Liverpool', 
+                awayTeam: 'Tottenham',
+                date: new Date(Date.now() + 86400000).toISOString(),
+                league: 'Premier League',
+                type: 'match'
+            }
+        ];
+        
+        return mockMatches.filter(match => 
+            match.homeTeam.toLowerCase().includes(query.toLowerCase()) ||
+            match.awayTeam.toLowerCase().includes(query.toLowerCase()) ||
+            match.league.toLowerCase().includes(query.toLowerCase())
+        );
+    }
+
+    displaySearchResults(results, query) {
+        const container = document.getElementById('searchResults');
+        const loading = document.getElementById('searchLoading');
+        
+        if (loading) loading.classList.add('hidden');
+        
+        if (!container) return;
+        
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="ri-search-line text-3xl mb-2"></i>
+                    <p>No results found for "${query}"</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = results.map(result => {
+            if (result.type === 'team') {
+                return `
+                    <div class="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onclick="app.selectSearchResult('team', ${result.id})">
+                        <img src="${result.logo}" alt="${result.name}" class="w-8 h-8 rounded-full mr-3">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">${result.name}</div>
+                            <div class="text-sm text-gray-500">Team</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line text-gray-400"></i>
+                    </div>
+                `;
+            } else if (result.type === 'league') {
+                return `
+                    <div class="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onclick="app.selectSearchResult('league', ${result.id})">
+                        <img src="${result.logo}" alt="${result.name}" class="w-8 h-8 rounded mr-3">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">${result.name}</div>
+                            <div class="text-sm text-gray-500">League</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line text-gray-400"></i>
+                    </div>
+                `;
+            } else if (result.type === 'match') {
+                return `
+                    <div class="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onclick="app.selectSearchResult('match', ${result.id})">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="ri-football-line text-green-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">${result.homeTeam} vs ${result.awayTeam}</div>
+                            <div class="text-sm text-gray-500">${result.league} • ${this.formatDate(result.date)}</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line text-gray-400"></i>
+                    </div>
+                `;
+            }
+        }).join('');
+    }
+
+    selectSearchResult(type, id) {
+        this.hideSearchModal();
+        
+        if (type === 'team') {
+            this.showSuccess(`Selected team with ID: ${id}`);
+            // TODO: Load team-specific matches
+        } else if (type === 'league') {
+            this.showSuccess(`Selected league with ID: ${id}`);
+            // TODO: Load league-specific matches
+        } else if (type === 'match') {
+            this.showSuccess(`Selected match with ID: ${id}`);
+            // TODO: Show match details
+        }
+    }
+
+    showSearchLoading() {
+        const container = document.getElementById('searchResults');
+        const loading = document.getElementById('searchLoading');
+        
+        if (container) container.classList.add('hidden');
+        if (loading) loading.classList.remove('hidden');
+    }
+
+    showSearchPlaceholder() {
+        const container = document.getElementById('searchResults');
+        const loading = document.getElementById('searchLoading');
+        
+        if (loading) loading.classList.add('hidden');
+        if (container) {
+            container.classList.remove('hidden');
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="ri-search-line text-3xl mb-2"></i>
+                    <p>Search for teams, leagues, or matches</p>
+                </div>
+            `;
+        }
+    }
+
+    showSearchError(message) {
+        const container = document.getElementById('searchResults');
+        const loading = document.getElementById('searchLoading');
+        
+        if (loading) loading.classList.add('hidden');
+        if (container) {
+            container.classList.remove('hidden');
+            container.innerHTML = `
+                <div class="text-center py-8 text-red-500">
+                    <i class="ri-error-warning-line text-3xl mb-2"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
     }
 }
 
