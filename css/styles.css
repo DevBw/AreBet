@@ -11,6 +11,66 @@ body {
   background-color: #f8f9fa;
 }
 
+/* Hide scrollbar for webkit browsers */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+/* Ensure proper spacing for fixed elements */
+body {
+    padding-top: 0; /* Remove any default padding */
+}
+
+/* Header spacing fixes */
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Ensure content doesn't overlap with fixed bottom nav */
+.pb-20 {
+    padding-bottom: 5rem; /* 80px */
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+    .text-lg {
+        font-size: 1rem;
+    }
+    
+    .text-xl {
+        font-size: 1.125rem;
+    }
+    
+    .space-x-2 > * + * {
+        margin-left: 0.5rem;
+    }
+    
+    .space-x-4 > * + * {
+        margin-left: 1rem;
+    }
+}
+
+/* Focus states for accessibility */
+button:focus {
+    outline: 2px solid #00a651;
+    outline-offset: 2px;
+}
+
+/* Ensure notification badge stays within bounds */
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
 /* Form Indicators */
 .form-indicator {
   width: 8px;
