@@ -297,18 +297,18 @@ class BetHelperApp {
         const prediction = this.generatePrediction(match);
 
         container.innerHTML = `
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-3">
-                    <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-8 h-8 rounded-full">
-                    <span class="font-semibold text-gray-900">${match.teams.home.name}</span>
+            <div class="flex items-center justify-between mb-4 min-w-0">
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                    <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-8 h-8 rounded-full flex-shrink-0">
+                    <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">${match.teams.home.name}</span>
                 </div>
-                <div class="text-center">
+                <div class="text-center flex-shrink-0 mx-2">
                     <div class="text-sm text-gray-500">VS</div>
                     <div class="text-xs text-gray-400">${this.formatDate(match.fixture.date)}</div>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <span class="font-semibold text-gray-900">${match.teams.away.name}</span>
-                    <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-8 h-8 rounded-full">
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
+                    <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">${match.teams.away.name}</span>
+                    <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-8 h-8 rounded-full flex-shrink-0">
                 </div>
             </div>
             
@@ -318,15 +318,15 @@ class BetHelperApp {
                     <span class="text-sm font-semibold text-green-600">${prediction.confidence}% confidence</span>
                 </div>
                 <div class="flex space-x-2 mb-3">
-                    <div class="flex-1 bg-white rounded p-2 text-center">
+                    <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
                         <div class="text-lg font-bold text-gray-900">${prediction.homeWin}%</div>
                         <div class="text-xs text-gray-500">Home</div>
                     </div>
-                    <div class="flex-1 bg-white rounded p-2 text-center">
+                    <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
                         <div class="text-lg font-bold text-gray-900">${prediction.draw}%</div>
                         <div class="text-xs text-gray-500">Draw</div>
                     </div>
-                    <div class="flex-1 bg-white rounded p-2 text-center">
+                    <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
                         <div class="text-lg font-bold text-gray-900">${prediction.awayWin}%</div>
                         <div class="text-xs text-gray-500">Away</div>
                     </div>
@@ -364,47 +364,47 @@ class BetHelperApp {
 
         return `
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center space-x-3">
-                        <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-6 h-6 rounded-full">
-                        <span class="font-medium text-gray-900">${match.teams.home.name}</span>
+                <div class="flex items-center justify-between mb-3 min-w-0">
+                    <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                        <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-6 h-6 rounded-full flex-shrink-0">
+                        <span class="font-medium text-gray-900 truncate text-sm sm:text-base">${match.teams.home.name}</span>
                     </div>
-                    <div class="text-center">
+                    <div class="text-center flex-shrink-0 mx-2">
                         <div class="text-sm text-gray-500">VS</div>
                         <div class="text-xs text-gray-400">${this.formatTime(match.fixture.date)}</div>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="font-medium text-gray-900">${match.teams.away.name}</span>
-                        <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-6 h-6 rounded-full">
+                    <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
+                        <span class="font-medium text-gray-900 truncate text-sm sm:text-base">${match.teams.away.name}</span>
+                        <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-6 h-6 rounded-full flex-shrink-0">
                     </div>
                 </div>
                 
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-sm text-gray-500">${match.league.name}</span>
-                    <span class="text-sm font-semibold ${confidenceColor}">${prediction.confidence}% confidence</span>
+                    <span class="text-sm text-gray-500 truncate flex-1 mr-2">${match.league.name}</span>
+                    <span class="text-sm font-semibold ${confidenceColor} flex-shrink-0">${prediction.confidence}% confidence</span>
                 </div>
                 
                 <div class="flex space-x-1 mb-3">
-                    <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                    <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
                         <div class="text-sm font-bold text-gray-900">${prediction.homeWin}%</div>
                         <div class="text-xs text-gray-500">Home</div>
                     </div>
-                    <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                    <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
                         <div class="text-sm font-bold text-gray-900">${prediction.draw}%</div>
                         <div class="text-xs text-gray-500">Draw</div>
                     </div>
-                    <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                    <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
                         <div class="text-sm font-bold text-gray-900">${prediction.awayWin}%</div>
                         <div class="text-xs text-gray-500">Away</div>
                     </div>
                 </div>
                 
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">
+                    <span class="text-sm text-gray-600 truncate flex-1 mr-2">
                         <i class="ri-target-line mr-1"></i>
                         Expected: ${prediction.expectedGoals} goals
                     </span>
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-2 flex-shrink-0">
                         <button onclick="app.saveMatch(${match.fixture.id})" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
                             <i class="ri-heart-line"></i>
                         </button>
