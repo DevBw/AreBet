@@ -196,8 +196,13 @@ class BetHelperApp {
 
         if (skipButton) {
             skipButton.onclick = () => {
+                console.log('Skip button clicked');
                 this.hideApiKeyModal();
-                this.loadDemoData();
+                // Add a small delay to ensure modal is hidden
+                setTimeout(() => {
+                    console.log('Loading demo data...');
+                    this.loadDemoData();
+                }, 100);
             };
         }
 
@@ -260,6 +265,13 @@ class BetHelperApp {
 
     // Demo Data (fallback)
     loadDemoData() {
+        console.log('loadDemoData called');
+        // Clear any loading states first
+        this.hideLoading();
+        this.hideLoadingMatches();
+        
+        console.log('Loading states cleared');
+        
         this.matches = [
             {
                 fixture: {
@@ -274,10 +286,14 @@ class BetHelperApp {
             }
         ];
         
+        console.log('Demo matches set:', this.matches);
+        
         this.updateMatchCount();
         this.renderMatches();
         this.setFeaturedMatch();
         this.showSuccess('Demo mode activated. Get an API key for real data!');
+        
+        console.log('Demo data loaded successfully');
     }
 
     // UI Updates
