@@ -80,17 +80,27 @@ button {
     bottom: 6rem; /* 96px - ensures it's above bottom navigation */
 }
 
+/* Floating Action Button - Highest Priority */
+button.fixed.bottom-24.right-4 {
+    z-index: 9999 !important;
+    position: fixed !important;
+}
+
+button.fixed.bottom-24.right-4:hover {
+    z-index: 9999 !important;
+}
+
 /* Ensure FAB is always visible */
 .fixed.bottom-24.right-4 {
     box-shadow: 0 4px 12px rgba(0, 166, 81, 0.3);
     border: 2px solid white;
-    z-index: 50 !important;
+    z-index: 9999 !important;
 }
 
 .fixed.bottom-24.right-4:hover {
     box-shadow: 0 6px 16px rgba(0, 166, 81, 0.4);
     transform: translateY(-2px);
-    z-index: 50 !important;
+    z-index: 9999 !important;
 }
 
 /* Success toast improvements */
