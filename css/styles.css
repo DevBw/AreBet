@@ -84,11 +84,13 @@ button {
 .fixed.bottom-24.right-4 {
     box-shadow: 0 4px 12px rgba(0, 166, 81, 0.3);
     border: 2px solid white;
+    z-index: 50 !important;
 }
 
 .fixed.bottom-24.right-4:hover {
     box-shadow: 0 6px 16px rgba(0, 166, 81, 0.4);
     transform: translateY(-2px);
+    z-index: 50 !important;
 }
 
 /* Success toast improvements */
