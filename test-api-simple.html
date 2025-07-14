@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Simple</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>API-Football Integration Test</h1>
+    
+    <div class="test-section info">
+        <h3>API Configuration</h3>
+        <p><strong>API Key:</strong> <span id="api-key">Loading...</span></p>
+        <p><strong>Season:</strong> 2023 (Free plan compatible)</p>
+        <p><strong>Base URL:</strong> https://v3.football.api-sports.io</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Test API Endpoints</h3>
+        <button onclick="testTodayMatches()">Test Today's Matches</button>
+        <button onclick="testTeamStats()">Test Team Statistics</button>
+        <button onclick="testLeagueInfo()">Test League Info</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script>
+        // Display API key
+        document.getElementById('api-key').textContent = '34217e3a7aa4a6e0acf7dfc67a7c726a';
+
+        function addResult(title, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-section ${type}`;
+            resultDiv.innerHTML = `
+                <h4>${title}</h4>
+                <pre>${JSON.stringify(content, null, 2)}</pre>
+            `;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        async function testTodayMatches() {
+            try {
+                addResult('Testing Today\'s Matches', 'Loading...', 'info');
+                
+                const matches = await apiService.getTodayMatches();
+                
+                if (matches.results > 0) {
+                    addResult('✅ Today\'s Matches Success', {
+                        total: matches.results,
+                        sample: matches.response.slice(0, 3).map(match => ({
+                            id: match.fixture.id,
+                            home: match.teams.home.name,
+                            away: match.teams.away.name,
+                            league: match.league.name,
+                            date: match.fixture.date
+                        }))
+                    }, 'success');
+                } else {
+                    addResult('⚠️ No Matches Today', {
+                        message: 'No matches found for today',
+                        date: new Date().toISOString().split('T')[0]
+                    }, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Today\'s Matches Error', {
+                    error: error.message,
+                    stack: error.stack
+                }, 'error');
+            }
+        }
+
+        async function testTeamStats() {
+            try {
+                addResult('Testing Team Statistics', 'Loading...', 'info');
+                
+                // Test with a known team (Manchester United - Premier League)
+                const stats = await apiService.getTeamStatistics(33, 39, 2023);
+                
+                if (stats.results > 0) {
+                    addResult('✅ Team Statistics Success', {
+                        team: 'Manchester United',
+                        league: 'Premier League',
+                        season: 2023,
+                        data: stats.response[0]
+                    }, 'success');
+                } else {
+                    addResult('⚠️ No Team Statistics', {
+                        message: 'No statistics found for this team/season',
+                        team: 'Manchester United',
+                        season: 2023
+                    }, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Team Statistics Error', {
+                    error: error.message,
+                    note: 'This might be due to free plan limitations'
+                }, 'error');
+            }
+        }
+
+        async function testLeagueInfo() {
+            try {
+                addResult('Testing League Info', 'Loading...', 'info');
+                
+                // Test with Premier League
+                const league = await apiService.getLeagueInfo(39);
+                
+                if (league.results > 0) {
+                    addResult('✅ League Info Success', {
+                        league: league.response[0]
+                    }, 'success');
+                } else {
+                    addResult('⚠️ No League Info', {
+                        message: 'No league information found'
+                    }, 'error');
+                }
+            } catch (error) {
+                addResult('❌ League Info Error', {
+                    error: error.message
+                }, 'error');
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testTodayMatches();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
