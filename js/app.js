@@ -21,14 +21,16 @@ class BetHelperApp {
                 return;
             }
 
+            // Show content immediately with loading state
+            this.hideLoading();
+            this.showLoadingMatches();
+            
             this.updateLoadingStatus('Loading matches...');
             await this.loadMatches();
             
         } catch (error) {
             console.error('App initialization error:', error);
             this.showError('Failed to initialize the app. Please try again.');
-        } finally {
-            this.hideLoading();
         }
     }
 
@@ -52,6 +54,54 @@ class BetHelperApp {
         if (overlay) {
             overlay.classList.add('hidden');
         }
+    }
+
+    showLoadingMatches() {
+        const container = document.getElementById('matchesContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    ${Array(3).fill().map(() => `
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="animate-pulse">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="h-3 bg-gray-200 rounded w-8 mb-1"></div>
+                                        <div class="h-2 bg-gray-200 rounded w-12"></div>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="h-4 bg-gray-200 rounded w-20"></div>
+                                        <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-1 mb-3">
+                                    <div class="flex-1 bg-gray-100 rounded p-2">
+                                        <div class="h-4 bg-gray-200 rounded w-8 mx-auto mb-1"></div>
+                                        <div class="h-2 bg-gray-200 rounded w-12 mx-auto"></div>
+                                    </div>
+                                    <div class="flex-1 bg-gray-100 rounded p-2">
+                                        <div class="h-4 bg-gray-200 rounded w-8 mx-auto mb-1"></div>
+                                        <div class="h-2 bg-gray-200 rounded w-12 mx-auto"></div>
+                                    </div>
+                                    <div class="flex-1 bg-gray-100 rounded p-2">
+                                        <div class="h-4 bg-gray-200 rounded w-8 mx-auto mb-1"></div>
+                                        <div class="h-2 bg-gray-200 rounded w-12 mx-auto"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+
+    hideLoadingMatches() {
+        // Loading matches will be replaced by actual content
     }
 
     // Error Handling
@@ -157,12 +207,11 @@ class BetHelperApp {
     async loadMatches() {
         try {
             this.isLoading = true;
-            this.updateLoadingStatus('Fetching today\'s matches...');
             
             const today = new Date().toISOString().split('T')[0];
             const matches = await this.apiService.getMatchesByDate(today);
             
-            this.matches = matches || [];
+            this.matches = matches?.response || [];
             this.updateMatchCount();
             
             if (this.matches.length === 0) {
@@ -178,6 +227,7 @@ class BetHelperApp {
             this.showError('Failed to load matches. Please check your API key or try again later.', () => this.loadMatches());
         } finally {
             this.isLoading = false;
+            this.hideLoadingMatches();
         }
     }
 
@@ -244,21 +294,21 @@ class BetHelperApp {
         if (!container || !this.featuredMatch) return;
 
         const match = this.featuredMatch;
-        const prediction = match.prediction;
+        const prediction = this.generatePrediction(match);
 
         container.innerHTML = `
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-3">
-                    <img src="${match.homeTeam.logo}" alt="${match.homeTeam.name}" class="w-8 h-8 rounded-full">
-                    <span class="font-semibold text-gray-900">${match.homeTeam.name}</span>
+                    <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-8 h-8 rounded-full">
+                    <span class="font-semibold text-gray-900">${match.teams.home.name}</span>
                 </div>
                 <div class="text-center">
                     <div class="text-sm text-gray-500">VS</div>
-                    <div class="text-xs text-gray-400">${this.formatDate(match.date)}</div>
+                    <div class="text-xs text-gray-400">${this.formatDate(match.fixture.date)}</div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <span class="font-semibold text-gray-900">${match.awayTeam.name}</span>
-                    <img src="${match.awayTeam.logo}" alt="${match.awayTeam.name}" class="w-8 h-8 rounded-full">
+                    <span class="font-semibold text-gray-900">${match.teams.away.name}</span>
+                    <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-8 h-8 rounded-full">
                 </div>
             </div>
             
@@ -289,10 +339,10 @@ class BetHelperApp {
             </div>
             
             <div class="flex space-x-2">
-                <button onclick="app.saveMatch(${match.id})" class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                <button onclick="app.saveMatch(${match.fixture.id})" class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                     <i class="ri-heart-line mr-2"></i>Save
                 </button>
-                <button onclick="app.placeBet(${match.id})" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                <button onclick="app.placeBet(${match.fixture.id})" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
                     <i class="ri-money-dollar-circle-line mr-2"></i>Bet Now
                 </button>
             </div>
@@ -307,7 +357,8 @@ class BetHelperApp {
     }
 
     createMatchCard(match) {
-        const prediction = match.prediction;
+        // Generate prediction data for the match
+        const prediction = this.generatePrediction(match);
         const confidenceColor = prediction.confidence >= 80 ? 'text-green-600' : 
                                prediction.confidence >= 60 ? 'text-yellow-600' : 'text-red-600';
 
@@ -315,21 +366,21 @@ class BetHelperApp {
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center space-x-3">
-                        <img src="${match.homeTeam.logo}" alt="${match.homeTeam.name}" class="w-6 h-6 rounded-full">
-                        <span class="font-medium text-gray-900">${match.homeTeam.name}</span>
+                        <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-6 h-6 rounded-full">
+                        <span class="font-medium text-gray-900">${match.teams.home.name}</span>
                     </div>
                     <div class="text-center">
                         <div class="text-sm text-gray-500">VS</div>
-                        <div class="text-xs text-gray-400">${this.formatTime(match.date)}</div>
+                        <div class="text-xs text-gray-400">${this.formatTime(match.fixture.date)}</div>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <span class="font-medium text-gray-900">${match.awayTeam.name}</span>
-                        <img src="${match.awayTeam.logo}" alt="${match.awayTeam.name}" class="w-6 h-6 rounded-full">
+                        <span class="font-medium text-gray-900">${match.teams.away.name}</span>
+                        <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-6 h-6 rounded-full">
                     </div>
                 </div>
                 
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-sm text-gray-500">${match.league}</span>
+                    <span class="text-sm text-gray-500">${match.league.name}</span>
                     <span class="text-sm font-semibold ${confidenceColor}">${prediction.confidence}% confidence</span>
                 </div>
                 
@@ -354,16 +405,50 @@ class BetHelperApp {
                         Expected: ${prediction.expectedGoals} goals
                     </span>
                     <div class="flex space-x-2">
-                        <button onclick="app.saveMatch(${match.id})" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <button onclick="app.saveMatch(${match.fixture.id})" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
                             <i class="ri-heart-line"></i>
                         </button>
-                        <button onclick="app.placeBet(${match.id})" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors">
+                        <button onclick="app.placeBet(${match.fixture.id})" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors">
                             Bet
                         </button>
                     </div>
                 </div>
             </div>
         `;
+    }
+
+    generatePrediction(match) {
+        // Simple prediction algorithm based on team IDs
+        const homeId = match.teams.home.id;
+        const awayId = match.teams.away.id;
+        
+        // Use team IDs to generate consistent predictions
+        const seed = homeId + awayId;
+        const random = (seed * 9301 + 49297) % 233280;
+        const normalized = random / 233280;
+        
+        const homeWin = Math.round(40 + normalized * 40); // 40-80%
+        const draw = Math.round(15 + normalized * 20); // 15-35%
+        const awayWin = 100 - homeWin - draw;
+        
+        const confidence = Math.round(60 + normalized * 30); // 60-90%
+        const expectedGoals = (2 + normalized * 2).toFixed(1); // 2-4 goals
+        
+        let recommendation = 'Home Win';
+        if (awayWin > homeWin) {
+            recommendation = 'Away Win';
+        } else if (draw > homeWin && draw > awayWin) {
+            recommendation = 'Draw';
+        }
+        
+        return {
+            homeWin,
+            draw,
+            awayWin,
+            confidence,
+            recommendation,
+            expectedGoals
+        };
     }
 
     // Actions
