@@ -1,4 +1,4 @@
-# BetHelper - Smart Football Predictions App
+ # BetHelper - Smart Football Predictions App
 
 A modern, mobile-first web application that provides intelligent football betting predictions and analysis.
 
@@ -110,11 +110,26 @@ Uses Remix Icons for consistent iconography throughout the app.
 
 ## API Integration
 
-The app is designed to work with betting APIs. To integrate real data:
+The app is now integrated with **API-Football** for real-time football data. 
 
-1. Add your API endpoints in `js/app.js`
-2. Update the `loadMatchData()` method to fetch real match data
-3. Implement authentication if required by your API provider
+### Quick Setup
+1. Get your free API key from [API-Football](https://www.api-football.com/)
+2. Start the app and enter your API key when prompted
+3. Enjoy real match data, statistics, and predictions!
+
+### Features
+- **Real-time matches**: Live scores and upcoming fixtures
+- **Team statistics**: Form, head-to-head records, and performance data
+- **League information**: Standings, schedules, and team rosters
+- **Predictions**: AI-powered match predictions and betting recommendations
+- **Caching**: Intelligent caching to reduce API calls and improve performance
+
+### Documentation
+See [API_INTEGRATION.md](API_INTEGRATION.md) for detailed setup instructions and API documentation.
+
+### API Limits
+- **Free tier**: 100 requests per day
+- **Paid tiers**: 1000+ requests per day with additional features
 
 ## Contributing
 
