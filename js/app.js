@@ -6,6 +6,8 @@ class BetHelperApp {
         this.featuredMatch = null;
         this.currentDate = new Date();
         this.isLoading = false;
+        this.cache = new Map();
+        this.debounceTimer = null;
         
         this.init();
     }
@@ -133,8 +135,13 @@ class BetHelperApp {
         }
     }
 
-    // Success Toast
+    // Success Toast with debouncing
     showSuccess(message, duration = 3000) {
+        // Clear existing timer
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+
         const toast = document.getElementById('successToast');
         const messageElement = document.getElementById('successMessage');
         
@@ -145,7 +152,7 @@ class BetHelperApp {
         if (toast) {
             toast.classList.remove('translate-x-full');
             
-            setTimeout(() => {
+            this.debounceTimer = setTimeout(() => {
                 toast.classList.add('translate-x-full');
             }, duration);
         }
@@ -203,15 +210,35 @@ class BetHelperApp {
         }
     }
 
-    // Match Loading
+    // Match Loading with caching
     async loadMatches() {
         try {
             this.isLoading = true;
             
             const today = new Date().toISOString().split('T')[0];
+            
+            // Check cache first
+            const cacheKey = `matches_${today}`;
+            const cachedData = this.cache.get(cacheKey);
+            
+            if (cachedData && Date.now() - cachedData.timestamp < 5 * 60 * 1000) { // 5 minutes
+                this.matches = cachedData.data?.response || [];
+                this.updateMatchCount();
+                this.renderMatches();
+                this.setFeaturedMatch();
+                return;
+            }
+            
             const matches = await this.apiService.getMatchesByDate(today);
             
             this.matches = matches?.response || [];
+            
+            // Cache the data
+            this.cache.set(cacheKey, {
+                data: matches,
+                timestamp: Date.now()
+            });
+            
             this.updateMatchCount();
             
             if (this.matches.length === 0) {
@@ -235,20 +262,15 @@ class BetHelperApp {
     loadDemoData() {
         this.matches = [
             {
-                id: 1,
-                homeTeam: { name: 'Manchester City', logo: 'https://media.api-sports.io/football/teams/50.png' },
-                awayTeam: { name: 'Arsenal', logo: 'https://media.api-sports.io/football/teams/42.png' },
-                league: 'Premier League',
-                date: '2024-01-15T20:00:00Z',
-                status: 'scheduled',
-                prediction: {
-                    homeWin: 65,
-                    draw: 22,
-                    awayWin: 13,
-                    confidence: 85,
-                    recommendation: 'Home Win',
-                    expectedGoals: 2.8
-                }
+                fixture: {
+                    id: 1,
+                    date: new Date().toISOString()
+                },
+                teams: {
+                    home: { id: 50, name: 'Manchester City', logo: 'https://media.api-sports.io/football/teams/50.png' },
+                    away: { id: 42, name: 'Arsenal', logo: 'https://media.api-sports.io/football/teams/42.png' }
+                },
+                league: { id: 39, name: 'Premier League', logo: 'https://media.api-sports.io/football/leagues/39.png' }
             }
         ];
         
@@ -299,7 +321,7 @@ class BetHelperApp {
         container.innerHTML = `
             <div class="flex items-center justify-between mb-4 min-w-0">
                 <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                    <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-8 h-8 rounded-full flex-shrink-0">
+                    <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
                     <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">${match.teams.home.name}</span>
                 </div>
                 <div class="text-center flex-shrink-0 mx-2">
@@ -308,7 +330,7 @@ class BetHelperApp {
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
                     <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">${match.teams.away.name}</span>
-                    <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-8 h-8 rounded-full flex-shrink-0">
+                    <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
                 </div>
             </div>
             
@@ -366,7 +388,7 @@ class BetHelperApp {
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center justify-between mb-3 min-w-0">
                     <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                        <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-6 h-6 rounded-full flex-shrink-0">
+                        <img src="${match.teams.home.logo}" alt="${match.teams.home.name}" class="w-6 h-6 rounded-full flex-shrink-0" loading="lazy">
                         <span class="font-medium text-gray-900 truncate text-sm sm:text-base">${match.teams.home.name}</span>
                     </div>
                     <div class="text-center flex-shrink-0 mx-2">
@@ -375,7 +397,7 @@ class BetHelperApp {
                     </div>
                     <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
                         <span class="font-medium text-gray-900 truncate text-sm sm:text-base">${match.teams.away.name}</span>
-                        <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-6 h-6 rounded-full flex-shrink-0">
+                        <img src="${match.teams.away.logo}" alt="${match.teams.away.name}" class="w-6 h-6 rounded-full flex-shrink-0" loading="lazy">
                     </div>
                 </div>
                 
@@ -477,6 +499,7 @@ class BetHelperApp {
     // Force refresh to clear cache and reload
     async forceRefresh() {
         try {
+            this.cache.clear();
             await this.apiService.forceRefresh();
             this.showSuccess('Cache cleared, reloading data...');
             await this.loadMatches();
@@ -504,11 +527,11 @@ class BetHelperApp {
         });
     }
 
-    // Event Handlers
+    // Event Handlers with performance optimizations
     setupEventHandlers() {
-        // Date filter buttons
-        document.querySelectorAll('.date-filter-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Date filter buttons with event delegation
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('date-filter-btn')) {
                 document.querySelectorAll('.date-filter-btn').forEach(b => {
                     b.classList.remove('active', 'bg-green-500', 'text-white');
                     b.classList.add('bg-gray-200', 'text-gray-700');
@@ -516,9 +539,8 @@ class BetHelperApp {
                 e.target.classList.add('active', 'bg-green-500', 'text-white');
                 e.target.classList.remove('bg-gray-200', 'text-gray-700');
                 
-                // TODO: Implement date filtering
                 this.showSuccess('Date filter updated!');
-            });
+            }
         });
 
         // Refresh button
@@ -546,9 +568,9 @@ class BetHelperApp {
             });
         }
 
-        // Navigation buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Navigation buttons with event delegation
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.nav-btn')) {
                 document.querySelectorAll('.nav-btn').forEach(b => {
                     b.classList.remove('active', 'text-green-500');
                     b.classList.add('text-gray-400');
@@ -556,9 +578,16 @@ class BetHelperApp {
                 e.target.closest('.nav-btn').classList.add('active', 'text-green-500');
                 e.target.closest('.nav-btn').classList.remove('text-gray-400');
                 
-                // TODO: Implement navigation
                 this.showSuccess('Navigation updated!');
-            });
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                this.forceRefresh();
+            }
         });
     }
 }

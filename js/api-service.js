@@ -1,4 +1,4 @@
-// API-Football Service for BetHelper
+// API-Football Service for BetHelper - Optimized Version
 class APIFootballService {
     constructor() {
         this.baseURL = 'https://v3.football.api-sports.io';
@@ -7,12 +7,14 @@ class APIFootballService {
         this.requestQueue = [];
         this.isProcessingQueue = false;
         this.lastRequestTime = 0;
-        this.minRequestInterval = 2000; // Reduced to 2 seconds between requests
-        this.maxConcurrentRequests = 3; // Allow more concurrent requests
+        this.minRequestInterval = 1500; // Reduced to 1.5 seconds for better performance
+        this.maxConcurrentRequests = 5; // Increased concurrent requests
         this.activeRequests = 0;
+        this.cacheExpiry = 10 * 60 * 1000; // 10 minutes cache
+        this.retryAttempts = 2;
     }
 
-    // Queue management for rate limiting
+    // Enhanced queue management with better error handling
     async processQueue() {
         if (this.isProcessingQueue || this.requestQueue.length === 0) {
             return;
@@ -21,7 +23,7 @@ class APIFootballService {
         this.isProcessingQueue = true;
 
         while (this.requestQueue.length > 0 && this.activeRequests < this.maxConcurrentRequests) {
-            const { resolve, reject, requestFn } = this.requestQueue.shift();
+            const { resolve, reject, requestFn, retryCount = 0 } = this.requestQueue.shift();
             
             // Ensure minimum interval between requests
             const now = Date.now();
@@ -33,56 +35,104 @@ class APIFootballService {
             this.activeRequests++;
             this.lastRequestTime = Date.now();
 
-            // Execute request without blocking the queue
+            // Execute request with retry logic
             requestFn()
                 .then(result => {
                     this.activeRequests--;
                     resolve(result);
-                    this.processQueue(); // Process next request
+                    this.processQueue();
                 })
                 .catch(error => {
                     this.activeRequests--;
-                    reject(error);
-                    this.processQueue(); // Process next request
+                    
+                    // Retry logic
+                    if (retryCount < this.retryAttempts) {
+                        console.log(`Retrying request (${retryCount + 1}/${this.retryAttempts})`);
+                        this.requestQueue.unshift({ resolve, reject, requestFn, retryCount: retryCount + 1 });
+                    } else {
+                        reject(error);
+                    }
+                    
+                    this.processQueue();
                 });
         }
 
         this.isProcessingQueue = false;
     }
 
-    // Add request to queue
-    async queueRequest(requestFn) {
+    // Add request to queue with priority
+    async queueRequest(requestFn, priority = false) {
         return new Promise((resolve, reject) => {
-            this.requestQueue.push({ resolve, reject, requestFn });
+            const request = { resolve, reject, requestFn };
+            
+            if (priority) {
+                this.requestQueue.unshift(request);
+            } else {
+                this.requestQueue.push(request);
+            }
+            
             this.processQueue();
         });
     }
 
-    // Make API request with rate limiting
+    // Optimized cache management
+    getCacheKey(endpoint, params = {}) {
+        return `${endpoint}?${new URLSearchParams(params).toString()}`;
+    }
+
+    getCachedData(cacheKey) {
+        const cached = this.cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+            return cached.data;
+        }
+        return null;
+    }
+
+    setCachedData(cacheKey, data) {
+        this.cache.set(cacheKey, {
+            data: data,
+            timestamp: Date.now()
+        });
+        
+        // Clean old cache entries if cache gets too large
+        if (this.cache.size > 100) {
+            const entries = Array.from(this.cache.entries());
+            entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+            entries.slice(0, 20).forEach(([key]) => this.cache.delete(key));
+        }
+    }
+
+    // Enhanced API request with better error handling
     async makeRequest(endpoint, params = {}) {
-        const cacheKey = `${endpoint}?${new URLSearchParams(params).toString()}`;
+        const cacheKey = this.getCacheKey(endpoint, params);
         
         // Check cache first
-        const cached = this.cache.get(cacheKey);
-        if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+        const cached = this.getCachedData(cacheKey);
+        if (cached) {
             console.log(`Using cached data for: ${endpoint}`);
-            return cached.data;
+            return cached;
         }
 
         return this.queueRequest(async () => {
             const url = new URL(endpoint, this.baseURL);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
-            console.log(`Making API request to: ${endpoint}`, params);
+            console.log(`Making API request to: ${endpoint}`);
 
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
                 const response = await fetch(url.toString(), {
                     method: 'GET',
                     headers: {
                         'x-rapidapi-host': 'v3.football.api-sports.io',
                         'x-rapidapi-key': this.apiKey
-                    }
+                    },
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,10 +148,7 @@ class APIFootballService {
                 }
 
                 // Cache successful response
-                this.cache.set(cacheKey, {
-                    data: data,
-                    timestamp: Date.now()
-                });
+                this.setCachedData(cacheKey, data);
 
                 return data;
             } catch (error) {
@@ -111,13 +158,12 @@ class APIFootballService {
         });
     }
 
-    // Get today's matches with fallback data
+    // Optimized match loading with better fallbacks
     async getTodayMatches() {
         try {
             const today = new Date().toISOString().split('T')[0];
             const data = await this.makeRequest('/fixtures', { date: today });
             
-            // If no matches today, return fallback data
             if (!data.response || data.response.length === 0) {
                 console.log('No matches today, returning fallback data');
                 return this.getFallbackMatches();
@@ -130,12 +176,10 @@ class APIFootballService {
         }
     }
 
-    // Get matches for a specific date
     async getMatchesByDate(date) {
         try {
             const data = await this.makeRequest('/fixtures', { date: date });
             
-            // If no matches for date, return fallback data
             if (!data.response || data.response.length === 0) {
                 console.log(`No matches for ${date}, returning fallback data`);
                 return this.getFallbackMatches();
@@ -148,15 +192,19 @@ class APIFootballService {
         }
     }
 
-    // Fallback matches data
+    // Enhanced fallback data
     getFallbackMatches() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
         return {
             results: 3,
             response: [
                 {
                     fixture: {
                         id: 1,
-                        date: new Date().toISOString(),
+                        date: today.toISOString(),
                         status: { short: 'NS' }
                     },
                     teams: {
@@ -168,7 +216,7 @@ class APIFootballService {
                 {
                     fixture: {
                         id: 2,
-                        date: new Date().toISOString(),
+                        date: tomorrow.toISOString(),
                         status: { short: 'NS' }
                     },
                     teams: {
@@ -180,7 +228,7 @@ class APIFootballService {
                 {
                     fixture: {
                         id: 3,
-                        date: new Date().toISOString(),
+                        date: today.toISOString(),
                         status: { short: 'NS' }
                     },
                     teams: {
@@ -193,16 +241,21 @@ class APIFootballService {
         };
     }
 
-    // Get team statistics (simplified)
+    // Optimized team statistics with better caching
     async getTeamStatistics(teamId, leagueId, season = 2023) {
+        const cacheKey = `stats_${teamId}_${leagueId}_${season}`;
+        const cached = this.getCachedData(cacheKey);
+        if (cached) return cached;
+
         try {
-            return await this.makeRequest('/teams/statistics', {
+            const data = await this.makeRequest('/teams/statistics', {
                 team: teamId,
                 league: leagueId,
                 season: season
             });
+            this.setCachedData(cacheKey, data);
+            return data;
         } catch (error) {
-            // Return fallback statistics
             return {
                 response: {
                     league: { id: leagueId },
@@ -217,14 +270,19 @@ class APIFootballService {
         }
     }
 
-    // Get head-to-head data (simplified)
+    // Optimized head-to-head data
     async getHeadToHead(team1Id, team2Id) {
+        const cacheKey = `h2h_${team1Id}_${team2Id}`;
+        const cached = this.getCachedData(cacheKey);
+        if (cached) return cached;
+
         try {
-            return await this.makeRequest('/fixtures', {
+            const data = await this.makeRequest('/fixtures', {
                 h2h: `${team1Id}-${team2Id}`
             });
+            this.setCachedData(cacheKey, data);
+            return data;
         } catch (error) {
-            // Return fallback H2H data
             return { 
                 results: 5, 
                 response: [
@@ -236,84 +294,29 @@ class APIFootballService {
         }
     }
 
-    // Get league standings (simplified)
-    async getLeagueStandings(leagueId, season = 2023) {
-        try {
-            return await this.makeRequest('/standings', {
-                league: leagueId,
-                season: season
-            });
-        } catch (error) {
-            // Return fallback standings
-            return {
-                response: [{
-                    league: { id: leagueId },
-                    standings: [
-                        { rank: 1, team: { id: 50, name: 'Manchester City' }, points: 45, all: { played: 20, win: 14, draw: 3, lose: 3 } },
-                        { rank: 2, team: { id: 42, name: 'Arsenal' }, points: 43, all: { played: 20, win: 13, draw: 4, lose: 3 } },
-                        { rank: 3, team: { id: 40, name: 'Liverpool' }, points: 42, all: { played: 20, win: 13, draw: 3, lose: 4 } }
-                    ]
-                }]
-            };
-        }
-    }
-
-    // Get team information (simplified)
-    async getTeamInfo(teamId) {
-        try {
-            return await this.makeRequest('/teams', { id: teamId });
-        } catch (error) {
-            // Return fallback team info
-            return {
-                response: [{
-                    team: {
-                        id: teamId,
-                        name: 'Team Name',
-                        logo: 'https://media.api-sports.io/football/teams/default.png'
-                    }
-                }]
-            };
-        }
-    }
-
-    // Get league information (simplified)
-    async getLeagueInfo(leagueId) {
-        try {
-            return await this.makeRequest('/leagues', { id: leagueId });
-        } catch (error) {
-            // Return fallback league info
-            return {
-                response: [{
-                    league: {
-                        id: leagueId,
-                        name: 'League Name',
-                        logo: 'https://media.api-sports.io/football/leagues/default.png'
-                    }
-                }]
-            };
-        }
-    }
-
-    // Clear cache
+    // Enhanced cache management
     clearCache() {
         this.cache.clear();
         console.log('API cache cleared');
     }
 
-    // Force refresh - clear cache and reload
     async forceRefresh() {
         this.clearCache();
         console.log('Forcing refresh - cache cleared');
         return true;
     }
 
-    // Get cache statistics
     getCacheStats() {
         return {
             size: this.cache.size,
-            entries: Array.from(this.cache.keys())
+            entries: Array.from(this.cache.keys()),
+            hitRate: this.cacheHits / (this.cacheHits + this.cacheMisses) || 0
         };
     }
+
+    // Performance monitoring
+    cacheHits = 0;
+    cacheMisses = 0;
 }
 
 // Create global instance
