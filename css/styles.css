@@ -446,3 +446,1573 @@ button:focus {
 .tooltip:hover::after {
     opacity: 1;
 } 
+
+/* Notification System Styles */
+.notification-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.notification-item:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.notification-item.unread {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.notification-filter-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.notification-filter-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Toast notification animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.toast-notification {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-notification.hiding {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+/* Notification badge pulse animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+#notificationBadge:not(.hidden) {
+    animation: pulse 2s infinite;
+}
+
+/* Notification modal backdrop blur */
+#notificationModal {
+    backdrop-filter: blur(4px);
+}
+
+/* Notification list scrollbar styling */
+#notificationList::-webkit-scrollbar {
+    width: 4px;
+}
+
+#notificationList::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#notificationList::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#notificationList::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+} 
+
+/* FAB Button and Quick Actions Styles */
+#fabButton {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+#fabButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+}
+
+#fabButton:active {
+    transform: scale(0.95);
+}
+
+/* Quick Actions Modal Animation */
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+#quickActionsModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Quick action button hover effects */
+#quickSearch:hover,
+#quickRefresh:hover,
+#quickFavorites:hover,
+#quickSettings:hover,
+#quickHelp:hover {
+    transform: translateX(4px);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Quick action button icons */
+#quickSearch .w-10,
+#quickRefresh .w-10,
+#quickFavorites .w-10,
+#quickSettings .w-10,
+#quickHelp .w-10 {
+    transition: all 0.2s ease-in-out;
+}
+
+#quickSearch:hover .w-10,
+#quickRefresh:hover .w-10,
+#quickFavorites:hover .w-10,
+#quickSettings:hover .w-10,
+#quickHelp:hover .w-10 {
+    transform: scale(1.1);
+}
+
+/* FAB button pulse animation for attention */
+@keyframes fabPulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(34, 197, 94, 0.6);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    }
+}
+
+#fabButton {
+    animation: fabPulse 2s infinite;
+}
+
+#fabButton:hover {
+    animation: none;
+}
+
+/* Quick actions backdrop blur */
+#quickActionsModal {
+    backdrop-filter: blur(4px);
+}
+
+/* Responsive adjustments for FAB */
+@media (max-width: 640px) {
+    #fabButton {
+        bottom: 5rem;
+        right: 1rem;
+    }
+}
+
+/* Quick action button focus states */
+#quickSearch:focus,
+#quickRefresh:focus,
+#quickFavorites:focus,
+#quickSettings:focus,
+#quickHelp:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(34 197 94);
+    ring-offset: 2px;
+} 
+
+/* Profile Modal Styles */
+#profileModal {
+    backdrop-filter: blur(4px);
+}
+
+#profileModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Profile modal scrollbar styling */
+#profileModal .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#profileModal .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#profileModal .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#profileModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* User info section */
+#profileModal .bg-gray-50 {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+}
+
+/* Stats cards hover effects */
+#profileModal .bg-blue-50,
+#profileModal .bg-green-50 {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+#profileModal .bg-blue-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    border-color: #dbeafe;
+}
+
+#profileModal .bg-green-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    border-color: #dcfce7;
+}
+
+/* Settings section styling */
+#profileModal .border-gray-200 {
+    transition: all 0.2s ease-in-out;
+}
+
+#profileModal .border-gray-200:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+
+/* Toggle switch styling */
+#notificationsToggle:checked + div {
+    background-color: #22c55e;
+}
+
+#notificationsToggle:focus + div {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Action buttons hover effects */
+#exportData:hover,
+#importData:hover,
+#clearData:hover {
+    transform: translateX(4px);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+#exportData:hover .w-10,
+#importData:hover .w-10,
+#clearData:hover .w-10 {
+    transform: scale(1.1);
+}
+
+/* Action button icons */
+#exportData .w-10,
+#importData .w-10,
+#clearData .w-10 {
+    transition: all 0.2s ease-in-out;
+}
+
+/* About section styling */
+#profileModal .border-t {
+    border-top-color: #e2e8f0;
+}
+
+#helpButton:hover,
+#feedbackButton:hover,
+#aboutButton:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+#helpButton,
+#feedbackButton,
+#aboutButton {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Profile button active state */
+#profileButton.active {
+    color: #22c55e;
+}
+
+/* Responsive adjustments for profile modal */
+@media (max-width: 640px) {
+    #profileModal .max-w-md {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+    
+    #profileModal .p-6 {
+        padding: 1rem;
+    }
+    
+    #profileModal .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark theme support (basic) */
+.dark #profileModal .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark #profileModal .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark #profileModal .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark #profileModal .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark #profileModal .border-gray-200 {
+    border-color: #374151;
+}
+
+.dark #profileModal .bg-gray-50 {
+    background-color: #374151;
+}
+
+/* Profile modal focus states */
+#profileModal button:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(34 197 94);
+    ring-offset: 2px;
+}
+
+/* Loading animation for profile data */
+@keyframes profileDataLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#profileModal .bg-gray-50,
+#profileModal .grid,
+#profileModal .space-y-4,
+#profileModal .space-y-3 {
+    animation: profileDataLoad 0.5s ease-out;
+} 
+
+/* Favorites Modal Styles */
+#favoritesModal {
+    backdrop-filter: blur(4px);
+}
+
+#favoritesModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Favorites modal scrollbar styling */
+#favoritesModal .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#favoritesModal .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#favoritesModal .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#favoritesModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Favorites header styling */
+#favoritesModal .bg-red-100 {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fecaca;
+}
+
+/* Filter tabs styling */
+.favorites-filter-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.favorites-filter-btn:hover {
+    transform: translateY(-1px);
+}
+
+.favorites-filter-btn.active {
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+/* Empty state styling */
+#favoritesEmptyState .bg-red-100 {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 2px solid #fecaca;
+}
+
+#browseMatches {
+    transition: all 0.2s ease-in-out;
+}
+
+#browseMatches:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Favorite match cards */
+#favoritesList .bg-white {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#favoritesList .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+/* Favorite match card buttons */
+#favoritesList button {
+    transition: all 0.2s ease-in-out;
+}
+
+#favoritesList button:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading animation for favorites */
+@keyframes favoritesLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#favoritesList .bg-white {
+    animation: favoritesLoad 0.5s ease-out;
+}
+
+/* Favorites button active state */
+#favoritesButton.active {
+    color: #ef4444;
+}
+
+/* Sort and filter buttons */
+#sortFavorites:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+#exportFavorites:hover,
+#clearFavorites:hover {
+    transform: translateY(-1px);
+}
+
+/* Responsive adjustments for favorites modal */
+@media (max-width: 640px) {
+    #favoritesModal .max-w-2xl {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+    
+    #favoritesModal .p-6 {
+        padding: 1rem;
+    }
+    
+    #favoritesModal .flex.space-x-1 {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .favorites-filter-btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Dark theme support for favorites */
+.dark #favoritesModal .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark #favoritesModal .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark #favoritesModal .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark #favoritesModal .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark #favoritesModal .border-gray-200 {
+    border-color: #374151;
+}
+
+.dark #favoritesModal .bg-gray-100 {
+    background-color: #374151;
+}
+
+/* Favorites modal focus states */
+#favoritesModal button:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(239 68 68);
+    ring-offset: 2px;
+}
+
+/* Heart icon animations */
+@keyframes heartBeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+#favoritesButton:hover i {
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* Favorites count badge */
+#favoritesCount {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Last updated styling */
+#favoritesLastUpdated {
+    font-family: monospace;
+    color: #6b7280;
+}
+
+/* Action buttons in footer */
+#favoritesModal .border-t {
+    border-top-color: #e2e8f0;
+}
+
+/* Loading spinner for favorites */
+#favoritesLoading .animate-spin {
+    border-color: #ef4444;
+    border-top-color: transparent;
+} 
+
+/* Schedule Modal Styles */
+#scheduleModal {
+    backdrop-filter: blur(4px);
+}
+
+#scheduleModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Schedule modal scrollbar styling */
+#scheduleModal .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#scheduleModal .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#scheduleModal .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#scheduleModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Schedule header styling */
+#scheduleModal .bg-blue-100 {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+}
+
+/* Date navigation styling */
+#prevWeek:hover,
+#nextWeek:hover {
+    color: #1d4ed8;
+    transform: scale(1.1);
+}
+
+#prevWeek,
+#nextWeek {
+    transition: all 0.2s ease-in-out;
+}
+
+#todayButton {
+    transition: all 0.2s ease-in-out;
+}
+
+#todayButton:hover {
+    color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* Filter tabs styling */
+.schedule-filter-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.schedule-filter-btn:hover {
+    transform: translateY(-1px);
+}
+
+.schedule-filter-btn.active {
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Empty state styling */
+#scheduleEmptyState .bg-blue-100 {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #93c5fd;
+}
+
+#loadMoreSchedule {
+    transition: all 0.2s ease-in-out;
+}
+
+#loadMoreSchedule:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Schedule date sections */
+#scheduleList .bg-gray-50 {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+}
+
+#scheduleList .bg-gray-50:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Schedule match cards */
+#scheduleList .bg-white {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#scheduleList .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+/* Schedule match card buttons */
+#scheduleList button {
+    transition: all 0.2s ease-in-out;
+}
+
+#scheduleList button:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading animation for schedule */
+@keyframes scheduleLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#scheduleList .bg-gray-50 {
+    animation: scheduleLoad 0.5s ease-out;
+}
+
+/* Schedule button active state */
+#scheduleButton.active {
+    color: #3b82f6;
+}
+
+/* Refresh button */
+#refreshSchedule:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Export and calendar buttons */
+#exportSchedule:hover,
+#addToCalendar:hover {
+    transform: translateY(-1px);
+}
+
+/* Responsive adjustments for schedule modal */
+@media (max-width: 640px) {
+    #scheduleModal .max-w-4xl {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+    
+    #scheduleModal .p-6 {
+        padding: 1rem;
+    }
+    
+    #scheduleModal .flex.space-x-1 {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .schedule-filter-btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Dark theme support for schedule */
+.dark #scheduleModal .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark #scheduleModal .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark #scheduleModal .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark #scheduleModal .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark #scheduleModal .border-gray-200 {
+    border-color: #374151;
+}
+
+.dark #scheduleModal .bg-gray-50 {
+    background-color: #374151;
+}
+
+.dark #scheduleModal .bg-gray-100 {
+    background-color: #374151;
+}
+
+/* Schedule modal focus states */
+#scheduleModal button:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(59 130 246);
+    ring-offset: 2px;
+}
+
+/* Calendar icon animations */
+@keyframes calendarPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+#scheduleButton:hover i {
+    animation: calendarPulse 0.6s ease-in-out;
+}
+
+/* Schedule count badge */
+#scheduleCount {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Last updated styling */
+#scheduleLastUpdated {
+    font-family: monospace;
+    color: #6b7280;
+}
+
+/* Action buttons in footer */
+#scheduleModal .border-t {
+    border-top-color: #e2e8f0;
+}
+
+/* Loading spinner for schedule */
+#scheduleLoading .animate-spin {
+    border-color: #3b82f6;
+    border-top-color: transparent;
+}
+
+/* Week range styling */
+#currentWeekRange {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Date section headers */
+#scheduleList h5 {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Match count in date sections */
+#scheduleList .text-sm.text-gray-500 {
+    font-size: 0.875rem;
+    color: #6b7280;
+} 
+
+/* Home Modal Styles */
+#homeModal {
+    backdrop-filter: blur(4px);
+}
+
+#homeModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Home modal scrollbar styling */
+#homeModal .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#homeModal .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#homeModal .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#homeModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Home header styling */
+#homeModal .bg-green-100 {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 1px solid #86efac;
+}
+
+/* Stats cards styling */
+#homeModal .bg-blue-50,
+#homeModal .bg-green-50,
+#homeModal .bg-red-50,
+#homeModal .bg-purple-50 {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+#homeModal .bg-blue-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    border-color: #93c5fd;
+}
+
+#homeModal .bg-green-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    border-color: #86efac;
+}
+
+#homeModal .bg-red-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    border-color: #fca5a5;
+}
+
+#homeModal .bg-purple-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.15);
+    border-color: #c4b5fd;
+}
+
+/* Quick actions styling */
+#homeModal .grid button {
+    transition: all 0.2s ease-in-out;
+}
+
+#homeModal .grid button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Featured matches styling */
+#featuredMatches .bg-white {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#featuredMatches .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+/* Recent activity styling */
+#recentActivity .bg-gray-50 {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#recentActivity .bg-gray-50:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Tips section styling */
+#homeModal .from-green-50.to-blue-50 {
+    background: linear-gradient(135deg, #dcfce7 0%, #dbeafe 100%);
+    border: 1px solid #86efac;
+    transition: all 0.2s ease-in-out;
+}
+
+#homeModal .from-green-50.to-blue-50:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+/* Empty state styling */
+#homeEmptyState .bg-green-100 {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 2px solid #86efac;
+}
+
+#getStarted {
+    transition: all 0.2s ease-in-out;
+}
+
+#getStarted:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Loading animation for home */
+@keyframes homeLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#homeModal .bg-blue-50,
+#homeModal .bg-green-50,
+#homeModal .bg-red-50,
+#homeModal .bg-purple-50 {
+    animation: homeLoad 0.5s ease-out;
+}
+
+/* Home button active state */
+#homeButton.active {
+    color: #16a34a;
+}
+
+/* Refresh button */
+#refreshHome:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Export and share buttons */
+#exportDashboard:hover,
+#shareDashboard:hover {
+    transform: translateY(-1px);
+}
+
+/* Responsive adjustments for home modal */
+@media (max-width: 640px) {
+    #homeModal .max-w-4xl {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+    
+    #homeModal .p-6 {
+        padding: 1rem;
+    }
+    
+    #homeModal .grid.grid-cols-2.sm\\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    #homeModal .grid.grid-cols-2.sm\\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Dark theme support for home */
+.dark #homeModal .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark #homeModal .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark #homeModal .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark #homeModal .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark #homeModal .border-gray-200 {
+    border-color: #374151;
+}
+
+.dark #homeModal .bg-gray-50 {
+    background-color: #374151;
+}
+
+.dark #homeModal .bg-gray-100 {
+    background-color: #374151;
+}
+
+/* Home modal focus states */
+#homeModal button:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(34 197 94);
+    ring-offset: 2px;
+}
+
+/* Home icon animations */
+@keyframes homePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+#homeButton:hover i {
+    animation: homePulse 0.6s ease-in-out;
+}
+
+/* Stats count styling */
+#homeMatchesCount,
+#homePredictionsCount,
+#homeFavoritesCount,
+#homeAccuracy {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Last updated styling */
+#homeLastUpdated {
+    font-family: monospace;
+    color: #6b7280;
+}
+
+/* Action buttons in footer */
+#homeModal .border-t {
+    border-top-color: #e2e8f0;
+}
+
+/* Loading spinner for home */
+#homeLoading .animate-spin {
+    border-color: #16a34a;
+    border-top-color: transparent;
+}
+
+/* Welcome message styling */
+#homeWelcome {
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Section headers */
+#homeModal h4 {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Quick action icons */
+#homeModal .grid button .w-12.h-12 {
+    transition: all 0.2s ease-in-out;
+}
+
+#homeModal .grid button:hover .w-12.h-12 {
+    transform: scale(1.1);
+}
+
+/* Activity icons */
+#recentActivity .w-8.h-8 {
+    transition: all 0.2s ease-in-out;
+}
+
+#recentActivity .bg-gray-50:hover .w-8.h-8 {
+    transform: scale(1.1);
+}
+
+/* Tips section icon */
+#homeModal .from-green-50.to-blue-50 .w-8.h-8 {
+    transition: all 0.2s ease-in-out;
+}
+
+#homeModal .from-green-50.to-blue-50:hover .w-8.h-8 {
+    transform: scale(1.1);
+}
+
+/* View all buttons */
+#viewAllMatches:hover,
+#viewAllActivity:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Get new tip button */
+#getNewTip:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Featured matches buttons */
+#featuredMatches button {
+    transition: all 0.2s ease-in-out;
+}
+
+#featuredMatches button:hover {
+    transform: translateY(-1px);
+}
+
+/* Stats grid animation delay */
+#homeModal .bg-blue-50 {
+    animation-delay: 0.1s;
+}
+
+#homeModal .bg-green-50 {
+    animation-delay: 0.2s;
+}
+
+#homeModal .bg-red-50 {
+    animation-delay: 0.3s;
+}
+
+#homeModal .bg-purple-50 {
+    animation-delay: 0.4s;
+} 
+
+/* Match Details Modal Styles */
+#matchDetailsModal {
+    backdrop-filter: blur(4px);
+}
+
+#matchDetailsModal .bg-white {
+    animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Match details modal scrollbar styling */
+#matchDetailsModal .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#matchDetailsModal .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+#matchDetailsModal .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+#matchDetailsModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Match details header styling */
+#matchDetailsModal .bg-blue-100 {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+}
+
+/* Match header gradient */
+#matchDetailsModal .from-blue-50.to-green-50 {
+    background: linear-gradient(135deg, #dbeafe 0%, #dcfce7 100%);
+    border: 1px solid #93c5fd;
+    transition: all 0.2s ease-in-out;
+}
+
+#matchDetailsModal .from-blue-50.to-green-50:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Team logos */
+#homeTeamLogo,
+#awayTeamLogo {
+    transition: all 0.2s ease-in-out;
+    border: 2px solid #e2e8f0;
+}
+
+#homeTeamLogo:hover,
+#awayTeamLogo:hover {
+    transform: scale(1.05);
+    border-color: #93c5fd;
+}
+
+/* Prediction cards styling */
+#matchDetailsModal .bg-blue-50,
+#matchDetailsModal .bg-gray-50,
+#matchDetailsModal .bg-red-50 {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+#matchDetailsModal .bg-blue-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    border-color: #93c5fd;
+}
+
+#matchDetailsModal .bg-gray-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.15);
+    border-color: #d1d5db;
+}
+
+#matchDetailsModal .bg-red-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    border-color: #fca5a5;
+}
+
+/* Recommended bet section */
+#matchDetailsModal .bg-green-50 {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 1px solid #86efac;
+    transition: all 0.2s ease-in-out;
+}
+
+#matchDetailsModal .bg-green-50:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+/* Team statistics styling */
+#matchDetailsModal .bg-blue-50.rounded-lg,
+#matchDetailsModal .bg-red-50.rounded-lg {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+#matchDetailsModal .bg-blue-50.rounded-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    border-color: #93c5fd;
+}
+
+#matchDetailsModal .bg-red-50.rounded-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    border-color: #fca5a5;
+}
+
+/* Head-to-head history styling */
+#headToHeadHistory .bg-white {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#headToHeadHistory .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+/* Recent form styling */
+#homeRecentForm .bg-gray-50,
+#awayRecentForm .bg-gray-50 {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+}
+
+#homeRecentForm .bg-gray-50:hover,
+#awayRecentForm .bg-gray-50:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Detailed analysis styling */
+#matchDetailsModal .bg-gray-50.rounded-lg {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+}
+
+#matchDetailsModal .bg-gray-50.rounded-lg:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Action buttons */
+#saveMatchDetails,
+#placeBetDetails {
+    transition: all 0.2s ease-in-out;
+}
+
+#saveMatchDetails:hover,
+#placeBetDetails:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Refresh button */
+#refreshMatchDetails:hover {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Export and share buttons */
+#exportMatchDetails:hover,
+#shareMatchDetails:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading animation for match details */
+@keyframes matchDetailsLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#matchDetailsModal .bg-blue-50,
+#matchDetailsModal .bg-gray-50,
+#matchDetailsModal .bg-red-50,
+#matchDetailsModal .bg-green-50 {
+    animation: matchDetailsLoad 0.5s ease-out;
+}
+
+/* Responsive adjustments for match details modal */
+@media (max-width: 640px) {
+    #matchDetailsModal .max-w-4xl {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+    
+    #matchDetailsModal .p-6 {
+        padding: 1rem;
+    }
+    
+    #matchDetailsModal .grid.grid-cols-1.sm\\:grid-cols-3 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    
+    #matchDetailsModal .grid.grid-cols-1.lg\\:grid-cols-2 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    
+    #matchDetailsModal .flex.items-center.space-x-4 {
+        flex-direction: column;
+        space-x: 0;
+        space-y: 2;
+    }
+    
+    #matchDetailsModal .text-center.flex-1 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Dark theme support for match details */
+.dark #matchDetailsModal .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark #matchDetailsModal .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark #matchDetailsModal .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark #matchDetailsModal .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark #matchDetailsModal .border-gray-200 {
+    border-color: #374151;
+}
+
+.dark #matchDetailsModal .bg-gray-50 {
+    background-color: #374151;
+}
+
+.dark #matchDetailsModal .bg-gray-100 {
+    background-color: #374151;
+}
+
+/* Match details modal focus states */
+#matchDetailsModal button:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgb(59 130 246);
+    ring-offset: 2px;
+}
+
+/* Match card clickable styling */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-pointer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading spinner for match details */
+#matchDetailsLoading .animate-spin {
+    border-color: #3b82f6;
+    border-top-color: transparent;
+}
+
+/* Last updated styling */
+#matchDetailsLastUpdated {
+    font-family: monospace;
+    color: #6b7280;
+}
+
+/* Action buttons in footer */
+#matchDetailsModal .border-t {
+    border-top-color: #e2e8f0;
+}
+
+/* Team names styling */
+#homeTeamName,
+#awayTeamName {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Match time and date styling */
+#matchTime {
+    font-weight: 500;
+    color: #374151;
+}
+
+#matchDate {
+    color: #6b7280;
+}
+
+/* Section headers */
+#matchDetailsModal h4 {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Stats labels */
+#matchDetailsModal .text-gray-600 {
+    color: #6b7280;
+}
+
+/* Stats values */
+#matchDetailsModal .text-gray-900 {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Form results styling */
+.text-green-600 {
+    color: #16a34a;
+}
+
+.text-yellow-600 {
+    color: #ca8a04;
+}
+
+.text-red-600 {
+    color: #dc2626;
+}
+
+/* Analysis bullet points */
+#detailedAnalysis .w-2.h-2 {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+/* Head-to-head scores */
+#headToHeadHistory .text-sm.font-bold {
+    color: #1f2937;
+}
+
+/* Recent form scores */
+#homeRecentForm .text-sm.font-medium,
+#awayRecentForm .text-sm.font-medium {
+    color: #1f2937;
+}
+
+/* Confidence level styling */
+#confidenceLevel {
+    font-weight: 600;
+    color: #16a34a;
+}
+
+/* Recommended bet styling */
+#recommendedBet {
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Stats grid animation delay */
+#matchDetailsModal .bg-blue-50 {
+    animation-delay: 0.1s;
+}
+
+#matchDetailsModal .bg-gray-50 {
+    animation-delay: 0.2s;
+}
+
+#matchDetailsModal .bg-red-50 {
+    animation-delay: 0.3s;
+}
+
+#matchDetailsModal .bg-green-50 {
+    animation-delay: 0.4s;
+} 
