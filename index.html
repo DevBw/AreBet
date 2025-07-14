@@ -1,307 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AreBet - Smart Football Predictions</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: { primary: "#00a651", secondary: "#2d3748" },
-            borderRadius: {
-              none: "0px",
-              sm: "4px",
-              DEFAULT: "8px",
-              md: "12px",
-              lg: "16px",
-              xl: "20px",
-              "2xl": "24px",
-              "3xl": "32px",
-              full: "9999px",
-              button: "8px",
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-    <link rel="stylesheet" href="css/styles.css" />
-  </head>
-  <body class="bg-gray-50">
-    <!-- Nav Bar -->
-    <nav class="fixed top-0 w-full bg-white shadow-sm z-50">
-      <div class="flex items-center justify-between px-4 py-3">
-        <div class="flex items-center">
-          <span class="text-primary font-['Pacifico'] text-xl">AreBet</span>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetHelper - Smart Football Predictions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p class="text-gray-600 font-medium">Loading matches...</p>
+            <p class="text-sm text-gray-500 mt-2" id="loadingStatus">Initializing app</p>
         </div>
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
-            <i class="ri-search-line ri-lg"></i>
-          </div>
-          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
-            <i class="ri-notification-3-line ri-lg"></i>
-          </div>
-          <div class="w-8 h-8 flex items-center justify-center cursor-pointer">
-            <i class="ri-user-3-line ri-lg"></i>
-          </div>
-        </div>
-      </div>
+    </div>
 
-      <!-- Date Tabs -->
-      <div class="px-4 pb-2">
-        <div class="flex bg-gray-100 p-1 rounded-full">
-          <button
-            class="flex-1 py-1.5 px-3 rounded-full bg-primary text-white text-sm font-medium"
-          >
-            Today
-          </button>
-          <button
-            class="flex-1 py-1.5 px-3 rounded-full text-gray-700 text-sm font-medium"
-          >
-            Tomorrow
-          </button>
-          <button
-            class="flex-1 py-1.5 px-3 rounded-full text-gray-700 text-sm font-medium"
-          >
-            Weekend
-          </button>
+    <!-- Error Modal -->
+    <div id="errorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 mx-4 max-w-md w-full">
+            <div class="flex items-center mb-4">
+                <i class="ri-error-warning-line text-red-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Oops! Something went wrong</h3>
+            </div>
+            <p id="errorMessage" class="text-gray-600 mb-6">We encountered an error while loading the data.</p>
+            <div class="flex space-x-3">
+                <button id="retryButton" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                    Try Again
+                </button>
+                <button id="closeErrorModal" class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                    Close
+                </button>
+            </div>
         </div>
-      </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 mx-4 max-w-md w-full">
+            <div class="text-center mb-6">
+                <i class="ri-football-line text-green-500 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Welcome to BetHelper!</h3>
+                <p class="text-gray-600">To get real match data and predictions, you'll need an API key from API-Football.</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                <input type="password" id="apiKeyInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your API key">
+                <p class="text-xs text-gray-500 mt-1">Get your free key at <a href="https://www.api-football.com/" target="_blank" class="text-green-500 hover:underline">api-football.com</a></p>
+            </div>
+            <div class="flex space-x-3">
+                <button id="saveApiKey" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                    Save & Continue
+                </button>
+                <button id="skipApiKey" class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                    Skip for Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-pacifico text-green-600">BetHelper</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="ri-search-line text-xl"></i>
+                    </button>
+                    <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors relative">
+                        <i class="ri-notification-3-line text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-20 px-4">
-      <!-- Featured Match -->
-      <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-5">
-        <div
-          class="bg-primary bg-opacity-10 px-4 py-2 flex items-center justify-between"
-        >
-          <div class="flex items-center">
-            <img
-              src="https://readdy.ai/api/search-image?query=Premier%20League%20logo%2C%20minimalist%20design%2C%20isolated%20on%20white%20background%2C%20high%20quality%2C%20professional%20sports%20logo&width=24&height=24&seq=1&orientation=squarish"
-              alt="Premier League"
-              class="w-5 h-5 mr-2"
-            />
-            <span class="text-sm font-medium">Premier League</span>
-          </div>
-          <span class="text-xs text-gray-600">Today • 20:45</span>
-        </div>
-
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-5">
-            <div class="flex flex-col items-center w-2/5">
-              <img
-                src="https://readdy.ai/api/search-image?query=Arsenal%20FC%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=64&height=64&seq=2&orientation=squarish"
-                alt="Arsenal"
-                class="w-16 h-16 mb-2"
-              />
-              <span class="font-medium text-center">Arsenal</span>
-              <div class="flex mt-2 space-x-1">
-                <span class="form-indicator form-win"></span>
-                <span class="form-indicator form-win"></span>
-                <span class="form-indicator form-draw"></span>
-                <span class="form-indicator form-win"></span>
-                <span class="form-indicator form-win"></span>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-center">
-              <span class="text-sm text-gray-500 mb-1">VS</span>
-              <div class="text-xs bg-gray-100 rounded-full px-3 py-1">
-                <i class="ri-fire-line text-primary mr-1"></i>
-                <span>Hot Match</span>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-center w-2/5">
-              <img
-                src="https://readdy.ai/api/search-image?query=Manchester%20United%20logo%2C%20football%20club%20emblem%2C%20professional%20sports%20logo%2C%20isolated%20on%20white%20background%2C%20high%20quality&width=64&height=64&seq=3&orientation=squarish"
-                alt="Manchester United"
-                class="w-16 h-16 mb-2"
-              />
-              <span class="font-medium text-center">Man United</span>
-              <div class="flex mt-2 space-x-1">
-                <span class="form-indicator form-win"></span>
-                <span class="form-indicator form-loss"></span>
-                <span class="form-indicator form-draw"></span>
-                <span class="form-indicator form-loss"></span>
-                <span class="form-indicator form-win"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-gray-50 rounded-lg p-3 mb-4">
-            <div class="flex justify-between items-center mb-3">
-              <div class="text-sm font-medium">Win Probability</div>
-              <div class="text-xs text-gray-500">Based on 24 factors</div>
-            </div>
-
-            <div class="flex items-center mb-2">
-              <div class="w-1/4 text-sm">Arsenal</div>
-              <div class="w-1/2">
-                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-primary rounded-full"
-                    style="width: 72%"
-                  ></div>
-                </div>
-              </div>
-              <div class="w-1/4 text-right text-sm font-medium text-primary">
-                72%
-              </div>
-            </div>
-
-            <div class="flex items-center mb-2">
-              <div class="w-1/4 text-sm">Draw</div>
-              <div class="w-1/2">
-                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-yellow-500 rounded-full"
-                    style="width: 18%"
-                  ></div>
-                </div>
-              </div>
-              <div class="w-1/4 text-right text-sm font-medium text-yellow-500">
-                18%
-              </div>
-            </div>
-
-            <div class="flex items-center">
-              <div class="w-1/4 text-sm">Man United</div>
-              <div class="w-1/2">
-                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-red-500 rounded-full"
-                    style="width: 10%"
-                  ></div>
-                </div>
-              </div>
-              <div class="w-1/4 text-right text-sm font-medium text-red-500">
-                10%
-              </div>
-            </div>
-          </div>
-
-          <div class="flex mb-4">
-            <div class="w-1/3 bg-gray-50 rounded-lg p-3 mr-2">
-              <div class="text-xs text-gray-500 mb-1">Expected Goals</div>
-              <div class="text-sm font-medium">2.4 - 0.8</div>
-            </div>
-            <div class="w-1/3 bg-gray-50 rounded-lg p-3 mr-2">
-              <div class="text-xs text-gray-500 mb-1">Recommended</div>
-              <div class="text-sm font-medium">Home Win</div>
-            </div>
-            <div class="w-1/3 bg-gray-50 rounded-lg p-3">
-              <div class="text-xs text-gray-500 mb-1">Best Odds</div>
-              <div class="text-sm font-medium">1.65</div>
-            </div>
-          </div>
-
-          <div class="flex">
-            <button
-              class="flex-1 bg-primary text-white py-2.5 rounded-button mr-3 flex items-center justify-center cursor-pointer"
-            >
-              <i class="ri-external-link-line mr-1"></i>
-              <span>Bet Now</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Date Filter -->
+        <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+            <button class="date-filter-btn active bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                Today
             </button>
-            <button
-              class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
-            >
-              <i class="ri-bookmark-line ri-lg"></i>
+            <button class="date-filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                Tomorrow
             </button>
-          </div>
+            <button class="date-filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                Weekend
+            </button>
         </div>
-      </div>
 
-      <!-- Dynamic Matches Container -->
-      <h2 class="text-lg font-semibold mb-3">Today's Predictions</h2>
-      <div class="space-y-4" id="matchesContainer">
-        <!-- Loading state -->
-        <div class="text-center py-8">
-          <i class="ri-loader-4-line ri-2x text-primary animate-spin mb-4"></i>
-          <p class="text-gray-500">Loading matches...</p>
-        </div>
-      </div>
+        <!-- Featured Match Section -->
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Featured Match</h2>
+            <div id="featuredMatch" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <!-- Featured match content will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Today's Predictions -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Today's Predictions</h2>
+                <div class="flex items-center space-x-2">
+                    <span id="matchCount" class="text-sm text-gray-500">0 matches</span>
+                    <button id="refreshButton" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="ri-refresh-line text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-12 hidden">
+                <i class="ri-football-line text-gray-300 text-6xl mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No matches today</h3>
+                <p class="text-gray-500 mb-4">There are no matches scheduled for today.</p>
+                <button id="loadMoreDays" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                    Load More Days
+                </button>
+            </div>
+
+            <!-- Matches Container -->
+            <div id="matchesContainer" class="space-y-4">
+                <!-- Match cards will be loaded here -->
+            </div>
+
+            <!-- Loading More Indicator -->
+            <div id="loadingMore" class="text-center py-4 hidden">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-2"></div>
+                <p class="text-sm text-gray-500">Loading more matches...</p>
+            </div>
+        </section>
     </main>
 
-    <!-- Floating Action Button -->
-    <div class="fixed right-4 bottom-20">
-      <button
-        class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer"
-      >
-        <i class="ri-add-line ri-xl text-white"></i>
-      </button>
-    </div>
-
-    <!-- Tab Bar -->
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
-      <div class="grid grid-cols-5 h-16">
-        <a
-          href="#"
-          class="flex flex-col items-center justify-center cursor-pointer"
-        >
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="ri-home-5-fill ri-lg text-primary"></i>
-          </div>
-          <span class="text-xs mt-1 text-primary font-medium">Home</span>
-        </a>
-        <a
-          href="#"
-          class="flex flex-col items-center justify-center cursor-pointer"
-        >
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="ri-bar-chart-line ri-lg text-gray-500"></i>
-          </div>
-          <span class="text-xs mt-1 text-gray-500">Stats</span>
-        </a>
-        <a
-          href="#"
-          class="flex flex-col items-center justify-center cursor-pointer"
-        >
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="ri-history-line ri-lg text-gray-500"></i>
-          </div>
-          <span class="text-xs mt-1 text-gray-500">History</span>
-        </a>
-        <a
-          href="#"
-          class="flex flex-col items-center justify-center cursor-pointer"
-        >
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="ri-trophy-line ri-lg text-gray-500"></i>
-          </div>
-          <span class="text-xs mt-1 text-gray-500">Leagues</span>
-        </a>
-        <a
-          href="#"
-          class="flex flex-col items-center justify-center cursor-pointer"
-        >
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="ri-user-3-line ri-lg text-gray-500"></i>
-          </div>
-          <span class="text-xs mt-1 text-gray-500">Profile</span>
-        </a>
-      </div>
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-around py-2">
+                <button class="nav-btn active flex flex-col items-center py-2 px-3 text-green-500">
+                    <i class="ri-home-5-line text-xl mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-3 text-gray-400 hover:text-gray-600">
+                    <i class="ri-calendar-line text-xl mb-1"></i>
+                    <span class="text-xs">Schedule</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-3 text-gray-400 hover:text-gray-600">
+                    <i class="ri-heart-line text-xl mb-1"></i>
+                    <span class="text-xs">Favorites</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-3 text-gray-400 hover:text-gray-600">
+                    <i class="ri-user-line text-xl mb-1"></i>
+                    <span class="text-xs">Profile</span>
+                </button>
+            </div>
+        </div>
     </nav>
 
+    <!-- Floating Action Button -->
+    <button class="fixed bottom-20 right-4 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors z-20">
+        <i class="ri-add-line text-xl"></i>
+    </button>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="ri-check-line mr-2"></i>
+            <span id="successMessage">Action completed successfully!</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/api-service.js"></script>
-    <script src="js/debug.js"></script>
     <script src="js/app.js"></script>
-  </body>
+</body>
 </html> 
