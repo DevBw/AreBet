@@ -464,13 +464,25 @@ class BetHelperApp {
     }
 
     placeBet(matchId) {
-        const match = this.matches.find(m => m.id === matchId);
+        const match = this.matches.find(m => m.fixture.id === matchId);
         if (match) {
-            this.showSuccess(`Redirecting to betting platform for ${match.homeTeam.name} vs ${match.awayTeam.name}...`);
+            this.showSuccess(`Redirecting to betting platform for ${match.teams.home.name} vs ${match.teams.away.name}...`);
             // In a real app, this would redirect to a betting platform
             setTimeout(() => {
                 window.open('https://www.bet365.com', '_blank');
             }, 1000);
+        }
+    }
+
+    // Force refresh to clear cache and reload
+    async forceRefresh() {
+        try {
+            await this.apiService.forceRefresh();
+            this.showSuccess('Cache cleared, reloading data...');
+            await this.loadMatches();
+        } catch (error) {
+            console.error('Force refresh error:', error);
+            this.showError('Failed to refresh data');
         }
     }
 
@@ -513,8 +525,7 @@ class BetHelperApp {
         const refreshBtn = document.getElementById('refreshButton');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', () => {
-                this.loadMatches();
-                this.showSuccess('Matches refreshed!');
+                this.forceRefresh();
             });
         }
 

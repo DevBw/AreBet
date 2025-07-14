@@ -300,6 +300,13 @@ class APIFootballService {
         console.log('API cache cleared');
     }
 
+    // Force refresh - clear cache and reload
+    async forceRefresh() {
+        this.clearCache();
+        console.log('Forcing refresh - cache cleared');
+        return true;
+    }
+
     // Get cache statistics
     getCacheStats() {
         return {

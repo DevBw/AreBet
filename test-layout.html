@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Test - BetHelper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 font-inter p-4">
+    <h1 class="text-2xl font-bold mb-6">Layout Test - Long Team Names</h1>
+    
+    <!-- Test Match Card with Long Names -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow mb-4">
+        <div class="flex items-center justify-between mb-3 min-w-0">
+            <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                <img src="https://media.api-sports.io/football/teams/50.png" alt="Team" class="w-6 h-6 rounded-full flex-shrink-0">
+                <span class="font-medium text-gray-900 truncate text-sm sm:text-base">Very Long Team Name That Should Be Truncated</span>
+            </div>
+            <div class="text-center flex-shrink-0 mx-2">
+                <div class="text-sm text-gray-500">VS</div>
+                <div class="text-xs text-gray-400">20:00</div>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
+                <span class="font-medium text-gray-900 truncate text-sm sm:text-base">Another Very Long Team Name That Should Also Be Truncated</span>
+                <img src="https://media.api-sports.io/football/teams/42.png" alt="Team" class="w-6 h-6 rounded-full flex-shrink-0">
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-500 truncate flex-1 mr-2">Premier League - Very Long League Name</span>
+            <span class="text-sm font-semibold text-green-600 flex-shrink-0">85% confidence</span>
+        </div>
+        
+        <div class="flex space-x-1 mb-3">
+            <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
+                <div class="text-sm font-bold text-gray-900">65%</div>
+                <div class="text-xs text-gray-500">Home</div>
+            </div>
+            <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
+                <div class="text-sm font-bold text-gray-900">22%</div>
+                <div class="text-xs text-gray-500">Draw</div>
+            </div>
+            <div class="flex-1 bg-gray-100 rounded p-2 text-center min-w-0">
+                <div class="text-sm font-bold text-gray-900">13%</div>
+                <div class="text-xs text-gray-500">Away</div>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600 truncate flex-1 mr-2">
+                <i class="ri-target-line mr-1"></i>
+                Expected: 2.8 goals
+            </span>
+            <div class="flex space-x-2 flex-shrink-0">
+                <button class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="ri-heart-line"></i>
+                </button>
+                <button class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors">
+                    Bet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Featured Match -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-4">
+        <div class="flex items-center justify-between mb-4 min-w-0">
+            <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                <img src="https://media.api-sports.io/football/teams/50.png" alt="Team" class="w-8 h-8 rounded-full flex-shrink-0">
+                <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">Featured Match with Very Long Home Team Name</span>
+            </div>
+            <div class="text-center flex-shrink-0 mx-2">
+                <div class="text-sm text-gray-500">VS</div>
+                <div class="text-xs text-gray-400">Today</div>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 justify-end">
+                <span class="font-semibold text-gray-900 truncate text-sm sm:text-base">Featured Match with Very Long Away Team Name</span>
+                <img src="https://media.api-sports.io/football/teams/42.png" alt="Team" class="w-8 h-8 rounded-full flex-shrink-0">
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Win Probability</span>
+                <span class="text-sm font-semibold text-green-600">85% confidence</span>
+            </div>
+            <div class="flex space-x-2 mb-3">
+                <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
+                    <div class="text-lg font-bold text-gray-900">65%</div>
+                    <div class="text-xs text-gray-500">Home</div>
+                </div>
+                <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
+                    <div class="text-lg font-bold text-gray-900">22%</div>
+                    <div class="text-xs text-gray-500">Draw</div>
+                </div>
+                <div class="flex-1 bg-white rounded p-2 text-center min-w-0">
+                    <div class="text-lg font-bold text-gray-900">13%</div>
+                    <div class="text-xs text-gray-500">Away</div>
+                </div>
+            </div>
+            <div class="text-center">
+                <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Home Win
+                </span>
+            </div>
+        </div>
+        
+        <div class="flex space-x-2">
+            <button class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                <i class="ri-heart-line mr-2"></i>Save
+            </button>
+            <button class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                <i class="ri-money-dollar-circle-line mr-2"></i>Bet Now
+            </button>
+        </div>
+    </div>
+
+    <div class="text-center mt-6">
+        <p class="text-gray-600 mb-4">If you can see this page and the team names are truncated with "..." then the layout fixes are working!</p>
+        <a href="index.html" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+            Back to Main App
+        </a>
+    </div>
+</body>
+</html> 
