@@ -1,0 +1,77 @@
+{
+  "name": "BetHelper - Smart Football Predictions",
+  "short_name": "BetHelper",
+  "description": "Your intelligent football prediction companion with real-time match data and AI-powered insights",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#00a651",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["sports", "entertainment", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwMGE2NTEiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyeiBtMCAxOGMtNC40MSAwLTgtMy41OS04LTggMC0xLjA5LjIxLTIuMTQuNTgtMy4wOUw5LjUgMTQuNWMuNzkuNzkgMS44NCAxLjI1IDIuOTkgMS4yNSAyLjIxIDAgNC0xLjc5IDQtNHMtMS43OS00LTQtNC0xLjc5IDEtLjc5IDQgLjU5IDQgMS4yOSA0bC0yLjkyIDIuOTJjLS45NS0uMzctMS44MS0uNTgtMi45Mi0uNTgtMi4yMSAwLTQgMS43OS00IDRzMS43OSA0IDQgNCA0LTEuNzkgNC00YzAtMS4xNS0uNDYtMi4yLTEuMjUtMi45OUwxNy45MSAxNy45MUMxOC44MiAxNy43OSAxOSAxNy4wOSAxOSAxNkMxOSAxNC4zNCAxNy42NiAxMyAxNiAxM1oiLz4KPC9zdmc+Cjwvc3ZnPgo=",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ],
+
+
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [
+    {
+      "protocol": "web+bethelper",
+      "url": "/?match=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "permissions": [
+    "notifications",
+    "background-sync"
+  ],
+  "background": {
+    "service_worker": "/sw.js",
+    "type": "module"
+  },
+  "features": [
+    "Cross Platform",
+    "Offline Support",
+    "Push Notifications",
+    "Real-time Updates",
+    "AI Predictions"
+  ],
+  "developer": {
+    "name": "BetHelper Team",
+    "url": "https://bethelper.com"
+  }
+} 

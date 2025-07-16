@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BetHelper - Smart Football Predictions</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/optimized-styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00a651">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="BetHelper">
 </head>
 <body class="bg-gray-50 font-inter">
     <!-- Loading Overlay -->
@@ -46,11 +52,13 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Welcome to BetHelper!</h3>
                 <p class="text-gray-600">To get real match data and predictions, you'll need an API key from API-Football.</p>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
-                <input type="password" id="apiKeyInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your API key">
-                <p class="text-xs text-gray-500 mt-1">Get your free key at <a href="https://www.api-football.com/" target="_blank" class="text-green-500 hover:underline">api-football.com</a></p>
-            </div>
+            <form onsubmit="event.preventDefault(); document.getElementById('saveApiKey').click();">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <input type="password" id="apiKeyInput" autocomplete="new-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your API key">
+                    <p class="text-xs text-gray-500 mt-1">Get your free key at <a href="https://www.api-football.com/" target="_blank" class="text-green-500 hover:underline">api-football.com</a></p>
+                </div>
+            </form>
             <div class="flex space-x-3">
                 <button id="saveApiKey" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
                     Save & Continue
@@ -1040,6 +1048,1198 @@
     <script src="js/config.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/notification-service.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/modules/ui-manager.js"></script>
+    <script src="js/modules/data-manager.js"></script>
+    <script src="js/modules/validation.js"></script>
+    <script src="js/app-modular.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Simple Working App Script -->
+    <script>
+        // Simple App State - This replaces the complex modules
+        const app = {
+            matches: [],
+            apiKey: localStorage.getItem('bethelper_api_key'),
+            currentView: 'home',
+            
+            // Initialize app
+            init() {
+                console.log('Initializing BetHelper...');
+                this.setupEventHandlers();
+                this.checkApiKey();
+                this.loadMatches();
+                this.hideLoading();
+            },
+
+            // Setup all event handlers
+            setupEventHandlers() {
+                // API Key modal
+                document.getElementById('saveApiKey')?.addEventListener('click', () => this.saveApiKey());
+                document.getElementById('skipApiKey')?.addEventListener('click', () => this.skipApiKey());
+                
+                // Navigation
+                document.getElementById('homeButton')?.addEventListener('click', () => this.navigateTo('home'));
+                document.getElementById('scheduleButton')?.addEventListener('click', () => this.navigateTo('schedule'));
+                document.getElementById('favoritesButton')?.addEventListener('click', () => this.navigateTo('favorites'));
+                document.getElementById('profileButton')?.addEventListener('click', () => this.navigateTo('profile'));
+                
+                // Search
+                document.getElementById('searchButton')?.addEventListener('click', () => this.showModal('searchModal'));
+                document.getElementById('closeSearchModal')?.addEventListener('click', () => this.hideModal('searchModal'));
+                
+                // Notifications
+                document.getElementById('notificationButton')?.addEventListener('click', () => this.showModal('notificationModal'));
+                document.getElementById('closeNotificationModal')?.addEventListener('click', () => this.hideModal('notificationModal'));
+                
+                // Quick actions
+                document.getElementById('fabButton')?.addEventListener('click', () => this.showModal('quickActionsModal'));
+                document.getElementById('closeQuickActionsModal')?.addEventListener('click', () => this.hideModal('quickActionsModal'));
+                
+                // Profile
+                document.getElementById('closeProfileModal')?.addEventListener('click', () => this.hideModal('profileModal'));
+                document.getElementById('manageApiKey')?.addEventListener('click', () => this.showModal('apiKeyModal'));
+                
+                // Favorites Modal
+                document.getElementById('closeFavoritesModal')?.addEventListener('click', () => this.hideModal('favoritesModal'));
+                document.getElementById('sortFavorites')?.addEventListener('click', () => this.sortFavorites());
+                document.getElementById('browseMatches')?.addEventListener('click', () => this.hideModal('favoritesModal'));
+                document.getElementById('exportFavorites')?.addEventListener('click', () => this.exportFavorites());
+                document.getElementById('clearFavorites')?.addEventListener('click', () => this.clearFavorites());
+                
+                // Schedule Modal
+                document.getElementById('closeScheduleModal')?.addEventListener('click', () => this.hideModal('scheduleModal'));
+                document.getElementById('refreshSchedule')?.addEventListener('click', () => this.refreshSchedule());
+                document.getElementById('prevWeek')?.addEventListener('click', () => this.navigateWeek('prev'));
+                document.getElementById('nextWeek')?.addEventListener('click', () => this.navigateWeek('next'));
+                document.getElementById('todayButton')?.addEventListener('click', () => this.goToToday());
+                document.getElementById('loadMoreSchedule')?.addEventListener('click', () => this.loadMoreSchedule());
+                document.getElementById('exportSchedule')?.addEventListener('click', () => this.exportSchedule());
+                document.getElementById('addToCalendar')?.addEventListener('click', () => this.addToCalendar());
+                
+                // Home Dashboard Modal
+                document.getElementById('closeHomeModal')?.addEventListener('click', () => this.hideModal('homeModal'));
+                document.getElementById('refreshHome')?.addEventListener('click', () => this.refreshHome());
+                document.getElementById('viewAllMatches')?.addEventListener('click', () => this.hideModal('homeModal'));
+                document.getElementById('homeSearch')?.addEventListener('click', () => {
+                    this.hideModal('homeModal');
+                    this.showModal('searchModal');
+                });
+                document.getElementById('homeSchedule')?.addEventListener('click', () => {
+                    this.hideModal('homeModal');
+                    this.showModal('scheduleModal');
+                });
+                document.getElementById('homeFavorites')?.addEventListener('click', () => {
+                    this.hideModal('homeModal');
+                    this.showModal('favoritesModal');
+                });
+                document.getElementById('homeNotifications')?.addEventListener('click', () => {
+                    this.hideModal('homeModal');
+                    this.showModal('notificationModal');
+                });
+                document.getElementById('homeSettings')?.addEventListener('click', () => {
+                    this.hideModal('homeModal');
+                    this.showModal('profileModal');
+                });
+                document.getElementById('homeHelp')?.addEventListener('click', () => this.showHelp());
+                document.getElementById('getNewTip')?.addEventListener('click', () => this.getNewTip());
+                document.getElementById('getStarted')?.addEventListener('click', () => this.hideModal('homeModal'));
+                
+                // Profile Actions
+                document.getElementById('exportData')?.addEventListener('click', () => this.exportData());
+                document.getElementById('importData')?.addEventListener('click', () => this.importData());
+                document.getElementById('clearData')?.addEventListener('click', () => this.clearData());
+                document.getElementById('helpButton')?.addEventListener('click', () => this.showHelp());
+                document.getElementById('feedbackButton')?.addEventListener('click', () => this.showFeedback());
+                document.getElementById('aboutButton')?.addEventListener('click', () => this.showAbout());
+                
+                // Theme and Settings
+                document.getElementById('themeSelect')?.addEventListener('change', (e) => this.changeTheme(e.target.value));
+                document.getElementById('notificationsToggle')?.addEventListener('change', (e) => this.toggleNotifications(e.target.checked));
+                
+                // Refresh
+                document.getElementById('refreshButton')?.addEventListener('click', () => this.loadMatches());
+                document.getElementById('loadMoreDays')?.addEventListener('click', () => this.loadDemoData());
+                
+                // Date filters
+                document.querySelectorAll('.date-filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.applyDateFilter(btn.textContent.trim()));
+                });
+                
+                // Quick actions
+                document.getElementById('quickSearch')?.addEventListener('click', () => {
+                    this.hideModal('quickActionsModal');
+                    this.showModal('searchModal');
+                });
+                document.getElementById('quickRefresh')?.addEventListener('click', () => {
+                    this.hideModal('quickActionsModal');
+                    this.loadMatches();
+                });
+                document.getElementById('quickFavorites')?.addEventListener('click', () => {
+                    this.hideModal('quickActionsModal');
+                    this.showModal('favoritesModal');
+                });
+                document.getElementById('quickSettings')?.addEventListener('click', () => {
+                    this.hideModal('quickActionsModal');
+                    this.showModal('profileModal');
+                });
+                document.getElementById('quickHelp')?.addEventListener('click', () => {
+                    this.hideModal('quickActionsModal');
+                    this.showHelp();
+                });
+                
+                // Favorites filters
+                document.querySelectorAll('.favorites-filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.filterFavorites(btn.textContent.trim()));
+                });
+                
+                // Schedule filters
+                document.querySelectorAll('.schedule-filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.filterSchedule(btn.textContent.trim()));
+                });
+                
+                // Match Details Modal
+                document.getElementById('closeMatchDetailsModal')?.addEventListener('click', () => this.hideModal('matchDetailsModal'));
+                document.getElementById('refreshMatchDetails')?.addEventListener('click', () => this.refreshMatchDetails());
+                document.getElementById('saveMatchDetails')?.addEventListener('click', () => this.saveMatchDetails());
+                document.getElementById('placeBetDetails')?.addEventListener('click', () => this.placeBetDetails());
+                document.getElementById('exportMatchDetails')?.addEventListener('click', () => this.exportMatchDetails());
+                document.getElementById('shareMatchDetails')?.addEventListener('click', () => this.shareMatchDetails());
+            },
+
+            // Check if API key exists
+            checkApiKey() {
+                if (!this.apiKey) {
+                    this.showModal('apiKeyModal');
+                }
+            },
+
+            // Save API key
+            saveApiKey() {
+                const apiKey = document.getElementById('apiKeyInput')?.value?.trim();
+                if (apiKey) {
+                    this.apiKey = apiKey;
+                    localStorage.setItem('bethelper_api_key', apiKey);
+                    this.hideModal('apiKeyModal');
+                    this.showSuccess('API key saved!');
+                    this.loadMatches();
+                }
+            },
+
+            // Skip API key
+            skipApiKey() {
+                this.hideModal('apiKeyModal');
+                this.loadDemoData();
+            },
+
+            // Show loading
+            showLoading() {
+                document.getElementById('loadingOverlay')?.classList.remove('hidden');
+            },
+
+            // Hide loading
+            hideLoading() {
+                document.getElementById('loadingOverlay')?.classList.add('hidden');
+            },
+
+            // Show modal
+            showModal(modalId) {
+                document.getElementById(modalId)?.classList.remove('hidden');
+            },
+
+            // Hide modal
+            hideModal(modalId) {
+                document.getElementById(modalId)?.classList.add('hidden');
+            },
+
+            // Show success message
+            showSuccess(message) {
+                const toast = document.getElementById('successToast');
+                const messageEl = document.getElementById('successMessage');
+                if (messageEl) messageEl.textContent = message;
+                if (toast) {
+                    toast.classList.remove('translate-x-full');
+                    setTimeout(() => {
+                        toast.classList.add('translate-x-full');
+                    }, 3000);
+                }
+            },
+
+            // Load matches
+            async loadMatches() {
+                this.showLoading();
+                
+                try {
+                    if (this.apiKey) {
+                        await this.loadApiMatches();
+                    } else {
+                        this.loadDemoData();
+                    }
+                } catch (error) {
+                    console.error('Error loading matches:', error);
+                    this.loadDemoData();
+                } finally {
+                    this.hideLoading();
+                }
+            },
+
+            // Load matches from API
+            async loadApiMatches() {
+                const today = new Date().toISOString().split('T')[0];
+                const url = `https://v3.football.api-sports.io/fixtures?date=${today}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'x-rapidapi-host': 'v3.football.api-sports.io',
+                        'x-rapidapi-key': this.apiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                
+                if (data.response && data.response.length > 0) {
+                    this.matches = data.response.map(match => ({
+                        id: match.fixture.id,
+                        homeTeam: match.teams.home.name,
+                        awayTeam: match.teams.away.name,
+                        time: new Date(match.fixture.date).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: false 
+                        }),
+                        league: match.league.name,
+                        homeTeamLogo: match.teams.home.logo,
+                        awayTeamLogo: match.teams.away.logo,
+                        status: match.fixture.status.short
+                    }));
+                } else {
+                    this.loadDemoData();
+                }
+                
+                this.renderMatches();
+            },
+
+            // Load demo data
+            loadDemoData() {
+                this.matches = [
+                    {
+                        id: 1,
+                        homeTeam: 'Manchester United',
+                        awayTeam: 'Liverpool',
+                        time: '20:00',
+                        league: 'Premier League',
+                        homeTeamLogo: 'https://media.api-sports.io/football/teams/33.png',
+                        awayTeamLogo: 'https://media.api-sports.io/football/teams/40.png',
+                        status: 'NS'
+                    },
+                    {
+                        id: 2,
+                        homeTeam: 'Arsenal',
+                        awayTeam: 'Chelsea',
+                        time: '15:30',
+                        league: 'Premier League',
+                        homeTeamLogo: 'https://media.api-sports.io/football/teams/42.png',
+                        awayTeamLogo: 'https://media.api-sports.io/football/teams/49.png',
+                        status: 'NS'
+                    },
+                    {
+                        id: 3,
+                        homeTeam: 'Barcelona',
+                        awayTeam: 'Real Madrid',
+                        time: '21:00',
+                        league: 'La Liga',
+                        homeTeamLogo: 'https://media.api-sports.io/football/teams/529.png',
+                        awayTeamLogo: 'https://media.api-sports.io/football/teams/541.png',
+                        status: 'NS'
+                    }
+                ];
+                
+                this.renderMatches();
+            },
+
+            // Render matches
+            renderMatches() {
+                const container = document.getElementById('matchesContainer');
+                const emptyState = document.getElementById('emptyState');
+                const matchCount = document.getElementById('matchCount');
+                
+                if (this.matches.length === 0) {
+                    if (container) container.classList.add('hidden');
+                    if (emptyState) emptyState.classList.remove('hidden');
+                    if (matchCount) matchCount.textContent = '0 matches';
+                } else {
+                    if (container) container.classList.remove('hidden');
+                    if (emptyState) emptyState.classList.add('hidden');
+                    if (matchCount) matchCount.textContent = `${this.matches.length} matches`;
+                    
+                    if (container) {
+                        container.innerHTML = this.matches.map(match => this.createMatchCard(match)).join('');
+                    }
+                }
+                
+                this.setFeaturedMatch();
+            },
+
+            // Create match card
+            createMatchCard(match) {
+                return `
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="app.showMatchDetails(${match.id})">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <img src="${match.homeTeamLogo}" alt="${match.homeTeam}" class="w-6 h-6 rounded-full" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>'">
+                                <span class="font-medium text-gray-900 truncate">${match.homeTeam}</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm font-bold text-gray-900">${match.time}</div>
+                                <div class="text-xs text-gray-500">${match.league}</div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="font-medium text-gray-900 truncate">${match.awayTeam}</span>
+                                <img src="${match.awayTeamLogo}" alt="${match.awayTeam}" class="w-6 h-6 rounded-full" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>'">
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-1 mb-3">
+                            <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                                <div class="text-sm font-bold text-gray-900">1</div>
+                                <div class="text-xs text-gray-500">Home</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                                <div class="text-sm font-bold text-gray-900">X</div>
+                                <div class="text-xs text-gray-500">Draw</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 rounded p-2 text-center">
+                                <div class="text-sm font-bold text-gray-900">2</div>
+                                <div class="text-xs text-gray-500">Away</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Prediction</h4>
+                                    <p class="text-sm text-gray-600">${this.generatePrediction(match)}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-green-600">75%</div>
+                                    <div class="text-xs text-green-500">Confidence</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="event.stopPropagation(); app.toggleFavorite(${match.id})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded text-sm transition-colors">
+                                Save
+                            </button>
+                            <button onclick="event.stopPropagation(); app.placeBet(${match.id})" class="flex-1 bg-green-500 text-white py-2 px-3 rounded text-sm hover:bg-green-600 transition-colors">
+                                Place Bet
+                            </button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // Generate prediction
+            generatePrediction(match) {
+                const predictions = [
+                    'Home team to win',
+                    'Away team to win',
+                    'Draw likely',
+                    'Both teams to score',
+                    'Over 2.5 goals',
+                    'Under 2.5 goals'
+                ];
+                return predictions[Math.floor(Math.random() * predictions.length)];
+            },
+
+            // Set featured match
+            setFeaturedMatch() {
+                if (this.matches.length > 0) {
+                    const match = this.matches[0];
+                    const container = document.getElementById('featuredMatch');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="${match.homeTeamLogo}" alt="${match.homeTeam}" class="w-8 h-8 rounded-full" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>'">
+                                    <span class="font-semibold text-gray-900">${match.homeTeam}</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-gray-900">${match.time}</div>
+                                    <div class="text-sm text-gray-500">${match.league}</div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-semibold text-gray-900">${match.awayTeam}</span>
+                                    <img src="${match.awayTeamLogo}" alt="${match.awayTeam}" class="w-8 h-8 rounded-full" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>'">
+                                </div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Prediction</h4>
+                                        <p class="text-sm text-gray-600">${this.generatePrediction(match)}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-lg font-bold text-green-600">75%</div>
+                                        <div class="text-sm text-green-500">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            },
+
+            // Navigation
+            navigateTo(section) {
+                // Hide all modals first
+                this.hideAllModals();
+                
+                switch(section) {
+                    case 'home':
+                        this.showModal('homeModal');
+                        this.loadHomeDashboard();
+                        break;
+                    case 'schedule':
+                        this.showModal('scheduleModal');
+                        this.loadSchedule();
+                        break;
+                    case 'favorites':
+                        this.showModal('favoritesModal');
+                        this.loadFavorites();
+                        break;
+                    case 'profile':
+                        this.showModal('profileModal');
+                        this.loadProfile();
+                        break;
+                }
+            },
+            
+            // Favorites functionality
+            loadFavorites() {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                const favoritesList = document.getElementById('favoritesList');
+                const favoritesCount = document.getElementById('favoritesCount');
+                const favoritesEmptyState = document.getElementById('favoritesEmptyState');
+                
+                favoritesCount.textContent = `${favorites.length} saved matches`;
+                
+                if (favorites.length === 0) {
+                    favoritesEmptyState.classList.remove('hidden');
+                    favoritesList.innerHTML = '';
+                    return;
+                }
+                
+                favoritesEmptyState.classList.add('hidden');
+                favoritesList.innerHTML = favorites.map(match => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-900">${match.homeTeam} vs ${match.awayTeam}</span>
+                                <span class="text-xs text-gray-500">${match.league}</span>
+                            </div>
+                            <button onclick="app.removeFavorite('${match.id}')" class="text-red-500 hover:text-red-600">
+                                <i class="ri-heart-fill"></i>
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div>Date: ${match.date}</div>
+                            <div>Time: ${match.time}</div>
+                            <div>Prediction: ${match.prediction}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            sortFavorites() {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                favorites.sort((a, b) => new Date(a.date) - new Date(b.date));
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                this.loadFavorites();
+            },
+            
+            filterFavorites(filter) {
+                // Update active filter button
+                document.querySelectorAll('.favorites-filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-red-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                event.target.classList.remove('bg-gray-200', 'text-gray-700');
+                event.target.classList.add('bg-red-500', 'text-white');
+                
+                // Apply filter logic here
+                this.loadFavorites();
+            },
+            
+            exportFavorites() {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                const dataStr = JSON.stringify(favorites, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'bethelper-favorites.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+            
+            clearFavorites() {
+                if (confirm('Are you sure you want to clear all favorites?')) {
+                    localStorage.removeItem('favorites');
+                    this.loadFavorites();
+                }
+            },
+            
+            removeFavorite(matchId) {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                const updatedFavorites = favorites.filter(fav => fav.id !== matchId);
+                localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+                this.loadFavorites();
+            },
+            
+            // Schedule functionality
+            loadSchedule() {
+                const scheduleList = document.getElementById('scheduleList');
+                const scheduleCount = document.getElementById('scheduleCount');
+                const scheduleEmptyState = document.getElementById('scheduleEmptyState');
+                
+                // Load demo schedule data
+                const scheduleData = this.getDemoScheduleData();
+                
+                scheduleCount.textContent = `${scheduleData.length} matches scheduled`;
+                
+                if (scheduleData.length === 0) {
+                    scheduleEmptyState.classList.remove('hidden');
+                    scheduleList.innerHTML = '';
+                    return;
+                }
+                
+                scheduleEmptyState.classList.add('hidden');
+                scheduleList.innerHTML = scheduleData.map(match => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-900">${match.homeTeam} vs ${match.awayTeam}</span>
+                                <span class="text-xs text-gray-500">${match.league}</span>
+                            </div>
+                            <span class="text-xs text-gray-500">${match.date} ${match.time}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div>Venue: ${match.venue}</div>
+                            <div>Status: ${match.status}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            getDemoScheduleData() {
+                return [
+                    {
+                        homeTeam: 'Manchester United',
+                        awayTeam: 'Liverpool',
+                        league: 'Premier League',
+                        date: '2024-01-15',
+                        time: '20:00',
+                        venue: 'Old Trafford',
+                        status: 'Scheduled'
+                    },
+                    {
+                        homeTeam: 'Barcelona',
+                        awayTeam: 'Real Madrid',
+                        league: 'La Liga',
+                        date: '2024-01-16',
+                        time: '21:00',
+                        venue: 'Camp Nou',
+                        status: 'Scheduled'
+                    },
+                    {
+                        homeTeam: 'Bayern Munich',
+                        awayTeam: 'Borussia Dortmund',
+                        league: 'Bundesliga',
+                        date: '2024-01-17',
+                        time: '19:30',
+                        venue: 'Allianz Arena',
+                        status: 'Scheduled'
+                    }
+                ];
+            },
+            
+            refreshSchedule() {
+                this.loadSchedule();
+                document.getElementById('scheduleLastUpdated').textContent = 'Just now';
+            },
+            
+            navigateWeek(direction) {
+                // Implement week navigation logic
+                this.loadSchedule();
+            },
+            
+            goToToday() {
+                // Implement go to today logic
+                this.loadSchedule();
+            },
+            
+            loadMoreSchedule() {
+                // Implement load more schedule logic
+                this.loadSchedule();
+            },
+            
+            filterSchedule(filter) {
+                // Update active filter button
+                document.querySelectorAll('.schedule-filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                event.target.classList.remove('bg-gray-200', 'text-gray-700');
+                event.target.classList.add('bg-blue-500', 'text-white');
+                
+                // Apply filter logic here
+                this.loadSchedule();
+            },
+            
+            exportSchedule() {
+                const scheduleData = this.getDemoScheduleData();
+                const dataStr = JSON.stringify(scheduleData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'bethelper-schedule.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+            
+            addToCalendar() {
+                alert('Calendar integration coming soon!');
+            },
+            
+            // Home Dashboard functionality
+            loadHomeDashboard() {
+                this.updateHomeStats();
+                this.loadFeaturedMatches();
+                this.loadRecentActivity();
+                this.updateDailyTip();
+            },
+            
+            updateHomeStats() {
+                const matches = this.matches || [];
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                
+                document.getElementById('homeMatchesCount').textContent = matches.length;
+                document.getElementById('homePredictionsCount').textContent = matches.filter(m => m.prediction).length;
+                document.getElementById('homeFavoritesCount').textContent = favorites.length;
+                document.getElementById('homeAccuracy').textContent = '85%'; // Demo accuracy
+            },
+            
+            loadFeaturedMatches() {
+                const featuredMatches = document.getElementById('featuredMatches');
+                const matches = this.matches || [];
+                const featured = matches.slice(0, 3);
+                
+                featuredMatches.innerHTML = featured.map(match => `
+                    <div class="border border-gray-200 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-900">${match.homeTeam} vs ${match.awayTeam}</span>
+                                <span class="text-xs text-gray-500">${match.league}</span>
+                            </div>
+                            <span class="text-xs text-gray-500">${match.date}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div>Prediction: ${match.prediction || 'Pending'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            loadRecentActivity() {
+                const recentActivity = document.getElementById('recentActivity');
+                const activities = [
+                    { action: 'Saved match', details: 'Manchester United vs Liverpool', time: '2 hours ago' },
+                    { action: 'Made prediction', details: 'Barcelona vs Real Madrid', time: '4 hours ago' },
+                    { action: 'Exported data', details: 'Schedule data', time: '1 day ago' }
+                ];
+                
+                recentActivity.innerHTML = activities.map(activity => `
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="ri-check-line text-green-600 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-gray-900">${activity.action}</div>
+                            <div class="text-xs text-gray-500">${activity.details} • ${activity.time}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            updateDailyTip() {
+                const tips = [
+                    'Consider checking team form and head-to-head statistics before placing bets.',
+                    'Look at recent performance trends and injury reports for better predictions.',
+                    'Don\'t bet more than you can afford to lose - set a budget and stick to it.',
+                    'Research both teams\' recent form and playing styles for better insights.'
+                ];
+                const randomTip = tips[Math.floor(Math.random() * tips.length)];
+                document.getElementById('dailyTip').textContent = randomTip;
+            },
+            
+            refreshHome() {
+                this.loadHomeDashboard();
+            },
+            
+            getNewTip() {
+                this.updateDailyTip();
+            },
+            
+            // Profile functionality
+            loadProfile() {
+                const apiKey = localStorage.getItem('apiKey');
+                const apiKeyStatus = document.getElementById('apiKeyStatus');
+                const apiKeyText = document.getElementById('apiKeyText');
+                
+                if (apiKey) {
+                    apiKeyStatus.textContent = 'Connected';
+                    apiKeyStatus.className = 'text-green-500 text-sm';
+                    apiKeyText.textContent = `••••${apiKey.slice(-4)}`;
+                } else {
+                    apiKeyStatus.textContent = 'Not connected';
+                    apiKeyStatus.className = 'text-red-500 text-sm';
+                    apiKeyText.textContent = 'No API key set';
+                }
+                
+                // Load saved settings
+                const theme = localStorage.getItem('theme') || 'light';
+                const notifications = localStorage.getItem('notifications') !== 'false';
+                
+                document.getElementById('themeSelect').value = theme;
+                document.getElementById('notificationsToggle').checked = notifications;
+            },
+            
+            changeTheme(theme) {
+                localStorage.setItem('theme', theme);
+                // Apply theme logic here
+                document.body.className = theme === 'dark' ? 'dark' : '';
+            },
+            
+            toggleNotifications(enabled) {
+                localStorage.setItem('notifications', enabled);
+                // Apply notification logic here
+            },
+            
+            exportData() {
+                const data = {
+                    favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+                    settings: {
+                        theme: localStorage.getItem('theme'),
+                        notifications: localStorage.getItem('notifications')
+                    },
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'bethelper-data.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+            
+            importData() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const data = JSON.parse(e.target.result);
+                                if (data.favorites) {
+                                    localStorage.setItem('favorites', JSON.stringify(data.favorites));
+                                }
+                                if (data.settings) {
+                                    if (data.settings.theme) localStorage.setItem('theme', data.settings.theme);
+                                    if (data.settings.notifications !== undefined) {
+                                        localStorage.setItem('notifications', data.settings.notifications);
+                                    }
+                                }
+                                alert('Data imported successfully!');
+                                this.loadProfile();
+                            } catch (error) {
+                                alert('Error importing data. Please check the file format.');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            },
+            
+            clearData() {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    localStorage.clear();
+                    alert('All data cleared successfully!');
+                    this.loadProfile();
+                }
+            },
+            
+            // Utility methods
+            showHelp() {
+                alert('Help documentation coming soon!');
+            },
+            
+            showFeedback() {
+                alert('Feedback form coming soon!');
+            },
+            
+            showAbout() {
+                alert('BetHelper v2.0\nPowered by API-Football\n\nA comprehensive football betting assistant.');
+            },
+            
+            hideAllModals() {
+                const modals = ['searchModal', 'notificationModal', 'quickActionsModal', 'profileModal', 
+                               'favoritesModal', 'scheduleModal', 'homeModal', 'apiKeyModal', 'matchDetailsModal'];
+                modals.forEach(modal => this.hideModal(modal));
+            },
+            
+            // Toggle favorite
+            toggleFavorite(matchId) {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                const match = this.matches.find(m => m.id === matchId);
+                
+                if (!match) return;
+                
+                const existingIndex = favorites.findIndex(fav => fav.id === matchId);
+                
+                if (existingIndex >= 0) {
+                    favorites.splice(existingIndex, 1);
+                    this.showNotification('Match removed from favorites', 'info');
+                } else {
+                    favorites.push({
+                        id: match.id,
+                        homeTeam: match.homeTeam,
+                        awayTeam: match.awayTeam,
+                        league: match.league,
+                        date: match.date,
+                        time: match.time,
+                        prediction: this.generatePrediction(match)
+                    });
+                    this.showNotification('Match added to favorites', 'success');
+                }
+                
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                this.updateFavoritesCount();
+            },
+            
+            // Place bet (placeholder)
+            placeBet(matchId) {
+                const match = this.matches.find(m => m.id === matchId);
+                if (match) {
+                    alert(`Bet placement for ${match.homeTeam} vs ${match.awayTeam} coming soon!`);
+                }
+            },
+            
+            // Match Details Modal functionality
+            showMatchDetails(matchId) {
+                const match = this.matches.find(m => m.id === matchId);
+                if (!match) return;
+                
+                this.currentMatchDetails = match;
+                this.loadMatchDetails(match);
+                this.showModal('matchDetailsModal');
+            },
+            
+            loadMatchDetails(match) {
+                // Update modal title and subtitle
+                document.getElementById('matchDetailsTitle').textContent = `${match.homeTeam} vs ${match.awayTeam}`;
+                document.getElementById('matchDetailsSubtitle').textContent = `${match.league} • ${match.date} ${match.time}`;
+                
+                // Update team information
+                document.getElementById('homeTeamName').textContent = match.homeTeam;
+                document.getElementById('awayTeamName').textContent = match.awayTeam;
+                document.getElementById('matchTime').textContent = match.time;
+                document.getElementById('matchDate').textContent = match.date;
+                
+                // Set team logos
+                const homeLogo = document.getElementById('homeTeamLogo');
+                const awayLogo = document.getElementById('awayTeamLogo');
+                homeLogo.src = match.homeTeamLogo || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚽</text></svg>';
+                awayLogo.src = match.awayTeamLogo || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚽</text></svg>';
+                
+                // Generate prediction percentages
+                const homeWin = Math.floor(Math.random() * 40) + 30; // 30-70%
+                const draw = Math.floor(Math.random() * 20) + 15; // 15-35%
+                const awayWin = 100 - homeWin - draw;
+                
+                document.getElementById('homeWinPercent').textContent = `${homeWin}%`;
+                document.getElementById('drawPercent').textContent = `${draw}%`;
+                document.getElementById('awayWinPercent').textContent = `${awayWin}%`;
+                
+                // Set recommended bet
+                const recommendations = [
+                    'Home team to win',
+                    'Away team to win',
+                    'Draw',
+                    'Both teams to score',
+                    'Over 2.5 goals',
+                    'Under 2.5 goals'
+                ];
+                const recommendation = recommendations[Math.floor(Math.random() * recommendations.length)];
+                document.getElementById('recommendedBet').textContent = recommendation;
+                
+                // Set confidence level
+                const confidence = Math.floor(Math.random() * 30) + 70; // 70-100%
+                document.getElementById('confidenceLevel').textContent = `${confidence}%`;
+                
+                // Load team statistics
+                this.loadTeamStatistics(match);
+                
+                // Load head-to-head history
+                this.loadHeadToHeadHistory(match);
+                
+                // Load recent form
+                this.loadRecentForm(match);
+                
+                // Load detailed analysis
+                this.loadDetailedAnalysis(match);
+                
+                // Update last updated time
+                document.getElementById('matchDetailsLastUpdated').textContent = 'Just now';
+            },
+            
+            loadTeamStatistics(match) {
+                // Home team stats
+                document.getElementById('homeForm').textContent = 'WWDLL';
+                document.getElementById('homeGoalsScored').textContent = Math.floor(Math.random() * 30) + 20;
+                document.getElementById('homeGoalsConceded').textContent = Math.floor(Math.random() * 20) + 10;
+                document.getElementById('homeCleanSheets').textContent = Math.floor(Math.random() * 8) + 2;
+                document.getElementById('homeWinRate').textContent = `${Math.floor(Math.random() * 30) + 50}%`;
+                
+                // Away team stats
+                document.getElementById('awayForm').textContent = 'LWDWW';
+                document.getElementById('awayGoalsScored').textContent = Math.floor(Math.random() * 25) + 15;
+                document.getElementById('awayGoalsConceded').textContent = Math.floor(Math.random() * 25) + 15;
+                document.getElementById('awayCleanSheets').textContent = Math.floor(Math.random() * 6) + 1;
+                document.getElementById('awayWinRate').textContent = `${Math.floor(Math.random() * 25) + 40}%`;
+            },
+            
+            loadHeadToHeadHistory(match) {
+                const headToHeadHistory = document.getElementById('headToHeadHistory');
+                const history = [
+                    {
+                        homeTeam: match.homeTeam,
+                        awayTeam: match.awayTeam,
+                        homeScore: 2,
+                        awayScore: 1,
+                        date: '2024-01-15',
+                        competition: match.league
+                    },
+                    {
+                        homeTeam: match.awayTeam,
+                        awayTeam: match.homeTeam,
+                        homeScore: 0,
+                        awayScore: 2,
+                        date: '2023-08-20',
+                        competition: match.league
+                    },
+                    {
+                        homeTeam: match.homeTeam,
+                        awayTeam: match.awayTeam,
+                        homeScore: 1,
+                        awayScore: 1,
+                        date: '2023-03-10',
+                        competition: match.league
+                    },
+                    {
+                        homeTeam: match.awayTeam,
+                        awayTeam: match.homeTeam,
+                        homeScore: 1,
+                        awayScore: 3,
+                        date: '2022-12-05',
+                        competition: match.league
+                    },
+                    {
+                        homeTeam: match.homeTeam,
+                        awayTeam: match.awayTeam,
+                        homeScore: 3,
+                        awayScore: 1,
+                        date: '2022-06-18',
+                        competition: match.league
+                    }
+                ];
+                
+                headToHeadHistory.innerHTML = history.map(game => `
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-3 flex-1">
+                                <span class="font-medium text-gray-900 text-sm">${game.homeTeam}</span>
+                            </div>
+                            <div class="text-center flex-shrink-0 mx-2">
+                                <div class="text-sm font-bold text-gray-900">${game.homeScore} - ${game.awayScore}</div>
+                                <div class="text-xs text-gray-500">${game.date}</div>
+                            </div>
+                            <div class="flex items-center space-x-3 flex-1 justify-end">
+                                <span class="font-medium text-gray-900 text-sm">${game.awayTeam}</span>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500">${game.competition}</div>
+                    </div>
+                `).join('');
+            },
+            
+            loadRecentForm(match) {
+                const homeRecentForm = document.getElementById('homeRecentForm');
+                const awayRecentForm = document.getElementById('awayRecentForm');
+                
+                const homeForm = [
+                    { opponent: 'Team A', result: 'W', score: '2-1' },
+                    { opponent: 'Team B', result: 'D', score: '1-1' },
+                    { opponent: 'Team C', result: 'W', score: '3-0' },
+                    { opponent: 'Team D', result: 'L', score: '0-2' },
+                    { opponent: 'Team E', result: 'L', score: '1-3' }
+                ];
+                
+                const awayForm = [
+                    { opponent: 'Team F', result: 'L', score: '0-1' },
+                    { opponent: 'Team G', result: 'W', score: '2-0' },
+                    { opponent: 'Team H', result: 'D', score: '1-1' },
+                    { opponent: 'Team I', result: 'W', score: '3-1' },
+                    { opponent: 'Team J', result: 'W', score: '2-1' }
+                ];
+                
+                homeRecentForm.innerHTML = homeForm.map(game => `
+                    <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                        <span class="text-sm text-gray-600">${game.opponent}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs px-2 py-1 rounded ${game.result === 'W' ? 'bg-green-100 text-green-700' : game.result === 'D' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${game.result}</span>
+                            <span class="text-sm text-gray-900">${game.score}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                awayRecentForm.innerHTML = awayForm.map(game => `
+                    <div class="flex items-center justify-between p-2 bg-red-50 rounded">
+                        <span class="text-sm text-gray-600">${game.opponent}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs px-2 py-1 rounded ${game.result === 'W' ? 'bg-green-100 text-green-700' : game.result === 'D' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${game.result}</span>
+                            <span class="text-sm text-gray-900">${game.score}</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            loadDetailedAnalysis(match) {
+                const detailedAnalysis = document.getElementById('detailedAnalysis');
+                const analysis = [
+                    'Home team has won 4 of their last 6 home games',
+                    'Away team has scored in 8 of their last 10 away matches',
+                    'Both teams have scored in 7 of their last 10 meetings',
+                    'Home team has kept 3 clean sheets in their last 5 home games',
+                    'Away team has conceded 2+ goals in 4 of their last 6 away games',
+                    'Average goals per game in head-to-head meetings: 2.8'
+                ];
+                
+                detailedAnalysis.innerHTML = analysis.map(point => `
+                    <div class="flex items-start space-x-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p class="text-sm text-gray-600">${point}</p>
+                    </div>
+                `).join('');
+            },
+            
+            refreshMatchDetails() {
+                if (this.currentMatchDetails) {
+                    this.loadMatchDetails(this.currentMatchDetails);
+                    this.showNotification('Match details refreshed', 'success');
+                }
+            },
+            
+            saveMatchDetails() {
+                if (this.currentMatchDetails) {
+                    this.toggleFavorite(this.currentMatchDetails.id);
+                }
+            },
+            
+            placeBetDetails() {
+                if (this.currentMatchDetails) {
+                    this.placeBet(this.currentMatchDetails.id);
+                }
+            },
+            
+            exportMatchDetails() {
+                if (this.currentMatchDetails) {
+                    const data = {
+                        match: this.currentMatchDetails,
+                        analysis: {
+                            homeWinPercent: document.getElementById('homeWinPercent').textContent,
+                            drawPercent: document.getElementById('drawPercent').textContent,
+                            awayWinPercent: document.getElementById('awayWinPercent').textContent,
+                            recommendedBet: document.getElementById('recommendedBet').textContent,
+                            confidenceLevel: document.getElementById('confidenceLevel').textContent
+                        },
+                        exportDate: new Date().toISOString()
+                    };
+                    
+                    const dataStr = JSON.stringify(data, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `match-details-${this.currentMatchDetails.homeTeam}-vs-${this.currentMatchDetails.awayTeam}.json`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    this.showNotification('Match details exported', 'success');
+                }
+            },
+            
+            shareMatchDetails() {
+                if (this.currentMatchDetails) {
+                    const match = this.currentMatchDetails;
+                    const shareText = `Check out this match: ${match.homeTeam} vs ${match.awayTeam} - ${match.league} on ${match.date}`;
+                    
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Match Details',
+                            text: shareText,
+                            url: window.location.href
+                        });
+                    } else {
+                        // Fallback: copy to clipboard
+                        navigator.clipboard.writeText(shareText).then(() => {
+                            this.showNotification('Match details copied to clipboard', 'success');
+                        });
+                    }
+                }
+            }
+        };
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = app;
+            app.init();
+        });
+    </script>
 </body>
 </html> 

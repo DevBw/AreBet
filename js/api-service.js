@@ -2,7 +2,7 @@
 class APIFootballService {
     constructor() {
         this.baseURL = 'https://v3.football.api-sports.io';
-        this.apiKey = '34217e3a7aa4a6e0acf7dfc67a7c726a';
+        this.apiKey = null;
         this.cache = new Map();
         this.requestQueue = [];
         this.isProcessingQueue = false;
@@ -102,8 +102,24 @@ class APIFootballService {
         }
     }
 
+    // Set API key
+    setApiKey(apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    // Get current API key
+    getApiKey() {
+        return this.apiKey;
+    }
+
     // Enhanced API request with better error handling
     async makeRequest(endpoint, params = {}) {
+        // Check if API key is available
+        if (!this.apiKey) {
+            console.warn('API key not set, using fallback data');
+            return this.getFallbackMatches();
+        }
+
         const cacheKey = this.getCacheKey(endpoint, params);
         
         // Check cache first
@@ -117,11 +133,11 @@ class APIFootballService {
             const url = new URL(endpoint, this.baseURL);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
-            console.log(`Making API request to: ${endpoint}`);
+            console.log(`Making API request to: ${url.toString()}`);
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // Increased to 15 seconds
 
                 const response = await fetch(url.toString(), {
                     method: 'GET',
@@ -134,11 +150,16 @@ class APIFootballService {
 
                 clearTimeout(timeoutId);
 
+                console.log(`API response status: ${response.status}`);
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error(`API HTTP error: ${response.status} - ${errorText}`);
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                 }
 
                 const data = await response.json();
+                console.log(`API response data:`, data);
 
                 // Check for API errors
                 if (data.errors && Object.keys(data.errors).length > 0) {
@@ -152,17 +173,43 @@ class APIFootballService {
 
                 return data;
             } catch (error) {
-                console.error(`API request error: ${error}`);
+                console.error(`API request error for ${endpoint}:`, error);
+                if (error.name === 'AbortError') {
+                    console.error('Request timed out');
+                    throw new Error('Request timed out. Please try again.');
+                }
                 throw error;
             }
         });
     }
 
+    // Test API connection
+    async testApiConnection() {
+        try {
+            console.log('Testing API connection...');
+            if (!this.apiKey) {
+                console.warn('No API key set, connection test skipped');
+                return false;
+            }
+            
+            const response = await this.makeRequest('/status');
+            console.log('API connection test successful:', response);
+            return true;
+        } catch (error) {
+            console.error('API connection test failed:', error);
+            return false;
+        }
+    }
+
     // Optimized match loading with better fallbacks
     async getTodayMatches() {
         try {
+            console.log('Fetching today\'s matches...');
             const today = new Date().toISOString().split('T')[0];
+            console.log('Date:', today);
+            
             const data = await this.makeRequest('/fixtures', { date: today });
+            console.log('API response for today\'s matches:', data);
             
             if (!data.response || data.response.length === 0) {
                 console.log('No matches today, returning fallback data');
@@ -171,7 +218,7 @@ class APIFootballService {
             
             return data;
         } catch (error) {
-            console.log('API failed, returning fallback data:', error);
+            console.error('API failed, returning fallback data:', error);
             return this.getFallbackMatches();
         }
     }

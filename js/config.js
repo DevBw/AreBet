@@ -1,7 +1,6 @@
 // API Configuration
 const API_CONFIG = {
     BASE_URL: 'https://v3.football.api-sports.io',
-    API_KEY: '34217e3a7aa4a6e0acf7dfc67a7c726a', // Your API key
     DEFAULT_SEASON: 2023, // Changed from 2025 to 2023 for free plan compatibility
     CACHE_DURATION: 5 * 60 * 1000, // 5 minutes in milliseconds
     REQUEST_DELAY: 1000, // 1 second delay between requests to respect rate limits
