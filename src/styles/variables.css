@@ -1,0 +1,23 @@
+:root {
+  --ab-bg: #0a0f0a;
+  --ab-bg-elev-1: #0e1510;
+  --ab-bg-elev-2: #121a14;
+  --ab-fg: #e7f5ed;
+  --ab-muted: #a3b5ac;
+  --ab-accent: #0ea765;
+  --ab-accent-2: #14d27f;
+  --ab-danger: #ff6b6b;
+  --ab-warning: #ffd166;
+  --ab-border: #1e2a23;
+  --ab-focus: 2px solid #14d27f;
+}
+
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: dark; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+

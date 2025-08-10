@@ -1,0 +1,12 @@
+import React from 'react';
+
+export default function KPIChip({ label, value, tone = 'neutral', title }) {
+  return (
+    <div className={`ab-kpi ab-kpi-${tone}`} role="note" aria-label={`${label} ${value}`} title={title}>
+      <span className="ab-kpi-label">{String(label).toUpperCase()}</span>
+      <strong className="ab-kpi-value">{value}</strong>
+    </div>
+  );
+}
+
+

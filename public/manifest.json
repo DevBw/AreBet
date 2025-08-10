@@ -1,0 +1,31 @@
+{
+  "name": "AreBet – Football Insights",
+  "short_name": "AreBet",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0a0f0a",
+  "theme_color": "#0ea765",
+  "description": "Futuristic football insights – no betting, just data.",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
+
+

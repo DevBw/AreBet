@@ -1,0 +1,40 @@
+.ab-card { background: var(--ab-bg-elev-1); border: 1px solid var(--ab-border); border-radius: 14px; overflow: clip; }
+.ab-card-title { margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--ab-border); font-size: 1rem; }
+.ab-card-body { padding: 14px; }
+.ab-card-footer { padding: 12px 14px; border-top: 1px solid var(--ab-border); }
+
+.ab-stats { list-style: none; padding: 0 14px 14px; margin: 0; display: grid; gap: 8px; }
+.ab-stats li { display: flex; justify-content: space-between; }
+
+.ab-kpi { display: inline-flex; align-items: baseline; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--ab-bg-elev-2); border: 1px solid var(--ab-border); }
+.ab-kpi-positive { border-color: #1f5138; color: var(--ab-accent-2); }
+.ab-kpi-warning { border-color: #594a1f; color: var(--ab-warning); }
+.ab-kpi-label { font-size: 0.75rem; opacity: 0.9; }
+.ab-kpi-value { font-size: 1rem; }
+
+.ab-loader { display: inline-flex; align-items: center; gap: 10px; opacity: 0.9; color: var(--ab-accent); }
+.ab-loader-pulse { animation: ab-pulse 1.2s ease-in-out infinite; }
+@keyframes ab-pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+.tab-book { display: inline-flex; gap: 8px; background: var(--ab-bg-elev-2); padding: 6px; border: 1px solid var(--ab-border); border-radius: 12px; }
+.tab-book-item { background: transparent; color: var(--ab-fg); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+.tab-book-item.is-active { background: var(--ab-bg-elev-1); }
+.tab-book-item:focus-visible { outline: var(--ab-focus); outline-offset: 2px; }
+
+.ab-analytics { background: var(--ab-bg-elev-1); border: 1px solid var(--ab-border); border-radius: 14px; }
+.ab-analytics-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--ab-border); }
+.ab-analytics-body { padding: 14px; }
+
+.ab-breadcrumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 8px; }
+.ab-breadcrumbs li::after { content: '/'; margin-left: 8px; color: var(--ab-muted); }
+.ab-breadcrumbs li:last-child::after { content: ''; }
+
+.ab-error { display: grid; grid-auto-flow: column; align-items: start; gap: 10px; color: var(--ab-warning); background: #1a1510; border: 1px solid var(--ab-border); border-radius: 10px; padding: 12px; }
+.ab-error strong { color: var(--ab-fg); }
+.ab-error-msg { color: var(--ab-muted); }
+
+.ab-sticky { position: sticky; top: 60px; background: var(--ab-bg-elev-1); padding: 6px 10px; border-bottom: 1px solid var(--ab-border); z-index: 1; }
+
+.ab-dot-live { color: var(--ab-accent-2); margin-right: 6px; }
+
+

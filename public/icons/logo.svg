@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" fill="#0a0f0a"/>
+  <g fill="none" stroke="#0ea765" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="256" cy="256" r="120"/>
+    <path d="M136 256h240M256 136v240"/>
+  </g>
+  <text x="256" y="468" font-size="64" text-anchor="middle" fill="#0ea765" font-family="Segoe UI, Roboto, Arial">AB</text>
+</svg>
+
+
