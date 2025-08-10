@@ -24,4 +24,62 @@ img { display: inline-block; }
 .ab-tile { background: var(--ab-bg-elev-2); border: 1px solid var(--ab-border); border-radius: 12px; padding: 14px; }
 .ab-placeholder { color: var(--ab-muted); }
 
+/* Mobile-specific enhancements */
+@media (max-width: 900px) {
+  /* Ensure touch-friendly button sizes */
+  button, 
+  .ab-button, 
+  .ab-tab, 
+  .ab-chip {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve touch targets */
+  .ab-card-interactive {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(14, 215, 127, 0.1);
+  }
+  
+  /* Better scrolling on mobile */
+  .ab-nav {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .ab-nav::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Optimize for small screens */
+  body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  /* Ensure proper spacing for touch */
+  .ab-grid > * {
+    margin-bottom: 8px;
+  }
+  
+  /* Better mobile navigation */
+  .ab-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--ab-bg-elev-1);
+    border-top: 1px solid var(--ab-border);
+    padding: 8px 0;
+    z-index: 100;
+  }
+  
+  /* Add bottom padding to prevent content overlap */
+  .ab-app {
+    padding-bottom: 80px;
+  }
+}
+
 
