@@ -11,4 +11,10 @@ export function toISODate(date = new Date()) {
   return `${d.getFullYear()}-${m}-${day}`;
 }
 
+export function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 
