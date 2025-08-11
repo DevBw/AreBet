@@ -10,8 +10,39 @@ img { display: inline-block; }
 .ab-input { background: var(--ab-bg-elev-2); color: var(--ab-fg); border: 1px solid var(--ab-border); padding: 8px 10px; border-radius: 8px; min-width: 220px; }
 .ab-button { background: var(--ab-accent); color: #08130d; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
 .ab-button:focus-visible { outline: var(--ab-focus); outline-offset: 2px; }
-.ab-chip { background: var(--ab-bg-elev-2); border: 1px solid var(--ab-border); color: var(--ab-fg); padding: 6px 10px; border-radius: 999px; cursor: pointer; }
-.ab-chip[aria-pressed="true"], .ab-chip:hover { background: var(--ab-accent); color: #08130d; }
+.ab-chip { 
+  background: var(--ab-bg-elev-2); 
+  border: 1px solid var(--ab-border); 
+  color: var(--ab-fg); 
+  padding: 6px 10px; 
+  border-radius: 999px; 
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ab-chip[aria-pressed="true"], 
+.ab-chip:hover,
+.ab-chip-active { 
+  background: var(--ab-accent); 
+  color: #0a0f0a; 
+  border-color: var(--ab-accent);
+  box-shadow: var(--ab-shadow);
+  transform: translateY(-1px);
+}
+
+.ab-chip-badge {
+  background: rgba(10, 15, 10, 0.8);
+  color: var(--ab-accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 2px;
+}
 .ab-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .ab-row { display: flex; gap: 12px; align-items: center; }
 .ab-stack { display: grid; gap: 16px; }

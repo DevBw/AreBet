@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { useLeagues } from '../hooks/useLeagues';
@@ -7,6 +7,7 @@ import { toISODate } from '../utils/date';
 export default function MainLayout({ children }) {
   const navigate = useNavigate();
   const today = toISODate();
+  const [activeFilters, setActiveFilters] = useState(new Set());
   const { data: liveData } = useLiveMatches();
   const { data: fixturesData } = useFixturesRange(today, today);
   const { data: leaguesData } = useLeagues();
@@ -20,6 +21,20 @@ export default function MainLayout({ children }) {
     const formData = new FormData(event.currentTarget);
     const query = (formData.get('q') || '').toString().trim();
     if (query) navigate(`/matches?q=${encodeURIComponent(query)}`);
+  }
+
+  function toggleFilter(filter) {
+    const newFilters = new Set(activeFilters);
+    if (newFilters.has(filter)) {
+      newFilters.delete(filter);
+    } else {
+      newFilters.add(filter);
+    }
+    setActiveFilters(newFilters);
+    
+    // Navigate with filter applied
+    if (filter === 'LIVE') navigate('/live');
+    else if (filter === 'TOP5') navigate('/leagues');
   }
 
   return (
@@ -57,9 +72,30 @@ export default function MainLayout({ children }) {
           <div className="ab-card">
             <h3 className="ab-card-title">Quick Filters</h3>
             <div className="ab-chip-row">
-              <button className="ab-chip" aria-pressed="false" title="Top 5 leagues">TOP 5</button>
-              <button className="ab-chip" aria-pressed="false" title="Favorites">FAV</button>
-              <button className="ab-chip" aria-pressed="false" title="Live now">LIVE</button>
+              <button 
+                className={`ab-chip ${activeFilters.has('TOP5') ? 'ab-chip-active' : ''}`}
+                aria-pressed={activeFilters.has('TOP5')}
+                title="Top 5 leagues"
+                onClick={() => toggleFilter('TOP5')}
+              >
+                TOP 5
+              </button>
+              <button 
+                className={`ab-chip ${activeFilters.has('FAV') ? 'ab-chip-active' : ''}`}
+                aria-pressed={activeFilters.has('FAV')}
+                title="Favorites"
+                onClick={() => toggleFilter('FAV')}
+              >
+                FAV
+              </button>
+              <button 
+                className={`ab-chip ${activeFilters.has('LIVE') ? 'ab-chip-active' : ''}`}
+                aria-pressed={activeFilters.has('LIVE')}
+                title="Live now"
+                onClick={() => toggleFilter('LIVE')}
+              >
+                LIVE {liveCount > 0 && <span className="ab-chip-badge">{liveCount}</span>}
+              </button>
             </div>
           </div>
           <div className="ab-card">
