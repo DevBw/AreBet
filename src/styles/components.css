@@ -36,14 +36,14 @@
     border-radius: 10px; 
   }
   .ab-card-title { 
-    padding: 8px 10px; 
+    padding: 10px 12px; 
     font-size: 0.9rem; 
   }
   .ab-card-body { 
-    padding: 10px; 
+    padding: 12px; 
   }
   .ab-card-footer { 
-    padding: 8px 10px; 
+    padding: 10px 12px; 
   }
 }
 
@@ -84,7 +84,7 @@
     font-size: 0.9rem; 
   }
   .ab-kpi-small { 
-    padding: 3px 6px; 
+    padding: 4px 6px; 
   }
   .ab-kpi-small .ab-kpi-label { 
     font-size: 0.65rem; 
@@ -1030,7 +1030,7 @@
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
   .ab-match-card {
-    padding: 12px;
+    padding: 14px;
   }
   
   .ab-match-teams {
@@ -1073,7 +1073,7 @@
 
 @media (max-width: 600px) {
   .ab-match-card {
-    padding: 10px;
+    padding: 12px;
   }
   
   .ab-match-teams {
@@ -1120,7 +1120,7 @@
 /* Dashboard Matches Layout */
 .ab-dashboard-matches {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .ab-matches-list {
@@ -1137,15 +1137,15 @@
 /* Mobile responsiveness for match lists */
 @media (max-width: 600px) {
   .ab-dashboard-matches {
-    gap: 8px;
+    gap: 12px;
   }
   
   .ab-matches-list {
-    gap: 12px;
+    gap: 14px;
   }
   
   .ab-live-matches {
-    gap: 12px;
+    gap: 14px;
   }
 }
 
