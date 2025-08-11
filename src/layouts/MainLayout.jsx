@@ -1,20 +1,42 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { useLeagues } from '../hooks/useLeagues';
-import { toISODate } from '../utils/date';
+import { toISODate, addDays } from '../utils/date';
 
 export default function MainLayout({ children }) {
   const navigate = useNavigate();
   const today = toISODate();
+  const nextWeek = addDays(today, 7);
   const [activeFilters, setActiveFilters] = useState(new Set());
+  const [liveUpdates, setLiveUpdates] = useState([]);
   const { data: liveData } = useLiveMatches();
-  const { data: fixturesData } = useFixturesRange(today, today);
+  const { data: fixturesData } = useFixturesRange(today, nextWeek);
   const { data: leaguesData } = useLeagues();
 
   const liveCount = useMemo(() => liveData?.response?.length ?? 0, [liveData]);
   const fixturesCount = useMemo(() => fixturesData?.response?.length ?? 0, [fixturesData]);
   const leaguesCount = useMemo(() => leaguesData?.response?.length ?? 0, [leaguesData]);
+
+  // Generate live updates from current live matches
+  const liveUpdatesData = useMemo(() => {
+    if (!liveData?.response) return [];
+    return liveData.response.slice(0, 5).map(match => ({
+      id: match.fixture?.id,
+      homeTeam: match.teams?.home?.name || 'Home',
+      awayTeam: match.teams?.away?.name || 'Away',
+      homeScore: match.goals?.home ?? 0,
+      awayScore: match.goals?.away ?? 0,
+      status: match.fixture?.status?.short || 'LIVE',
+      elapsed: match.fixture?.status?.elapsed || null,
+      league: match.league?.name || 'League'
+    }));
+  }, [liveData]);
+
+  // Update live updates state
+  useEffect(() => {
+    setLiveUpdates(liveUpdatesData);
+  }, [liveUpdatesData]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -115,7 +137,29 @@ export default function MainLayout({ children }) {
         <aside className="ab-col-right" aria-label="Right rail">
           <div className="ab-card">
             <h3 className="ab-card-title">Live Updates</h3>
-            <div className="ab-live" aria-live="polite">Scores update here...</div>
+            <div className="ab-live" aria-live="polite">
+              {liveUpdates.length > 0 ? (
+                liveUpdates.map(update => (
+                  <div key={update.id} className="ab-live-update">
+                    <div className="ab-live-match">
+                      <div className="ab-live-teams">
+                        <span className="ab-live-home">{update.homeTeam}</span>
+                        <span className="ab-live-score">
+                          {update.homeScore} - {update.awayScore}
+                        </span>
+                        <span className="ab-live-away">{update.awayTeam}</span>
+                      </div>
+                      <div className="ab-live-status">
+                        <span className="ab-live-time">{update.elapsed}'</span>
+                        <span className="ab-live-league">{update.league}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="ab-live-empty">No live matches</div>
+              )}
+            </div>
           </div>
           <div className="ab-card">
             <h3 className="ab-card-title">Trending</h3>

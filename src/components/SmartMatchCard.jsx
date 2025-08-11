@@ -113,11 +113,35 @@ export default function SmartMatchCard({
     if (!status) return 'TBD';
     
     if (status.short === 'LIVE' || status.short === '1H' || status.short === '2H') {
-      return `${status.elapsed || 0}'`;
+      const elapsed = status.elapsed || 0;
+      const period = status.short === '1H' ? '1st' : status.short === '2H' ? '2nd' : 'LIVE';
+      return (
+        <div className="ab-live-status-indicator">
+          <span className="ab-live-period">{period}</span>
+          <span className="ab-live-time">{elapsed}'</span>
+        </div>
+      );
     }
-    if (status.short === 'FT') return 'FT';
-    if (status.short === 'NS') return formatTime(match?.fixture?.date);
-    return status.short;
+    if (status.short === 'HT') return (
+      <div className="ab-status-indicator ab-status-halftime">
+        <span>HALF TIME</span>
+      </div>
+    );
+    if (status.short === 'FT') return (
+      <div className="ab-status-indicator ab-status-finished">
+        <span>FULL TIME</span>
+      </div>
+    );
+    if (status.short === 'NS') return (
+      <div className="ab-status-indicator ab-status-upcoming">
+        <span>{formatTime(match?.fixture?.date)}</span>
+      </div>
+    );
+    return (
+      <div className="ab-status-indicator">
+        <span>{status.short}</span>
+      </div>
+    );
   };
 
   const getVariantClass = () => {
@@ -190,30 +214,29 @@ export default function SmartMatchCard({
         <div className="ab-match-insights">
           {predictions && !predictionsLoading && (
             <div className="ab-quick-predictions">
-              {predictions.homeWin && (
-                <KPIChip 
-                  label="HOME" 
-                  value={`${predictions.homeWin}%`} 
-                  tone={getConfidenceTone(predictions.homeWin)}
-                  size="small"
-                />
-              )}
-              {predictions.draw && (
-                <KPIChip 
-                  label="DRAW" 
-                  value={`${predictions.draw}%`} 
-                  tone="neutral"
-                  size="small"
-                />
-              )}
-              {predictions.awayWin && (
-                <KPIChip 
-                  label="AWAY" 
-                  value={`${predictions.awayWin}%`} 
-                  tone={getConfidenceTone(predictions.awayWin)}
-                  size="small"
-                />
-              )}
+              <div className="ab-prediction-bars">
+                <div className="ab-prediction-bar-container">
+                  <div className="ab-prediction-bar-labels">
+                    <span>HOME {predictions.homeWin}%</span>
+                    <span>DRAW {predictions.draw}%</span>
+                    <span>AWAY {predictions.awayWin}%</span>
+                  </div>
+                  <div className="ab-prediction-bar-track">
+                    <div 
+                      className="ab-prediction-bar ab-prediction-bar-home" 
+                      style={{ width: `${predictions.homeWin || 0}%` }}
+                    ></div>
+                    <div 
+                      className="ab-prediction-bar ab-prediction-bar-draw" 
+                      style={{ width: `${predictions.draw || 0}%` }}
+                    ></div>
+                    <div 
+                      className="ab-prediction-bar ab-prediction-bar-away" 
+                      style={{ width: `${predictions.awayWin || 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
           

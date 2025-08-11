@@ -8,7 +8,27 @@
 .ab-search { display: flex; gap: 8px; justify-content: flex-end; }
 
 .ab-grid { display: grid; grid-template-columns: 260px 1fr 320px; gap: 16px; padding: 16px; }
-.ab-col-left, .ab-col-right { display: grid; gap: 16px; align-content: start; }
+.ab-col-left, .ab-col-right { 
+  display: grid; 
+  gap: 20px; 
+  align-content: start; 
+}
+
+.ab-col-left {
+  background: linear-gradient(180deg, var(--ab-bg-elev-1) 0%, var(--ab-bg) 100%);
+  border-radius: 12px;
+  padding: 8px;
+  border: 1px solid var(--ab-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ab-col-right {
+  background: linear-gradient(180deg, var(--ab-bg-elev-1) 0%, var(--ab-bg) 100%);
+  border-radius: 12px;
+  padding: 8px;
+  border: 1px solid var(--ab-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
 .ab-col-main { display: grid; gap: 16px; }
 
 /* Tablet breakpoint */
