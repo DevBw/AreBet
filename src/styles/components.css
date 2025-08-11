@@ -1069,6 +1069,62 @@
   font-style: italic; 
 }
 
+/* Live Updates Loading & Error States */
+.ab-live-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.ab-live-error {
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.ab-error-message {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  color: var(--ab-danger);
+  font-size: 0.85rem;
+}
+
+.ab-retry-button {
+  background: var(--ab-danger);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ab-retry-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.ab-sample-notice {
+  background: var(--ab-accent-soft);
+  border: 1px solid var(--ab-accent);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.ab-sample-notice small {
+  color: var(--ab-accent);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
 /* Smart Match Card Styles */
 .ab-match-card {
   background: var(--ab-bg-elev-1);

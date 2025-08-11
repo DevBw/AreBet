@@ -10,7 +10,7 @@ export default function MainLayout({ children }) {
   const nextWeek = addDays(today, 7);
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [liveUpdates, setLiveUpdates] = useState([]);
-  const { data: liveData } = useLiveMatches();
+  const { data: liveData, loading: liveLoading, error: liveError, refetch: refetchLive } = useLiveMatches();
   const { data: fixturesData } = useFixturesRange(today, nextWeek);
   const { data: leaguesData } = useLeagues();
 
@@ -33,10 +33,58 @@ export default function MainLayout({ children }) {
     }));
   }, [liveData]);
 
+  // Auto-refresh live matches every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchLive();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [refetchLive]);
+
+  // Sample data for when no live matches are available
+  const sampleLiveData = [
+    {
+      id: 'sample-1',
+      homeTeam: 'Manchester City',
+      awayTeam: 'Liverpool',
+      homeScore: 2,
+      awayScore: 1,
+      status: 'LIVE',
+      elapsed: 78,
+      league: 'Premier League'
+    },
+    {
+      id: 'sample-2',
+      homeTeam: 'Real Madrid',
+      awayTeam: 'Barcelona',
+      homeScore: 1,
+      awayScore: 1,
+      status: 'LIVE',
+      elapsed: 65,
+      league: 'La Liga'
+    },
+    {
+      id: 'sample-3',
+      homeTeam: 'Bayern Munich',
+      awayTeam: 'Borussia Dortmund',
+      homeScore: 3,
+      awayScore: 0,
+      status: 'LIVE',
+      elapsed: 82,
+      league: 'Bundesliga'
+    }
+  ];
+
   // Update live updates state
   useEffect(() => {
-    setLiveUpdates(liveUpdatesData);
-  }, [liveUpdatesData]);
+    if (liveUpdatesData.length > 0) {
+      setLiveUpdates(liveUpdatesData);
+    } else if (!liveLoading && !liveError) {
+      // Show sample data when no live matches but API call succeeded
+      setLiveUpdates(sampleLiveData);
+    }
+  }, [liveUpdatesData, liveLoading, liveError]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -138,26 +186,52 @@ export default function MainLayout({ children }) {
           <div className="ab-card">
             <h3 className="ab-card-title">Live Updates</h3>
             <div className="ab-live" aria-live="polite">
-              {liveUpdates.length > 0 ? (
-                liveUpdates.map(update => (
-                  <div key={update.id} className="ab-live-update">
-                    <div className="ab-live-match">
-                      <div className="ab-live-teams">
-                        <span className="ab-live-home">{update.homeTeam}</span>
-                        <span className="ab-live-score">
-                          {update.homeScore} - {update.awayScore}
-                        </span>
-                        <span className="ab-live-away">{update.awayTeam}</span>
-                      </div>
-                      <div className="ab-live-status">
-                        <span className="ab-live-time">{update.elapsed}'</span>
-                        <span className="ab-live-league">{update.league}</span>
+              {liveLoading ? (
+                <div className="ab-live-loading">
+                  <div className="ab-loader">
+                    <span className="ab-loader-text">Loading live matches...</span>
+                  </div>
+                </div>
+              ) : liveError ? (
+                <div className="ab-live-error">
+                  <div className="ab-error-message">
+                    <span>Failed to load live matches</span>
+                    <button 
+                      onClick={refetchLive}
+                      className="ab-retry-button"
+                      title="Retry loading live matches"
+                    >
+                      🔄 Retry
+                    </button>
+                  </div>
+                </div>
+              ) : liveUpdates.length > 0 ? (
+                <>
+                  {liveUpdatesData.length === 0 && liveUpdates.length > 0 && (
+                    <div className="ab-sample-notice">
+                      <small>📊 Sample live match data</small>
+                    </div>
+                  )}
+                  {liveUpdates.map(update => (
+                    <div key={update.id} className="ab-live-update">
+                      <div className="ab-live-match">
+                        <div className="ab-live-teams">
+                          <span className="ab-live-home">{update.homeTeam}</span>
+                          <span className="ab-live-score">
+                            {update.homeScore} - {update.awayScore}
+                          </span>
+                          <span className="ab-live-away">{update.awayTeam}</span>
+                        </div>
+                        <div className="ab-live-status">
+                          <span className="ab-live-time">{update.elapsed}'</span>
+                          <span className="ab-live-league">{update.league}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </>
               ) : (
-                <div className="ab-live-empty">No live matches</div>
+                <div className="ab-live-empty">No live matches available</div>
               )}
             </div>
           </div>
