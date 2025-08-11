@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { apiFootball } from '../services/apiFootball';
@@ -20,20 +21,28 @@ export default function MatchDetail() {
   const { data: lineupsData } = useApi(() => (fixtureId ? apiFootball.getLineups({ fixture: fixtureId }) : Promise.resolve(null)), [fixtureId]);
   const { data: h2hData } = useApi(() => (homeId && awayId ? apiFootball.getH2H({ home: homeId, away: awayId, last: 5 }) : Promise.resolve(null)), [homeId, awayId]);
   const { data: eventsData } = useApi(() => (fixtureId ? apiFootball.getEvents({ fixture: fixtureId }) : Promise.resolve(null)), [fixtureId]);
+  const getMatchVariant = () => {
+    if (!fx?.fixture?.status) return 'upcoming';
+    const status = fx.fixture.status.short;
+    if (status === 'LIVE' || status === '1H' || status === '2H') return 'live';
+    if (status === 'FT') return 'finished';
+    return 'upcoming';
+  };
+
   return (
     <div className="ab-stack">
       <Breadcrumbs items={[{ label: 'Matches', to: '/matches' }, { label: 'Match Detail' }]} />
-      <Card title="Overview">
-        {loading && <Loader label="Loading match" />}
-        {error && <ErrorState title="Could not load match" message="Try again later" />}
-        {!loading && !error && fx && (
-          <div>
-            <div>{fx.teams?.home?.name} vs {fx.teams?.away?.name}</div>
-            <div>{fx.goals?.home}:{fx.goals?.away}</div>
-            <div>{fx.fixture?.status?.long}</div>
-          </div>
-        )}
-      </Card>
+      
+      {/* Enhanced Match Overview */}
+      {loading && <Loader label="Loading match" />}
+      {error && <ErrorState title="Could not load match" message="Try again later" />}
+      {!loading && !error && fx && (
+        <SmartMatchCard 
+          match={fx}
+          variant={getMatchVariant()}
+          showExpanded={true}
+        />
+      )}
       <Card title="Insights">
         <div className="ab-muted">Powered by Api-Football predictions.</div>
       </Card>

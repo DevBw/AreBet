@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import TabBar from '../components/TabBar.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useLiveMatches, useMatches } from '../hooks/useMatches';
 
 const tabs = [
@@ -49,11 +50,16 @@ export default function Matches() {
           <div className="ab-muted">No results.</div>
         )}
         {!isLoading && !isError && filtered.length > 0 && (
-          <ul className="ab-list">
-            {filtered.slice(0, 50).map((fx) => (
-              <li key={fx.fixture?.id}>{fx.teams?.home?.name} vs {fx.teams?.away?.name}</li>
+          <div className="ab-matches-list">
+            {filtered.slice(0, 20).map((match) => (
+              <SmartMatchCard 
+                key={match.fixture?.id} 
+                match={match}
+                variant={active === 'live' ? 'live' : active === 'finished' ? 'finished' : 'upcoming'}
+                showExpanded={false}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </Card>
     </div>

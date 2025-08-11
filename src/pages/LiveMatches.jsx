@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import KPIChip from '../components/KPIChip.jsx';
+import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useLiveMatches } from '../hooks/useMatches';
 
 export default function LiveMatches() {
@@ -117,32 +118,12 @@ export default function LiveMatches() {
         {!loading && !error && filteredMatches.length > 0 && (
           <div className="ab-live-matches" aria-live="polite">
             {filteredMatches.map((match) => (
-              <div key={match.fixture?.id} className="ab-live-match">
-                <div className="ab-live-match-header">
-                  <span className="ab-live-match-league">{match.league?.name}</span>
-                  <span className="ab-live-match-time">{match.fixture?.status?.elapsed}'</span>
-                </div>
-                <div className="ab-live-match-content">
-                  <div className="ab-live-match-teams">
-                    <span className="ab-live-match-team ab-live-match-home">
-                      {match.teams?.home?.name}
-                    </span>
-                    <span className="ab-live-match-vs">vs</span>
-                    <span className="ab-live-match-team ab-live-match-away">
-                      {match.teams?.away?.name}
-                    </span>
-                  </div>
-                  <div className="ab-live-match-score">
-                    <span className="ab-live-match-goals">{match.goals?.home || 0}</span>
-                    <span className="ab-live-match-separator">:</span>
-                    <span className="ab-live-match-goals">{match.goals?.away || 0}</span>
-                  </div>
-                </div>
-                <div className="ab-live-match-status">
-                  <span className="ab-dot-live" aria-hidden="true">●</span>
-                  <span>LIVE</span>
-                </div>
-              </div>
+              <SmartMatchCard 
+                key={match.fixture?.id} 
+                match={match}
+                variant="live"
+                showExpanded={false}
+              />
             ))}
           </div>
         )}

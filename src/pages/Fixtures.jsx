@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import KPIChip from '../components/KPIChip.jsx';
+import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useFixturesRange } from '../hooks/useMatches';
 import { toISODate, addDays, formatDate } from '../utils/date';
 
@@ -118,30 +119,12 @@ export default function Fixtures() {
                   </div>
                   <div className="ab-fixtures-date-content">
                     {dateFixtures.map((fixture) => (
-                      <div key={fixture.fixture?.id} className="ab-fixture-item">
-                        <div className="ab-fixture-time">
-                          {new Date(fixture.fixture?.date).toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false
-                          })}
-                        </div>
-                        <div className="ab-fixture-league">
-                          {fixture.league?.name}
-                        </div>
-                        <div className="ab-fixture-teams">
-                          <span className="ab-fixture-team ab-fixture-home">
-                            {fixture.teams?.home?.name}
-                          </span>
-                          <span className="ab-fixture-vs">vs</span>
-                          <span className="ab-fixture-team ab-fixture-away">
-                            {fixture.teams?.away?.name}
-                          </span>
-                        </div>
-                        <div className="ab-fixture-venue">
-                          {fixture.fixture?.venue?.name || 'TBD'}
-                        </div>
-                      </div>
+                      <SmartMatchCard 
+                        key={fixture.fixture?.id} 
+                        match={fixture}
+                        variant="upcoming"
+                        showExpanded={false}
+                      />
                     ))}
                   </div>
                 </div>

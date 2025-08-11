@@ -599,4 +599,502 @@
   }
 }
 
+/* Smart Match Card Styles */
+.ab-match-card {
+  background: var(--ab-bg-elev-1);
+  border: 1px solid var(--ab-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.ab-match-card:hover {
+  border-color: var(--ab-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.ab-match-card-live {
+  border-left: 4px solid var(--ab-accent-2);
+  background: linear-gradient(135deg, var(--ab-bg-elev-1) 0%, rgba(14, 215, 127, 0.02) 100%);
+}
+
+.ab-match-card-finished {
+  opacity: 0.9;
+}
+
+.ab-match-card-upcoming {
+  background: linear-gradient(135deg, var(--ab-bg-elev-1) 0%, rgba(255, 209, 102, 0.02) 100%);
+}
+
+/* Match Card Header */
+.ab-match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.ab-match-card-league {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-match-card-status {
+  color: var(--ab-accent-2);
+  font-family: monospace;
+  font-weight: 700;
+}
+
+/* Teams and Score Layout */
+.ab-match-card-main {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-match-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.ab-match-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.ab-match-home {
+  justify-self: start;
+  color: var(--ab-accent-2);
+}
+
+.ab-match-away {
+  justify-self: end;
+  flex-direction: row-reverse;
+  color: var(--ab-fg);
+}
+
+.ab-team-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.ab-team-name {
+  font-size: 0.95rem;
+}
+
+.ab-match-score {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: center;
+}
+
+.ab-match-vs {
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  font-weight: 500;
+}
+
+.ab-score-home,
+.ab-score-away {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ab-accent-2);
+  font-family: monospace;
+}
+
+.ab-score-separator {
+  font-size: 1.2rem;
+  color: var(--ab-muted);
+  font-weight: 600;
+  margin: 0 2px;
+}
+
+/* Quick Insights */
+.ab-match-insights {
+  display: flex;
+  justify-content: center;
+  min-height: 32px;
+  align-items: center;
+}
+
+.ab-quick-predictions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Expand Toggle */
+.ab-match-card-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--ab-bg-elev-2);
+  border: 1px solid var(--ab-border);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--ab-muted);
+  transition: all 0.2s ease;
+}
+
+.ab-match-card-toggle:hover {
+  background: var(--ab-accent);
+  color: #08130d;
+  border-color: var(--ab-accent);
+}
+
+/* Expandable Content */
+.ab-match-card-expanded {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ab-border);
+}
+
+.ab-match-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--ab-bg-elev-2);
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.ab-tab-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ab-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: capitalize;
+}
+
+.ab-tab-button.active {
+  background: var(--ab-bg-elev-1);
+  color: var(--ab-accent-2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ab-tab-button:hover:not(.active) {
+  background: var(--ab-bg-elev-1);
+  color: var(--ab-fg);
+}
+
+/* Tab Content */
+.ab-match-tab-content {
+  min-height: 120px;
+}
+
+.ab-tab-overview {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-match-details {
+  display: grid;
+  gap: 8px;
+}
+
+.ab-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ab-border);
+}
+
+.ab-detail-item:last-child {
+  border-bottom: none;
+}
+
+.ab-detail-label {
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  font-weight: 500;
+}
+
+.ab-detail-value {
+  font-size: 0.85rem;
+  color: var(--ab-fg);
+}
+
+/* Predictions Tab */
+.ab-tab-predictions {
+  display: grid;
+  gap: 16px;
+}
+
+.ab-predictions-content {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-prediction-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ab-prediction-item {
+  display: flex;
+  justify-content: center;
+}
+
+.ab-prediction-advice,
+.ab-predicted-score,
+.ab-prediction-detail {
+  padding: 8px 12px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.ab-prediction-advice strong,
+.ab-predicted-score strong,
+.ab-prediction-detail strong {
+  color: var(--ab-accent);
+}
+
+/* Statistics Tab */
+.ab-tab-stats {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-form-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ab-form-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: var(--ab-accent);
+}
+
+.ab-form-placeholder {
+  color: var(--ab-muted);
+  font-size: 0.8rem;
+  padding: 8px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 6px;
+}
+
+.ab-match-statistics {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.ab-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 6px;
+}
+
+.ab-stat-label {
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+  text-transform: capitalize;
+}
+
+.ab-stat-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ab-fg);
+}
+
+/* H2H Tab */
+.ab-tab-h2h {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-h2h-content {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-h2h-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ab-h2h-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  font-style: italic;
+}
+
+/* No Data State */
+.ab-no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--ab-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .ab-match-card {
+    padding: 12px;
+  }
+  
+  .ab-match-teams {
+    gap: 12px;
+  }
+  
+  .ab-team-name {
+    font-size: 0.9rem;
+  }
+  
+  .ab-team-logo {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .ab-score-home,
+  .ab-score-away {
+    font-size: 1.3rem;
+  }
+  
+  .ab-prediction-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  
+  .ab-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ab-form-comparison {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .ab-h2h-summary {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ab-match-card {
+    padding: 10px;
+  }
+  
+  .ab-match-teams {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .ab-match-team {
+    justify-self: center;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .ab-match-away {
+    flex-direction: column;
+  }
+  
+  .ab-team-name {
+    font-size: 0.85rem;
+  }
+  
+  .ab-match-card-toggle {
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .ab-quick-predictions {
+    gap: 4px;
+  }
+  
+  .ab-match-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .ab-tab-button {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+}
+
+/* Dashboard Matches Layout */
+.ab-dashboard-matches {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-matches-list {
+  display: grid;
+  gap: 16px;
+}
+
+/* Live Matches Layout Updates */
+.ab-live-matches {
+  display: grid;
+  gap: 16px;
+}
+
+/* Mobile responsiveness for match lists */
+@media (max-width: 600px) {
+  .ab-dashboard-matches {
+    gap: 8px;
+  }
+  
+  .ab-matches-list {
+    gap: 12px;
+  }
+  
+  .ab-live-matches {
+    gap: 12px;
+  }
+}
+
 

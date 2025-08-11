@@ -4,6 +4,7 @@ import Loader from '../components/Loader.jsx';
 import KPIChip from '../components/KPIChip.jsx';
 import AnalyticsPanel from '../components/AnalyticsPanel.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { toISODate } from '../utils/date';
 import { useHotPicks } from '../hooks/useHotPicks';
@@ -35,15 +36,16 @@ export default function Dashboard() {
             <ErrorState title="No live matches" message="All matches are finished or not started yet" icon="🏟️" />
           )}
           {!liveLoading && !liveError && live.length > 0 && (
-            <ul className="ab-list" aria-live="polite">
-              {live.slice(0, 6).map((fx) => (
-                <li key={fx.fixture?.id} className="ab-match-item">
-                  <span className="ab-dot-live" aria-hidden="true">●</span>
-                  <span className="ab-match-teams">{fx.teams?.home?.name} vs {fx.teams?.away?.name}</span>
-                  <span className="ab-match-score">{fx.goals?.home || 0}:{fx.goals?.away || 0}</span>
-                </li>
+            <div className="ab-dashboard-matches" aria-live="polite">
+              {live.slice(0, 3).map((match) => (
+                <SmartMatchCard 
+                  key={match.fixture?.id} 
+                  match={match}
+                  variant="live"
+                  showExpanded={false}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </Card>
 
@@ -59,13 +61,16 @@ export default function Dashboard() {
                 <KPIChip label="TODAY" value={fixtures.length} tone="neutral" />
                 <KPIChip label="THIS WEEK" value="--" tone="neutral" />
               </div>
-              <ul className="ab-list ab-list-compact">
-                {fixtures.slice(0, 4).map((fx) => (
-                  <li key={fx.fixture?.id} className="ab-fixture-item">
-                    {fx.teams?.home?.name} vs {fx.teams?.away?.name}
-                  </li>
+              <div className="ab-dashboard-matches">
+                {fixtures.slice(0, 2).map((match) => (
+                  <SmartMatchCard 
+                    key={match.fixture?.id} 
+                    match={match}
+                    variant="upcoming"
+                    showExpanded={false}
+                  />
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </Card>
