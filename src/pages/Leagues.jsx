@@ -59,8 +59,41 @@ export default function Leagues() {
           </div>
         )}
       </Card>
-      <Card title="Stats Line">
-        <div className="ab-placeholder">League stats snapshot</div>
+      <Card title="League Statistics">
+        <div className="ab-league-stats">
+          <div className="ab-league-stat-item">
+            <div className="ab-league-stat-icon">⚽</div>
+            <div className="ab-league-stat-content">
+              <div className="ab-league-stat-title">Goals per Game</div>
+              <div className="ab-league-stat-value">2.7</div>
+              <div className="ab-league-stat-subtitle">Season average</div>
+            </div>
+          </div>
+          <div className="ab-league-stat-item">
+            <div className="ab-league-stat-icon">🏆</div>
+            <div className="ab-league-stat-content">
+              <div className="ab-league-stat-title">Top Scorer</div>
+              <div className="ab-league-stat-value">E. Haaland</div>
+              <div className="ab-league-stat-subtitle">15 goals</div>
+            </div>
+          </div>
+          <div className="ab-league-stat-item">
+            <div className="ab-league-stat-icon">🎯</div>
+            <div className="ab-league-stat-content">
+              <div className="ab-league-stat-title">BTTS Rate</div>
+              <div className="ab-league-stat-value">64%</div>
+              <div className="ab-league-stat-subtitle">Both teams score</div>
+            </div>
+          </div>
+          <div className="ab-league-stat-item">
+            <div className="ab-league-stat-icon">🏟️</div>
+            <div className="ab-league-stat-content">
+              <div className="ab-league-stat-title">Home Advantage</div>
+              <div className="ab-league-stat-value">58%</div>
+              <div className="ab-league-stat-subtitle">Home win rate</div>
+            </div>
+          </div>
+        </div>
       </Card>
     </div>
   );

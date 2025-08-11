@@ -5,6 +5,7 @@ import KPIChip from '../components/KPIChip.jsx';
 import AnalyticsPanel from '../components/AnalyticsPanel.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import SmartMatchCard from '../components/SmartMatchCard.jsx';
+import { FormTrendsChart, VenueAnalysisChart } from '../components/MiniChart.jsx';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { toISODate } from '../utils/date';
 import { useHotPicks } from '../hooks/useHotPicks';
@@ -100,22 +101,11 @@ export default function Dashboard() {
 
       {/* Analytics Row */}
       <div className="ab-dashboard-grid">
-        <Card title="Compact Charts">
-          <div className="ab-chart-mini">
-            <div className="ab-chart-title">Form Trends</div>
-            <div className="ab-chart-placeholder">Mini line chart</div>
-          </div>
+        <Card title="Match Trends">
+          <FormTrendsChart />
         </Card>
         <Card title="Venue Analysis">
-          <div className="ab-venue-stats">
-            <div className="ab-grid-2">
-              <KPIChip label="HOME WINS" value="62%" tone="positive" />
-              <KPIChip label="AWAY WINS" value="23%" tone="warning" />
-            </div>
-            <div className="ab-venue-chart">
-              <div className="ab-chart-placeholder">Home vs Away breakdown</div>
-            </div>
-          </div>
+          <VenueAnalysisChart />
         </Card>
       </div>
     </div>

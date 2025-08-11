@@ -330,11 +330,25 @@ export default function SmartMatchCard({
                   <div className="ab-form-comparison">
                     <div className="ab-form-section">
                       <h4>{match?.teams?.home?.name} (Home)</h4>
-                      <div className="ab-form-placeholder">Recent form data</div>
+                      <div className="ab-form-display">
+                        <div className="ab-form-label">Recent Form:</div>
+                        <div className="ab-form-record">W W D L W</div>
+                        <div className="ab-form-stats">
+                          <span>Goals: 8 scored, 4 conceded</span>
+                          <span>Clean sheets: 2/5</span>
+                        </div>
+                      </div>
                     </div>
                     <div className="ab-form-section">
                       <h4>{match?.teams?.away?.name} (Away)</h4>
-                      <div className="ab-form-placeholder">Recent form data</div>
+                      <div className="ab-form-display">
+                        <div className="ab-form-label">Recent Form:</div>
+                        <div className="ab-form-record">L W W D L</div>
+                        <div className="ab-form-stats">
+                          <span>Goals: 6 scored, 7 conceded</span>
+                          <span>Clean sheets: 1/5</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : statsLoading ? (

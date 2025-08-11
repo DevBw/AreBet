@@ -467,6 +467,362 @@
 .ab-venue-stats { display: grid; gap: 16px; }
 .ab-venue-chart { margin-top: 8px; }
 
+/* Mini Chart Styles */
+.ab-mini-chart {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-mini-chart-container {
+  display: grid;
+  gap: 8px;
+}
+
+.ab-mini-chart-bars {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 80px;
+  padding: 8px 0;
+}
+
+.ab-mini-chart-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+.ab-mini-chart-bar {
+  width: 8px;
+  border-radius: 2px;
+  min-height: 2px;
+  transition: all 0.3s ease;
+}
+
+.ab-mini-chart-matches {
+  background: var(--ab-accent);
+  box-shadow: 0 0 8px var(--ab-accent-soft);
+}
+
+.ab-mini-chart-goals {
+  background: var(--ab-warning);
+  opacity: 0.8;
+}
+
+.ab-mini-chart-label {
+  font-size: 0.7rem;
+  color: var(--ab-muted);
+  margin-top: 4px;
+}
+
+.ab-mini-chart-legend {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.ab-mini-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ab-mini-chart-legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* Venue Analysis Styles */
+.ab-venue-analysis {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-venue-breakdown {
+  display: flex;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--ab-bg-elev-2);
+}
+
+.ab-venue-segment {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.ab-venue-home {
+  background: var(--ab-accent);
+}
+
+.ab-venue-draw {
+  background: var(--ab-muted);
+}
+
+.ab-venue-away {
+  background: var(--ab-warning);
+}
+
+.ab-venue-labels {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ab-venue-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--ab-fg);
+}
+
+.ab-venue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.ab-venue-total {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+  font-style: italic;
+}
+
+/* Predictions Styles */
+.ab-predictions-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.ab-prediction-insights {
+  display: grid;
+  gap: 16px;
+}
+
+.ab-insight-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 8px;
+  border: 1px solid var(--ab-border);
+}
+
+.ab-insight-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.ab-insight-content {
+  display: grid;
+  gap: 4px;
+}
+
+.ab-insight-title {
+  font-weight: 600;
+  color: var(--ab-accent);
+  font-size: 0.9rem;
+}
+
+.ab-insight-text {
+  color: var(--ab-fg);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Trends Styles */
+.ab-trends-overview {
+  display: grid;
+  gap: 16px;
+}
+
+.ab-trends-summary {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  font-style: italic;
+}
+
+.ab-trends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.ab-trend-item {
+  padding: 16px;
+  background: var(--ab-bg-elev-2);
+  border: 1px solid var(--ab-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ab-trend-item:hover {
+  border-color: var(--ab-accent);
+  transform: translateY(-1px);
+}
+
+.ab-trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.ab-trend-title {
+  font-weight: 600;
+  color: var(--ab-accent);
+  font-size: 0.9rem;
+}
+
+.ab-trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-trend-icon {
+  font-size: 1.2rem;
+}
+
+.ab-trend-description {
+  color: var(--ab-fg);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.ab-tracking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.ab-tracking-item {
+  padding: 12px;
+  background: var(--ab-bg-elev-2);
+  border: 1px solid var(--ab-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ab-tracking-item:hover {
+  border-color: var(--ab-accent);
+}
+
+.ab-tracking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ab-tracking-name {
+  font-weight: 600;
+  color: var(--ab-fg);
+  font-size: 0.9rem;
+}
+
+.ab-tracking-type {
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ab-tracking-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.ab-tracking-form {
+  background: var(--ab-accent-soft);
+  color: var(--ab-accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.ab-tracking-stat {
+  color: var(--ab-fg);
+}
+
+.ab-tracking-next,
+.ab-tracking-date {
+  color: var(--ab-muted);
+}
+
+.ab-tracking-trend {
+  font-size: 1rem;
+}
+
+.ab-market-insights {
+  display: grid;
+  gap: 16px;
+}
+
+/* League Statistics Styles */
+.ab-league-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.ab-league-stat-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  background: var(--ab-bg-elev-2);
+  border: 1px solid var(--ab-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ab-league-stat-item:hover {
+  border-color: var(--ab-accent);
+  transform: translateY(-1px);
+}
+
+.ab-league-stat-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.ab-league-stat-content {
+  display: grid;
+  gap: 2px;
+}
+
+.ab-league-stat-title {
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  font-weight: 500;
+}
+
+.ab-league-stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ab-accent);
+}
+
+.ab-league-stat-subtitle {
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+  opacity: 0.8;
+}
+
 /* Mobile responsiveness for charts and venue */
 @media (max-width: 600px) {
   .ab-chart-mini { 
@@ -958,6 +1314,39 @@
   padding: 8px;
   background: var(--ab-bg-elev-2);
   border-radius: 6px;
+}
+
+.ab-form-display {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 6px;
+}
+
+.ab-form-label {
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+  font-weight: 500;
+}
+
+.ab-form-record {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ab-accent);
+  letter-spacing: 1px;
+}
+
+.ab-form-stats {
+  display: grid;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--ab-fg);
+}
+
+.ab-form-stats span {
+  opacity: 0.9;
 }
 
 .ab-match-statistics {
