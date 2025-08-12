@@ -1,113 +1,42 @@
 const API_BASE = 'https://v3.football.api-sports.io';
 const API_KEY = import.meta.env.VITE_API_FOOTBALL_KEY;
 
-// Cache for API responses (in-memory cache)
-const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-// Rate limiting
-let requestCount = 0;
-const MAX_REQUESTS_PER_MINUTE = 30;
-const RATE_LIMIT_RESET_INTERVAL = 60 * 1000; // 1 minute
-
-// Reset rate limit counter
-setInterval(() => {
-  requestCount = 0;
-}, RATE_LIMIT_RESET_INTERVAL);
-
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function getCacheKey(path, params) {
-  const sortedParams = Object.keys(params)
-    .sort()
-    .map(key => `${key}=${params[key]}`)
-    .join('&');
-  return `${path}?${sortedParams}`;
-}
-
-function getCachedResponse(cacheKey) {
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
-  cache.delete(cacheKey);
-  return null;
-}
-
-function setCachedResponse(cacheKey, data) {
-  cache.set(cacheKey, {
-    data,
-    timestamp: Date.now()
-  });
-  
-  // Clean up old cache entries
-  if (cache.size > 100) {
-    const oldestKey = cache.keys().next().value;
-    cache.delete(oldestKey);
-  }
-}
-
-async function fetchJson(path, { params = {}, method = 'GET', retries = 2, useCache = true } = {}) {
-  // Check rate limit
-  if (requestCount >= MAX_REQUESTS_PER_MINUTE) {
-    throw new Error('Rate limit exceeded. Please try again in a moment.');
-  }
-  
-  const cacheKey = useCache ? getCacheKey(path, params) : null;
-  
-  // Check cache first
-  if (useCache && cacheKey) {
-    const cached = getCachedResponse(cacheKey);
-    if (cached) {
-      return cached;
-    }
-  }
-  
+async function fetchJson(path, { params = {}, method = 'GET', retries = 2 } = {}) {
   const url = new URL(API_BASE + path);
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   });
 
+  console.log('API Request:', url.toString());
+  console.log('API Key present:', !!API_KEY);
+
   for (let attempt = 0; attempt <= retries; attempt += 1) {
-    try {
-      requestCount++;
-      
-      const res = await fetch(url.toString(), {
-        method,
-        headers: {
-          'x-apisports-key': API_KEY ?? '',
-        },
-      });
-      
-      if (res.status === 429 && attempt < retries) {
-        // Rate limit: exponential backoff
-        const delay = Math.min(1000 * (2 ** attempt), 10000);
-        await sleep(delay);
-        continue;
-      }
-      
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`ApiFootball error ${res.status}: ${text}`);
-      }
-      
-      const json = await res.json();
-      
-      // Cache successful responses
-      if (useCache && cacheKey) {
-        setCachedResponse(cacheKey, json);
-      }
-      
-      return json;
-    } catch (error) {
-      if (attempt === retries - 1) {
-        throw error;
-      }
-      // Wait before retry
-      await sleep(1000 * (attempt + 1));
+    const res = await fetch(url.toString(), {
+      method,
+      headers: {
+        'x-apisports-key': API_KEY ?? '',
+      },
+    });
+    
+    console.log('API Response:', res.status, res.statusText);
+    
+    if (res.status === 429 && attempt < retries) {
+      // rate limit: exponential backoff
+      await sleep(500 * (2 ** attempt));
+      continue;
     }
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('API Error:', text);
+      throw new Error(`ApiFootball error ${res.status}: ${text}`);
+    }
+    const json = await res.json();
+    console.log('API Data:', json);
+    return json;
   }
 }
 
