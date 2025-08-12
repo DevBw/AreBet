@@ -1,13 +1,17 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { useLeagues } from '../hooks/useLeagues';
 import { toISODate, addDays } from '../utils/date';
 
 export default function MainLayout({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const today = toISODate();
   const nextWeek = addDays(today, 7);
+  
+  // Check if we're on the dashboard page
+  const isDashboard = location.pathname === '/dashboard' || location.pathname === '/';
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [liveUpdates, setLiveUpdates] = useState([]);
   const { data: liveData, loading: liveLoading, error: liveError, refetch: refetchLive } = useLiveMatches();
@@ -107,6 +111,50 @@ export default function MainLayout({ children }) {
     else if (filter === 'TOP5') navigate('/leagues');
   }
 
+  // For dashboard, use the special layout, for other pages use the original layout
+  if (isDashboard) {
+    return (
+      <div className="ab-app">
+        <header className="ab-header" role="banner">
+          <div className="ab-brand" aria-label="AreBet home" onClick={() => navigate('/dashboard')} tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' ? navigate('/dashboard') : null)}>
+            <img src="/icons/logo.svg" alt="AreBet logo" width="28" height="28" />
+            <span className="ab-title">AreBet</span>
+          </div>
+          <nav className="ab-nav" aria-label="Primary">
+            <NavLink to="/dashboard" className="ab-tab" aria-label="Dashboard">
+              <span className="ab-tab-icon">📊</span>
+              Dashboard
+            </NavLink>
+            <NavLink to="/live" className="ab-tab" aria-label="Live Matches">
+              <span className="ab-tab-icon">⚽</span>
+              Matches
+            </NavLink>
+            <NavLink to="/teams" className="ab-tab" aria-label="Teams">
+              <span className="ab-tab-icon">👥</span>
+              Teams
+            </NavLink>
+            <NavLink to="/statistics" className="ab-tab" aria-label="Analytics">
+              <span className="ab-tab-icon">📈</span>
+              Analytics
+            </NavLink>
+          </nav>
+          <div className="header-right">
+            <button className="notification-btn" aria-label="Notifications">
+              🔔
+            </button>
+            <button className="profile-btn" aria-label="Profile">
+              👤
+            </button>
+          </div>
+        </header>
+
+        <main className="dashboard-container" role="main">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="ab-app">
       <header className="ab-header" role="banner">
@@ -115,12 +163,22 @@ export default function MainLayout({ children }) {
           <span className="ab-title">AreBet</span>
         </div>
         <nav className="ab-nav" aria-label="Primary">
-          <NavLink to="/dashboard" className="ab-tab" aria-label="Dashboard">Dashboard</NavLink>
-          <NavLink to="/live" className="ab-tab" aria-label="Live Matches">Live</NavLink>
-          <NavLink to="/fixtures" className="ab-tab" aria-label="Fixtures">Fixtures</NavLink>
-          <NavLink to="/matches" className="ab-tab" aria-label="Matches">Matches</NavLink>
-          <NavLink to="/leagues" className="ab-tab" aria-label="Leagues">Leagues</NavLink>
-          <NavLink to="/teams" className="ab-tab" aria-label="Teams">Teams</NavLink>
+          <NavLink to="/dashboard" className="ab-tab" aria-label="Dashboard">
+            <span className="ab-tab-icon">📊</span>
+            Dashboard
+          </NavLink>
+          <NavLink to="/live" className="ab-tab" aria-label="Live Matches">
+            <span className="ab-tab-icon">⚽</span>
+            Matches
+          </NavLink>
+          <NavLink to="/teams" className="ab-tab" aria-label="Teams">
+            <span className="ab-tab-icon">👥</span>
+            Teams
+          </NavLink>
+          <NavLink to="/statistics" className="ab-tab" aria-label="Analytics">
+            <span className="ab-tab-icon">📈</span>
+            Analytics
+          </NavLink>
         </nav>
         <form className="ab-search" role="search" aria-label="Search matches" onSubmit={handleSearchSubmit}>
           <input name="q" type="search" placeholder="Search teams, leagues..." aria-label="Search" />

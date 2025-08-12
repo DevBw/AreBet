@@ -1,9 +1,9 @@
 .ab-app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
-.ab-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--ab-border); background: var(--ab-bg-elev-1); position: sticky; top: 0; z-index: 10; }
+.ab-header { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--ab-border); background: var(--ab-bg-elev-1); position: sticky; top: 0; z-index: 10; }
 .ab-brand { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
 .ab-title { font-weight: 700; letter-spacing: 0.5px; }
 .ab-nav { display: flex; gap: 8px; justify-content: center; }
-.ab-tab { padding: 8px 12px; border-radius: 8px; color: var(--ab-fg); }
+.ab-tab { padding: 8px 12px; border-radius: 8px; color: var(--ab-fg); display: flex; align-items: center; gap: 6px; }
 .ab-tab.active, .ab-tab[aria-current="page"], .ab-tab:hover { background: var(--ab-bg-elev-2); }
 .ab-search { display: flex; gap: 8px; justify-content: flex-end; }
 
