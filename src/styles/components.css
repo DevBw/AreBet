@@ -1802,4 +1802,157 @@
   }
 }
 
+/* Error Boundary Styles */
+.ab-error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--ab-bg);
+  padding: 2rem;
+}
+
+.ab-error-boundary-content {
+  text-align: center;
+  max-width: 500px;
+  background: var(--ab-bg-elev-1);
+  border: 1px solid var(--ab-border);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: var(--ab-shadow);
+}
+
+.ab-error-boundary-content h2 {
+  color: var(--ab-error);
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.ab-error-boundary-content p {
+  color: var(--ab-muted);
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+}
+
+.ab-error-details {
+  margin-top: 2rem;
+  text-align: left;
+  background: var(--ab-bg-elev-2);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--ab-border);
+}
+
+.ab-error-details summary {
+  color: var(--ab-accent);
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ab-error-details pre {
+  background: var(--ab-bg);
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+/* Performance Optimizations */
+.ab-virtual-list {
+  position: relative;
+  overflow: hidden;
+}
+
+.ab-virtual-list-item {
+  position: absolute;
+  width: 100%;
+  transition: transform 0.1s ease;
+}
+
+/* Loading State Improvements */
+.ab-loader-skeleton {
+  background: linear-gradient(90deg, var(--ab-bg-elev-2) 25%, var(--ab-bg-elev-1) 50%, var(--ab-bg-elev-2) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive Image Loading */
+.ab-lazy-image {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ab-lazy-image.loaded {
+  opacity: 1;
+}
+
+/* Intersection Observer for lazy loading */
+.ab-intersection-observer {
+  min-height: 1px;
+}
+
+/* Performance Monitoring */
+.ab-performance-monitor {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--ab-bg-elev-1);
+  border: 1px solid var(--ab-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--ab-muted);
+  z-index: 1000;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.ab-performance-monitor:hover {
+  opacity: 1;
+}
+
+.ab-performance-metric {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.2rem 0;
+}
+
+.ab-performance-metric .value {
+  color: var(--ab-accent);
+  font-weight: 600;
+}
+
+/* Memory Usage Indicator */
+.ab-memory-indicator {
+  width: 100%;
+  height: 4px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.ab-memory-bar {
+  height: 100%;
+  background: var(--ab-accent);
+  transition: width 0.3s ease;
+}
+
+.ab-memory-bar.warning {
+  background: var(--ab-warning);
+}
+
+.ab-memory-bar.danger {
+  background: var(--ab-error);
+}
+
 

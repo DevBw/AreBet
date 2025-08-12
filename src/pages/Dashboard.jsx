@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import Card from '../components/Card.jsx';
 import Loader from '../components/Loader.jsx';
 import KPIChip from '../components/KPIChip.jsx';
@@ -8,6 +8,38 @@ import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
 import { useLeagues } from '../hooks/useLeagues';
 import { toISODate, addDays } from '../utils/date';
 
+// Virtual scrolling component for large lists
+function VirtualList({ items, itemHeight = 60, containerHeight = 400, renderItem }) {
+  const [scrollTop, setScrollTop] = useState(0);
+  const containerRef = useRef(null);
+
+  const visibleItemCount = Math.ceil(containerHeight / itemHeight);
+  const startIndex = Math.floor(scrollTop / itemHeight);
+  const endIndex = Math.min(startIndex + visibleItemCount + 1, items.length);
+
+  const visibleItems = items.slice(startIndex, endIndex);
+  const totalHeight = items.length * itemHeight;
+  const offsetY = startIndex * itemHeight;
+
+  const handleScroll = useCallback((e) => {
+    setScrollTop(e.target.scrollTop);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ height: containerHeight, overflow: 'auto' }}
+      onScroll={handleScroll}
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        <div style={{ transform: `translateY(${offsetY}px)` }}>
+          {visibleItems.map((item, index) => renderItem(item, startIndex + index))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { data: liveData, loading: liveLoading, error: liveError } = useLiveMatches();
   const today = toISODate();
@@ -15,11 +47,12 @@ export default function Dashboard() {
   const { data: fixturesData, loading: fixturesLoading, error: fixturesError } = useFixturesRange(today, nextWeek);
   const { data: leaguesData, loading: leaguesLoading } = useLeagues();
   
+  // Memoized data with proper fallbacks
   const live = useMemo(() => liveData?.response ?? [], [liveData]);
   const fixtures = useMemo(() => fixturesData?.response ?? [], [fixturesData]);
   const leagues = useMemo(() => leaguesData?.response ?? [], [leaguesData]);
   
-  // Calculate real stats from API data
+  // Optimized stats calculation
   const stats = useMemo(() => {
     const todayFixtures = fixtures.filter(match => {
       const matchDate = new Date(match.fixture?.date).toDateString();
@@ -35,35 +68,100 @@ export default function Dashboard() {
     };
   }, [live, fixtures, leagues]);
   
-  const [activeFilters, setActiveFilters] = useState({
-    premierLeague: true,
-    championsLeague: false,
-    laLiga: true,
-    serieA: false
-  });
-
-  // Get real league data for filters
+  // Optimized filters state
+  const [activeFilters, setActiveFilters] = useState(new Set());
+  
+  // Memoized available leagues with filtering
   const availableLeagues = useMemo(() => {
     if (!leaguesData?.response) return [];
-    return leaguesData.response.map(league => ({
-      id: league.league?.id,
-      name: league.league?.name,
-      country: league.country?.name,
-      isActive: league.seasons?.[0]?.current || false
-    }));
+    return leaguesData.response
+      .filter(league => league.seasons?.[0]?.current)
+      .slice(0, 8)
+      .map(league => ({
+        id: league.league?.id,
+        name: league.league?.name,
+        country: league.country?.name,
+        isActive: league.seasons?.[0]?.current || false
+      }));
   }, [leaguesData]);
   
+  // Optimized date range state
   const [dateRange, setDateRange] = useState({
-    from: 'Dec 15, 2024',
-    to: 'Dec 22, 2024'
+    from: today,
+    to: nextWeek
   });
 
-  const toggleFilter = (filter) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      [filter]: !prev[filter]
-    }));
-  };
+  // Memoized filter toggle function
+  const toggleFilter = useCallback((filter) => {
+    setActiveFilters(prev => {
+      const newFilters = new Set(prev);
+      if (newFilters.has(filter)) {
+        newFilters.delete(filter);
+      } else {
+        newFilters.add(filter);
+      }
+      return newFilters;
+    });
+  }, []);
+
+  // Memoized filtered fixtures
+  const filteredFixtures = useMemo(() => {
+    if (activeFilters.size === 0) return fixtures;
+    
+    return fixtures.filter(match => {
+      const leagueName = match.league?.name?.toLowerCase().replace(/\s+/g, '');
+      return activeFilters.has(leagueName);
+    });
+  }, [fixtures, activeFilters]);
+
+  // Memoized render functions for virtual scrolling
+  const renderFixtureItem = useCallback((match, index) => (
+    <div key={match.fixture?.id || index} className="upcoming-match">
+      <div className="match-time">
+        {new Date(match.fixture?.date).toLocaleDateString()}
+      </div>
+      <div className="match-teams-upcoming">
+        <div className="team-upcoming">
+          <span className="team-initial-upcoming">
+            {match.teams?.home?.name?.charAt(0) || 'H'}
+          </span>
+          {match.teams?.home?.name || 'Home Team'}
+        </div>
+        <span className="vs">VS</span>
+        <div className="team-upcoming">
+          <span className="team-initial-upcoming">
+            {match.teams?.away?.name?.charAt(0) || 'A'}
+          </span>
+          {match.teams?.away?.name || 'Away Team'}
+        </div>
+      </div>
+      <div className="match-league-upcoming">{match.league?.name || 'League'}</div>
+    </div>
+  ), []);
+
+  const renderLeagueItem = useCallback((league, index) => (
+    <label key={league.id || index} className="filter-toggle">
+      <input 
+        type="checkbox" 
+        checked={activeFilters.has(league.name?.toLowerCase().replace(/\s+/g, ''))}
+        onChange={() => toggleFilter(league.name?.toLowerCase().replace(/\s+/g, ''))}
+      />
+      <span className="toggle-slider"></span>
+      {league.name}
+    </label>
+  ), [activeFilters, toggleFilter]);
+
+  // Auto-refresh optimization
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Only refresh if there are live matches
+      if (live.length > 0) {
+        window.location.reload();
+      }
+    }, 60000); // 1 minute
+
+    return () => clearInterval(interval);
+  }, [live.length]);
 
   return (
     <div className="new-dashboard">
@@ -77,19 +175,9 @@ export default function Dashboard() {
             {leaguesLoading ? (
               <div className="filter-loading">Loading leagues...</div>
             ) : (
-              <div className="filter-toggles">
-                {availableLeagues.slice(0, 6).map((league) => (
-                  <label key={league.id} className="filter-toggle">
-                    <input 
-                      type="checkbox" 
-                      checked={activeFilters[league.name?.toLowerCase().replace(/\s+/g, '')] || false}
-                      onChange={() => toggleFilter(league.name?.toLowerCase().replace(/\s+/g, ''))}
-                    />
-                    <span className="toggle-slider"></span>
-                    {league.name}
-                  </label>
-                ))}
-              </div>
+            <div className="filter-toggles">
+                {availableLeagues.map(renderLeagueItem)}
+            </div>
             )}
           </div>
 
@@ -97,12 +185,22 @@ export default function Dashboard() {
             <h4 className="filter-group-title">Date Range</h4>
             <div className="date-inputs">
               <div className="date-input-group">
-                <label>From: {dateRange.from}</label>
-                <input type="date" className="date-input" />
+                <label>From: {new Date(dateRange.from).toLocaleDateString()}</label>
+                <input 
+                  type="date" 
+                  className="date-input"
+                  value={dateRange.from}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                />
               </div>
               <div className="date-input-group">
-                <label>To: {dateRange.to}</label>
-                <input type="date" className="date-input" />
+                <label>To: {new Date(dateRange.to).toLocaleDateString()}</label>
+                <input 
+                  type="date" 
+                  className="date-input"
+                  value={dateRange.to}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                />
               </div>
             </div>
           </div>
@@ -112,8 +210,8 @@ export default function Dashboard() {
             {fixturesLoading ? (
               <div className="teams-loading">Loading teams...</div>
             ) : (
-              <div className="favorite-teams">
-                {fixtures.slice(0, 4).map((match) => {
+            <div className="favorite-teams">
+                {filteredFixtures.slice(0, 4).map((match) => {
                   const homeTeam = match.teams?.home;
                   const awayTeam = match.teams?.away;
                   return (
@@ -122,10 +220,10 @@ export default function Dashboard() {
                         <div className="team-chip">
                           <span className="team-initial">{homeTeam.name?.charAt(0) || 'T'}</span>
                           {homeTeam.name || 'Team'}
-                        </div>
+              </div>
                       )}
                       {awayTeam && (
-                        <div className="team-chip">
+              <div className="team-chip">
                           <span className="team-initial">{awayTeam.name?.charAt(0) || 'T'}</span>
                           {awayTeam.name || 'Team'}
                         </div>
@@ -264,50 +362,12 @@ export default function Dashboard() {
           {fixturesError && <ErrorState title="Failed to load fixtures" message="Please try again later" />}
           
           {!fixturesLoading && !fixturesError && (
-            <div className="upcoming-matches">
-              {fixtures.length > 0 ? (
-                fixtures.slice(0, 3).map((match) => {
-                  const matchDate = new Date(match.fixture?.date);
-                  const isToday = matchDate.toDateString() === new Date().toDateString();
-                  const isTomorrow = matchDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
-                  
-                  let timeDisplay = matchDate.toLocaleDateString() + ', ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                  if (isToday) timeDisplay = 'Today, ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                  if (isTomorrow) timeDisplay = 'Tomorrow, ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                  
-                  return (
-                    <div key={match.fixture?.id} className="upcoming-match">
-                      <div className="match-time">{timeDisplay}</div>
-                      <div className="match-teams-upcoming">
-                        <div className="team-upcoming">
-                          <span className="team-initial-upcoming">
-                            {match.teams?.home?.name?.charAt(0) || 'H'}
-                          </span>
-                          {match.teams?.home?.name || 'Home Team'}
-                        </div>
-                        <span className="vs">VS</span>
-                        <div className="team-upcoming">
-                          <span className="team-initial-upcoming">
-                            {match.teams?.away?.name?.charAt(0) || 'A'}
-                          </span>
-                          {match.teams?.away?.name || 'Away Team'}
-                        </div>
-                      </div>
-                      <div className="match-league-upcoming">{match.league?.name || 'League'}</div>
-                      <div className="match-venue">
-                        <span className="venue-label">Venue</span>
-                        <span className="venue-value">{match.fixture?.venue?.name || 'Stadium'}</span>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <ErrorState 
-                  title="No Upcoming Matches" 
-                  message="No fixtures scheduled for the next week." 
-                />
-              )}
-            </div>
+            <VirtualList
+              items={filteredFixtures}
+              itemHeight={60}
+              containerHeight={300}
+              renderItem={renderFixtureItem}
+            />
           )}
         </div>
       </main>
@@ -322,25 +382,25 @@ export default function Dashboard() {
             {fixturesLoading ? (
               <div className="stats-loading">Loading statistics...</div>
             ) : (
-              <div className="trending-stats">
-                <div className="trending-stat">
+            <div className="trending-stats">
+              <div className="trending-stat">
                   <span className="stat-name">Total Matches</span>
                   <span className="stat-number">{fixtures.length}</span>
-                  <div className="stat-bar">
+                <div className="stat-bar">
                     <div className="stat-progress" style={{width: `${Math.min((fixtures.length / 50) * 100, 100)}%`}}></div>
                   </div>
-                </div>
-                <div className="trending-stat">
+              </div>
+              <div className="trending-stat">
                   <span className="stat-name">Live Matches</span>
                   <span className="stat-number">{live.length}</span>
-                  <div className="stat-bar">
+                <div className="stat-bar">
                     <div className="stat-progress" style={{width: `${live.length > 0 ? 100 : 0}%`}}></div>
                   </div>
-                </div>
-                <div className="trending-stat">
+              </div>
+              <div className="trending-stat">
                   <span className="stat-name">Active Leagues</span>
                   <span className="stat-number">{leagues.length}</span>
-                  <div className="stat-bar">
+                <div className="stat-bar">
                     <div className="stat-progress" style={{width: `${Math.min((leagues.length / 20) * 100, 100)}%`}}></div>
                   </div>
                 </div>

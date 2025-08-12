@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout.jsx';
 import Loader from './components/Loader.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Matches = lazy(() => import('./pages/Matches.jsx'));
@@ -20,28 +21,30 @@ const Players = lazy(() => import('./pages/Players.jsx'));
 
 export default function App() {
   return (
-    <MainLayout>
-      <Suspense fallback={<Loader label="Loading page" />}> 
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/matches" element={<Matches />} />
-          <Route path="/live" element={<LiveMatches />} />
-          <Route path="/fixtures" element={<Fixtures />} />
-          <Route path="/leagues" element={<Leagues />} />
-          <Route path="/teams" element={<Teams />} />
-          <Route path="/players" element={<Players />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/predictions" element={<Predictions />} />
-          <Route path="/trends" element={<Trends />} />
-          <Route path="/match/:matchId" element={<MatchDetail />} />
-          <Route path="/team/:teamId" element={<TeamProfile />} />
-          <Route path="/league/:leagueId" element={<LeagueDetail />} />
-          <Route path="/player/:playerId" element={<PlayerProfile />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Suspense>
-    </MainLayout>
+    <ErrorBoundary>
+      <MainLayout>
+        <Suspense fallback={<Loader label="Loading page" />}> 
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/matches" element={<Matches />} />
+            <Route path="/live" element={<LiveMatches />} />
+            <Route path="/fixtures" element={<Fixtures />} />
+            <Route path="/leagues" element={<Leagues />} />
+            <Route path="/teams" element={<Teams />} />
+            <Route path="/players" element={<Players />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/predictions" element={<Predictions />} />
+            <Route path="/trends" element={<Trends />} />
+            <Route path="/match/:matchId" element={<MatchDetail />} />
+            <Route path="/team/:teamId" element={<TeamProfile />} />
+            <Route path="/league/:leagueId" element={<LeagueDetail />} />
+            <Route path="/player/:playerId" element={<PlayerProfile />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Suspense>
+      </MainLayout>
+    </ErrorBoundary>
   );
 }
 
