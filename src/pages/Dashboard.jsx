@@ -41,6 +41,17 @@ export default function Dashboard() {
     laLiga: true,
     serieA: false
   });
+
+  // Get real league data for filters
+  const availableLeagues = useMemo(() => {
+    if (!leaguesData?.response) return [];
+    return leaguesData.response.map(league => ({
+      id: league.league?.id,
+      name: league.league?.name,
+      country: league.country?.name,
+      isActive: league.seasons?.[0]?.current || false
+    }));
+  }, [leaguesData]);
   
   const [dateRange, setDateRange] = useState({
     from: 'Dec 15, 2024',
@@ -63,44 +74,23 @@ export default function Dashboard() {
           
           <div className="filter-group">
             <h4 className="filter-group-title">Tournaments</h4>
-            <div className="filter-toggles">
-              <label className="filter-toggle">
-                <input 
-                  type="checkbox" 
-                  checked={activeFilters.premierLeague}
-                  onChange={() => toggleFilter('premierLeague')}
-                />
-                <span className="toggle-slider"></span>
-                Premier League
-              </label>
-              <label className="filter-toggle">
-                <input 
-                  type="checkbox" 
-                  checked={activeFilters.championsLeague}
-                  onChange={() => toggleFilter('championsLeague')}
-                />
-                <span className="toggle-slider"></span>
-                Champions League
-              </label>
-              <label className="filter-toggle">
-                <input 
-                  type="checkbox" 
-                  checked={activeFilters.laLiga}
-                  onChange={() => toggleFilter('laLiga')}
-                />
-                <span className="toggle-slider"></span>
-                La Liga
-              </label>
-              <label className="filter-toggle">
-                <input 
-                  type="checkbox" 
-                  checked={activeFilters.serieA}
-                  onChange={() => toggleFilter('serieA')}
-                />
-                <span className="toggle-slider"></span>
-                Serie A
-              </label>
-            </div>
+            {leaguesLoading ? (
+              <div className="filter-loading">Loading leagues...</div>
+            ) : (
+              <div className="filter-toggles">
+                {availableLeagues.slice(0, 6).map((league) => (
+                  <label key={league.id} className="filter-toggle">
+                    <input 
+                      type="checkbox" 
+                      checked={activeFilters[league.name?.toLowerCase().replace(/\s+/g, '')] || false}
+                      onChange={() => toggleFilter(league.name?.toLowerCase().replace(/\s+/g, ''))}
+                    />
+                    <span className="toggle-slider"></span>
+                    {league.name}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="filter-group">
@@ -118,17 +108,33 @@ export default function Dashboard() {
           </div>
 
           <div className="filter-group">
-            <h4 className="filter-group-title">Favorite Teams</h4>
-            <div className="favorite-teams">
-              <div className="team-chip team-chip-active">
-                <span className="team-initial">M</span>
-                Manchester United
+            <h4 className="filter-group-title">Top Teams</h4>
+            {fixturesLoading ? (
+              <div className="teams-loading">Loading teams...</div>
+            ) : (
+              <div className="favorite-teams">
+                {fixtures.slice(0, 4).map((match) => {
+                  const homeTeam = match.teams?.home;
+                  const awayTeam = match.teams?.away;
+                  return (
+                    <React.Fragment key={`${match.fixture?.id}-teams`}>
+                      {homeTeam && (
+                        <div className="team-chip">
+                          <span className="team-initial">{homeTeam.name?.charAt(0) || 'T'}</span>
+                          {homeTeam.name || 'Team'}
+                        </div>
+                      )}
+                      {awayTeam && (
+                        <div className="team-chip">
+                          <span className="team-initial">{awayTeam.name?.charAt(0) || 'T'}</span>
+                          {awayTeam.name || 'Team'}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </div>
-              <div className="team-chip">
-                <span className="team-initial">C</span>
-                Chelsea FC
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </aside>
@@ -312,30 +318,34 @@ export default function Dashboard() {
           <h3 className="sidebar-title">Live Analytics</h3>
           
           <div className="trending-section">
-            <h4 className="subsection-title">Trending Now</h4>
-            <div className="trending-stats">
-              <div className="trending-stat">
-                <span className="stat-name">Goals per Match</span>
-                <span className="stat-number">2.7 avg</span>
-                <div className="stat-bar">
-                  <div className="stat-progress" style={{width: '75%'}}></div>
+            <h4 className="subsection-title">Match Statistics</h4>
+            {fixturesLoading ? (
+              <div className="stats-loading">Loading statistics...</div>
+            ) : (
+              <div className="trending-stats">
+                <div className="trending-stat">
+                  <span className="stat-name">Total Matches</span>
+                  <span className="stat-number">{fixtures.length}</span>
+                  <div className="stat-bar">
+                    <div className="stat-progress" style={{width: `${Math.min((fixtures.length / 50) * 100, 100)}%`}}></div>
+                  </div>
+                </div>
+                <div className="trending-stat">
+                  <span className="stat-name">Live Matches</span>
+                  <span className="stat-number">{live.length}</span>
+                  <div className="stat-bar">
+                    <div className="stat-progress" style={{width: `${live.length > 0 ? 100 : 0}%`}}></div>
+                  </div>
+                </div>
+                <div className="trending-stat">
+                  <span className="stat-name">Active Leagues</span>
+                  <span className="stat-number">{leagues.length}</span>
+                  <div className="stat-bar">
+                    <div className="stat-progress" style={{width: `${Math.min((leagues.length / 20) * 100, 100)}%`}}></div>
+                  </div>
                 </div>
               </div>
-              <div className="trending-stat">
-                <span className="stat-name">Clean Sheets</span>
-                <span className="stat-number">34%</span>
-                <div className="stat-bar">
-                  <div className="stat-progress" style={{width: '34%'}}></div>
-                </div>
-              </div>
-              <div className="trending-stat">
-                <span className="stat-name">Home Win Rate</span>
-                <span className="stat-number">45%</span>
-                <div className="stat-bar">
-                  <div className="stat-progress" style={{width: '45%'}}></div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="leagues-section">

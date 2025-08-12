@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import KPIChip from '../components/KPIChip.jsx';
 import Loader from '../components/Loader.jsx';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
+import { useLeagues } from '../hooks/useLeagues';
 import { toISODate, addDays } from '../utils/date';
 
 export default function Trends() {
@@ -10,6 +11,7 @@ export default function Trends() {
   const { data: liveData, loading: liveLoading } = useLiveMatches();
   const { data: recentData, loading: recentLoading } = useFixturesRange(addDays(today, -7), today);
   const { data: upcomingData, loading: upcomingLoading } = useFixturesRange(today, addDays(today, 7));
+  const { data: leaguesData } = useLeagues();
   
   const trendStats = useMemo(() => {
     const recentMatches = recentData?.response?.filter(m => m.fixture?.status?.short === 'FT') || [];
@@ -39,39 +41,82 @@ export default function Trends() {
     };
   }, [recentData]);
 
-  const hotTrends = useMemo(() => [
-    {
-      title: "Goals Galore Weekend",
-      description: "72% of weekend fixtures saw over 2.5 goals",
-      trend: "⬆️",
-      confidence: "High"
-    },
-    {
-      title: "Home Fortress",
-      description: "Premier League home teams winning 65% of matches",
-      trend: "⬆️", 
-      confidence: "Medium"
-    },
-    {
-      title: "Late Drama",
-      description: "45% of goals scored in final 30 minutes",
-      trend: "🔥",
-      confidence: "High"
-    },
-    {
-      title: "Derby Intensity",
-      description: "Local derbies averaging 3.2 cards per game",
-      trend: "⚡",
-      confidence: "Medium"
+  const hotTrends = useMemo(() => {
+    if (!recentData?.response || recentData.response.length === 0) {
+      return [
+        {
+          title: "No Recent Data",
+          description: "No matches played in the last 7 days",
+          trend: "📊",
+          confidence: "Low"
+        }
+      ];
     }
-  ], []);
 
-  const trackingTargets = [
-    { name: "Manchester City", type: "Team", form: "WWWWW", nextMatch: "vs Arsenal" },
-    { name: "Erling Haaland", type: "Player", stat: "12 goals in 8 games", team: "Man City" },
-    { name: "Premier League", type: "League", stat: "2.8 goals/game", trend: "⬆️" },
-    { name: "El Clasico", type: "Event", date: "Next Sunday", impact: "High" }
-  ];
+    const matches = recentData.response;
+    const totalMatches = matches.length;
+    const homeWins = matches.filter(match => 
+      match.goals?.home > match.goals?.away
+    ).length;
+    const highScoring = matches.filter(match => 
+      (match.goals?.home || 0) + (match.goals?.away || 0) > 2.5
+    ).length;
+
+    return [
+      {
+        title: "Match Activity",
+        description: `${totalMatches} matches analyzed in the last 7 days`,
+        trend: "📊",
+        confidence: "High"
+      },
+      {
+        title: "Home Advantage",
+        description: `${totalMatches > 0 ? Math.round((homeWins / totalMatches) * 100) : 0}% of home teams won`,
+        trend: "🏠",
+        confidence: "Medium"
+      },
+      {
+        title: "High Scoring",
+        description: `${totalMatches > 0 ? Math.round((highScoring / totalMatches) * 100) : 0}% of matches had over 2.5 goals`,
+        trend: "⚽",
+        confidence: "Medium"
+      },
+      {
+        title: "Data Coverage",
+        description: `Tracking ${leaguesData?.response?.length || 0} active competitions`,
+        trend: "🌍",
+        confidence: "High"
+      }
+    ];
+  }, [recentData, leaguesData]);
+
+  const trackingTargets = useMemo(() => {
+    if (!recentData?.response || recentData.response.length === 0) {
+      return [
+        { name: "No Data", type: "Status", stat: "No recent matches", trend: "📊" }
+      ];
+    }
+
+    const matches = recentData.response;
+    const topTeams = matches.reduce((acc, match) => {
+      const homeTeam = match.teams?.home?.name;
+      const awayTeam = match.teams?.away?.name;
+      if (homeTeam) acc[homeTeam] = (acc[homeTeam] || 0) + 1;
+      if (awayTeam) acc[awayTeam] = (acc[awayTeam] || 0) + 1;
+      return acc;
+    }, {});
+
+    const sortedTeams = Object.entries(topTeams)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3);
+
+    return sortedTeams.map(([teamName, matchCount]) => ({
+      name: teamName,
+      type: "Team",
+      stat: `${matchCount} matches tracked`,
+      trend: "📈"
+    }));
+  }, [recentData]);
 
   const isLoading = liveLoading || recentLoading || upcomingLoading;
 

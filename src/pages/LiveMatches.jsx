@@ -116,10 +116,10 @@ export default function LiveMatches() {
             onClick={() => setAutoRefresh(!autoRefresh)}
             aria-label={`${autoRefresh ? 'Disable' : 'Enable'} auto refresh`}
           >
-            {autoRefresh ? '⏸️ Pause' : '▶️ Resume'}
+            {autoRefresh ? 'Pause' : 'Resume'}
           </button>
           <button className="ab-button" onClick={refetch} aria-label="Refresh live matches">
-            🔄 Refresh
+            Refresh
           </button>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function LiveMatches() {
                     showExpanded={false}
                   />
                   {selectedMatch === match.fixture?.id && (
-                    <div className="selected-indicator">📺 Live Details Active</div>
+                    <div className="selected-indicator">Live Details Active</div>
                   )}
                 </div>
               ))}
@@ -228,7 +228,7 @@ export default function LiveMatches() {
                         <div className="event-player">{event.player?.name}</div>
                         {event.detail && <div className="event-detail">{event.detail}</div>}
                       </div>
-                      <div className="event-indicator">🔴</div>
+                                              <div className="event-indicator">●</div>
                     </div>
                   ))}
                 </div>

@@ -484,6 +484,16 @@
   font-weight: 600;
 }
 
+/* Loading States */
+.filter-loading,
+.teams-loading,
+.stats-loading {
+  padding: 1rem;
+  text-align: center;
+  color: var(--ab-muted);
+  font-style: italic;
+}
+
 /* Chart Placeholder */
 .chart-placeholder {
   background: var(--ab-bg-elev-1);

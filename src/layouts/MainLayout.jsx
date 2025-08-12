@@ -47,48 +47,32 @@ export default function MainLayout({ children }) {
   }, [refetchLive]);
 
   // Sample data for when no live matches are available
-  const sampleLiveData = [
-    {
-      id: 'sample-1',
-      homeTeam: 'Manchester City',
-      awayTeam: 'Liverpool',
-      homeScore: 2,
-      awayScore: 1,
-      status: 'LIVE',
-      elapsed: 78,
-      league: 'Premier League'
-    },
-    {
-      id: 'sample-2',
-      homeTeam: 'Real Madrid',
-      awayTeam: 'Barcelona',
-      homeScore: 1,
-      awayScore: 1,
-      status: 'LIVE',
-      elapsed: 65,
-      league: 'La Liga'
-    },
-    {
-      id: 'sample-3',
-      homeTeam: 'Bayern Munich',
-      awayTeam: 'Borussia Dortmund',
-      homeScore: 3,
-      awayScore: 0,
-      status: 'LIVE',
-      elapsed: 82,
-      league: 'Bundesliga'
-    }
-  ];
+  // Convert API data to live updates format
+  const convertToLiveUpdates = (apiData) => {
+    if (!apiData?.response) return [];
+    
+    return apiData.response.map(match => ({
+      id: match.fixture?.id?.toString() || `match-${Date.now()}`,
+      homeTeam: match.teams?.home?.name || 'Home Team',
+      awayTeam: match.teams?.away?.name || 'Away Team',
+      homeScore: match.goals?.home || 0,
+      awayScore: match.goals?.away || 0,
+      status: match.fixture?.status?.short || 'LIVE',
+      elapsed: match.fixture?.status?.elapsed || 0,
+      league: match.league?.name || 'League'
+    }));
+  };
 
   // Update live updates state
   useEffect(() => {
     if (liveUpdatesData.length > 0) {
       setLiveUpdates(liveUpdatesData);
     } else if (!liveLoading && !liveError) {
-      // Show sample data when no live matches but API call succeeded
-      setLiveUpdates(sampleLiveData);
+      // Convert API data to live updates format
+      const convertedData = convertToLiveUpdates(liveData);
+      setLiveUpdates(convertedData);
     }
-  }, [liveUpdatesData, liveLoading, liveError]);
+  }, [liveUpdatesData, liveLoading, liveError, liveData]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -289,9 +273,9 @@ export default function MainLayout({ children }) {
           <div className="ab-card">
             <h3 className="ab-card-title">Trending</h3>
             <ul className="ab-list">
-              <li>Premier League</li>
-              <li>La Liga</li>
-              <li>Serie A</li>
+                          {leaguesData?.response?.slice(0, 3).map((league) => (
+              <li key={league.league?.id}>{league.league?.name || 'League'}</li>
+            )) || <li>Loading leagues...</li>}
             </ul>
           </div>
         </aside>
