@@ -15,6 +15,8 @@ const Trends = lazy(() => import('./pages/Trends.jsx'));
 const MatchDetail = lazy(() => import('./pages/MatchDetail.jsx'));
 const TeamProfile = lazy(() => import('./pages/TeamProfile.jsx'));
 const LeagueDetail = lazy(() => import('./pages/LeagueDetail.jsx'));
+const PlayerProfile = lazy(() => import('./pages/PlayerProfile.jsx'));
+const Players = lazy(() => import('./pages/Players.jsx'));
 
 export default function App() {
   return (
@@ -28,12 +30,14 @@ export default function App() {
           <Route path="/fixtures" element={<Fixtures />} />
           <Route path="/leagues" element={<Leagues />} />
           <Route path="/teams" element={<Teams />} />
+          <Route path="/players" element={<Players />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/trends" element={<Trends />} />
           <Route path="/match/:matchId" element={<MatchDetail />} />
           <Route path="/team/:teamId" element={<TeamProfile />} />
           <Route path="/league/:leagueId" element={<LeagueDetail />} />
+          <Route path="/player/:playerId" element={<PlayerProfile />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>

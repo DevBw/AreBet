@@ -5,22 +5,35 @@ import KPIChip from '../components/KPIChip.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import SmartMatchCard from '../components/SmartMatchCard.jsx';
 import { useLiveMatches, useFixturesRange } from '../hooks/useMatches';
-import { toISODate } from '../utils/date';
+import { useLeagues } from '../hooks/useLeagues';
+import { toISODate, addDays } from '../utils/date';
 
 export default function Dashboard() {
   const { data: liveData, loading: liveLoading, error: liveError } = useLiveMatches();
   const today = toISODate();
-  const { data: fixturesData, loading: fixturesLoading, error: fixturesError } = useFixturesRange(today, today);
+  const nextWeek = addDays(today, 7);
+  const { data: fixturesData, loading: fixturesLoading, error: fixturesError } = useFixturesRange(today, nextWeek);
+  const { data: leaguesData, loading: leaguesLoading } = useLeagues();
+  
   const live = useMemo(() => liveData?.response ?? [], [liveData]);
   const fixtures = useMemo(() => fixturesData?.response ?? [], [fixturesData]);
+  const leagues = useMemo(() => leaguesData?.response ?? [], [leaguesData]);
   
-  // Mock data for demo purposes
-  const mockStats = {
-    liveMatches: 24,
-    teamsAnalyzed: 156,
-    predictionRate: 87.3,
-    activeTournaments: 12
-  };
+  // Calculate real stats from API data
+  const stats = useMemo(() => {
+    const todayFixtures = fixtures.filter(match => {
+      const matchDate = new Date(match.fixture?.date).toDateString();
+      const todayDate = new Date().toDateString();
+      return matchDate === todayDate;
+    });
+    
+    return {
+      liveMatches: live.length,
+      teamsAnalyzed: fixtures.length,
+      predictionRate: fixtures.length > 0 ? Math.round((live.length / fixtures.length) * 100 * 10) / 10 : 0,
+      activeTournaments: leagues.length
+    };
+  }, [live, fixtures, leagues]);
   
   const [activeFilters, setActiveFilters] = useState({
     premierLeague: true,
@@ -130,42 +143,42 @@ export default function Dashboard() {
         {/* Stats Cards */}
         <div className="stats-grid">
           <div className="stat-card stat-card-green">
-            <div className="stat-icon">⚽</div>
+            <div className="stat-icon">LIVE</div>
             <div className="stat-content">
               <div className="stat-label">Today</div>
-              <div className="stat-value">{mockStats.liveMatches}</div>
+              <div className="stat-value">{stats.liveMatches}</div>
               <div className="stat-detail">Live Matches</div>
-              <div className="stat-trend">• 8 in progress</div>
+              <div className="stat-trend">{stats.liveMatches > 0 ? `${stats.liveMatches} in progress` : 'No live matches'}</div>
             </div>
           </div>
           
           <div className="stat-card stat-card-blue">
-            <div className="stat-icon">👥</div>
+            <div className="stat-icon">WEEK</div>
             <div className="stat-content">
               <div className="stat-label">This Week</div>
-              <div className="stat-value">{mockStats.teamsAnalyzed}</div>
-              <div className="stat-detail">Teams Analyzed</div>
-              <div className="stat-trend">+12% from last week</div>
+              <div className="stat-value">{stats.teamsAnalyzed}</div>
+              <div className="stat-detail">Fixtures Tracked</div>
+              <div className="stat-trend">{fixtures.length > 0 ? 'Updated live' : 'Loading data'}</div>
             </div>
           </div>
           
           <div className="stat-card stat-card-purple">
-            <div className="stat-icon">📊</div>
+            <div className="stat-icon">RATE</div>
             <div className="stat-content">
-              <div className="stat-label">Accuracy</div>
-              <div className="stat-value">{mockStats.predictionRate}%</div>
-              <div className="stat-detail">Prediction Rate</div>
-              <div className="stat-trend">+2.1% improvement</div>
+              <div className="stat-label">Activity</div>
+              <div className="stat-value">{stats.predictionRate}%</div>
+              <div className="stat-detail">Match Coverage</div>
+              <div className="stat-trend">{leagues.length > 0 ? 'Real-time data' : 'Loading leagues'}</div>
             </div>
           </div>
           
           <div className="stat-card stat-card-orange">
-            <div className="stat-icon">🏆</div>
+            <div className="stat-icon">COMP</div>
             <div className="stat-content">
               <div className="stat-label">Active</div>
-              <div className="stat-value">{mockStats.activeTournaments}</div>
-              <div className="stat-detail">Tournaments</div>
-              <div className="stat-trend">Across 8 countries</div>
+              <div className="stat-value">{stats.activeTournaments}</div>
+              <div className="stat-detail">Competitions</div>
+              <div className="stat-trend">{leagues.length > 0 ? 'Multiple countries' : 'Loading data'}</div>
             </div>
           </div>
         </div>
@@ -178,7 +191,7 @@ export default function Dashboard() {
           </div>
           
           {liveLoading && <Loader label="Loading live matches" />}
-          {liveError && <ErrorState title="Failed to load matches" message="Please try again later" icon="⚽" />}
+          {liveError && <ErrorState title="Failed to load matches" message="Please try again later" />}
           
           {!liveLoading && !liveError && (
             <div className="live-matches-grid">
@@ -186,52 +199,41 @@ export default function Dashboard() {
                 live.slice(0, 2).map((match) => (
                   <div key={match.fixture?.id} className="live-match-card">
                     <div className="match-header">
-                      <span className="match-status">LIVE - 67'</span>
-                      <span className="match-league">Premier League</span>
+                      <span className="match-status">
+                        LIVE - {match.fixture?.status?.elapsed || 0}'
+                      </span>
+                      <span className="match-league">{match.league?.name || 'League'}</span>
                     </div>
                     <div className="match-teams">
                       <div className="team team-home">
-                        <span className="team-initial">M</span>
-                        <span className="team-name">{match.teams?.home?.name || 'Manchester United'}</span>
+                        <span className="team-initial">
+                          {match.teams?.home?.name?.charAt(0) || 'H'}
+                        </span>
+                        <span className="team-name">{match.teams?.home?.name || 'Home Team'}</span>
                       </div>
                       <div className="match-score">
-                        <span className="score">{match.goals?.home || 2} - {match.goals?.away || 1}</span>
+                        <span className="score">
+                          {match.goals?.home || 0} - {match.goals?.away || 0}
+                        </span>
                       </div>
                       <div className="team team-away">
-                        <span className="team-initial">C</span>
-                        <span className="team-name">{match.teams?.away?.name || 'Chelsea FC'}</span>
+                        <span className="team-initial">
+                          {match.teams?.away?.name?.charAt(0) || 'A'}
+                        </span>
+                        <span className="team-name">{match.teams?.away?.name || 'Away Team'}</span>
                       </div>
                     </div>
                     <div className="match-footer">
-                      <span className="next-goal">Next Goal Probability</span>
-                      <span className="probability">Manchester United 65%</span>
+                      <span className="venue">Venue: {match.fixture?.venue?.name || 'Stadium'}</span>
+                      <span className="status">{match.fixture?.status?.long || 'In Progress'}</span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="sample-live-match">
-                  <div className="match-header">
-                    <span className="match-status">LIVE - 67'</span>
-                    <span className="match-league">Premier League</span>
-                  </div>
-                  <div className="match-teams">
-                    <div className="team team-home">
-                      <span className="team-initial">M</span>
-                      <span className="team-name">Manchester United</span>
-                    </div>
-                    <div className="match-score">
-                      <span className="score">2 - 1</span>
-                    </div>
-                    <div className="team team-away">
-                      <span className="team-initial">C</span>
-                      <span className="team-name">Chelsea FC</span>
-                    </div>
-                  </div>
-                  <div className="match-footer">
-                    <span className="next-goal">Next Goal Probability</span>
-                    <span className="probability">Manchester United 65%</span>
-                  </div>
-                </div>
+                <ErrorState 
+                  title="No Live Matches" 
+                  message="There are currently no live matches. Check back during match days." 
+                />
               )}
             </div>
           )}
@@ -243,7 +245,7 @@ export default function Dashboard() {
             <h2 className="section-title">Team Performance Trends</h2>
           </div>
           <div className="chart-placeholder">
-            <div className="chart-icon">📈</div>
+            <div className="chart-icon">CHART</div>
             <div className="chart-text">Performance analytics chart would be displayed here</div>
             <div className="chart-subtext">Real-time data visualization</div>
           </div>
@@ -252,47 +254,55 @@ export default function Dashboard() {
         {/* Upcoming Matches */}
         <div className="upcoming-section">
           <h2 className="section-title">Upcoming Matches</h2>
-          <div className="upcoming-matches">
-            <div className="upcoming-match">
-              <div className="match-time">Tomorrow, 15:30</div>
-              <div className="match-teams-upcoming">
-                <div className="team-upcoming">
-                  <span className="team-initial-upcoming">L</span>
-                  Liverpool FC
-                </div>
-                <span className="vs">VS</span>
-                <div className="team-upcoming">
-                  <span className="team-initial-upcoming">D</span>
-                  Borussia Dortmund
-                </div>
-              </div>
-              <div className="match-league-upcoming">Champions League</div>
-              <div className="win-probability">
-                <span className="probability-label">Win Probability</span>
-                <span className="probability-value">Liverpool 72%</span>
-              </div>
+          {fixturesLoading && <Loader label="Loading upcoming matches" />}
+          {fixturesError && <ErrorState title="Failed to load fixtures" message="Please try again later" />}
+          
+          {!fixturesLoading && !fixturesError && (
+            <div className="upcoming-matches">
+              {fixtures.length > 0 ? (
+                fixtures.slice(0, 3).map((match) => {
+                  const matchDate = new Date(match.fixture?.date);
+                  const isToday = matchDate.toDateString() === new Date().toDateString();
+                  const isTomorrow = matchDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
+                  
+                  let timeDisplay = matchDate.toLocaleDateString() + ', ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                  if (isToday) timeDisplay = 'Today, ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                  if (isTomorrow) timeDisplay = 'Tomorrow, ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                  
+                  return (
+                    <div key={match.fixture?.id} className="upcoming-match">
+                      <div className="match-time">{timeDisplay}</div>
+                      <div className="match-teams-upcoming">
+                        <div className="team-upcoming">
+                          <span className="team-initial-upcoming">
+                            {match.teams?.home?.name?.charAt(0) || 'H'}
+                          </span>
+                          {match.teams?.home?.name || 'Home Team'}
+                        </div>
+                        <span className="vs">VS</span>
+                        <div className="team-upcoming">
+                          <span className="team-initial-upcoming">
+                            {match.teams?.away?.name?.charAt(0) || 'A'}
+                          </span>
+                          {match.teams?.away?.name || 'Away Team'}
+                        </div>
+                      </div>
+                      <div className="match-league-upcoming">{match.league?.name || 'League'}</div>
+                      <div className="match-venue">
+                        <span className="venue-label">Venue</span>
+                        <span className="venue-value">{match.fixture?.venue?.name || 'Stadium'}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <ErrorState 
+                  title="No Upcoming Matches" 
+                  message="No fixtures scheduled for the next week." 
+                />
+              )}
             </div>
-            
-            <div className="upcoming-match">
-              <div className="match-time">Dec 20, 18:00</div>
-              <div className="match-teams-upcoming">
-                <div className="team-upcoming">
-                  <span className="team-initial-upcoming">J</span>
-                  Juventus FC
-                </div>
-                <span className="vs">VS</span>
-                <div className="team-upcoming">
-                  <span className="team-initial-upcoming">M</span>
-                  AC Milan
-                </div>
-              </div>
-              <div className="match-league-upcoming">Serie A</div>
-              <div className="expected-goals">
-                <span className="goals-label">Expected Goals</span>
-                <span className="goals-value">2.3 - 1.8</span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </main>
 
@@ -328,103 +338,78 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="top-performers-section">
-            <h4 className="subsection-title">Top Performers</h4>
-            <div className="performers-list">
-              <div className="performer-item">
-                <div className="performer-rank">1</div>
-                <div className="performer-info">
-                  <span className="performer-name">Erling Haaland</span>
-                  <span className="performer-team">Manchester City</span>
-                </div>
-                <div className="performer-stat">
-                  <span className="stat-value">18</span>
-                  <span className="stat-label">Goals</span>
-                </div>
+          <div className="leagues-section">
+            <h4 className="subsection-title">Active Leagues</h4>
+            {leaguesLoading && <Loader label="Loading leagues" size="small" />}
+            {!leaguesLoading && (
+              <div className="leagues-list">
+                {leagues.slice(0, 5).map((league, index) => (
+                  <div key={league.league?.id} className="league-item">
+                    <div className="league-rank">{index + 1}</div>
+                    <div className="league-info">
+                      <span className="league-name">{league.league?.name || 'League'}</span>
+                      <span className="league-country">{league.country?.name || 'Country'}</span>
+                    </div>
+                    <div className="league-status">
+                      <span className="season">{league.seasons?.[0]?.year || 'Season'}</span>
+                    </div>
+                  </div>
+                ))}
+                {leagues.length === 0 && (
+                  <div className="no-data">No leagues available</div>
+                )}
               </div>
-              <div className="performer-item">
-                <div className="performer-rank">2</div>
-                <div className="performer-info">
-                  <span className="performer-name">Harry Kane</span>
-                  <span className="performer-team">Bayern Munich</span>
-                </div>
-                <div className="performer-stat">
-                  <span className="stat-value">16</span>
-                  <span className="stat-label">Goals</span>
-                </div>
-              </div>
-              <div className="performer-item">
-                <div className="performer-rank">3</div>
-                <div className="performer-info">
-                  <span className="performer-name">Kylian Mbappé</span>
-                  <span className="performer-team">Real Madrid</span>
-                </div>
-                <div className="performer-stat">
-                  <span className="stat-value">14</span>
-                  <span className="stat-label">Goals</span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="league-table-section">
-            <h4 className="subsection-title">Premier League Top 5</h4>
-            <div className="league-table">
-              <div className="table-row">
-                <span className="position">1</span>
-                <span className="team-name">Liverpool</span>
-                <span className="points">45 pts</span>
-                <span className="form">+28</span>
+          <div className="fixtures-summary-section">
+            <h4 className="subsection-title">Upcoming This Week</h4>
+            {!fixturesLoading && (
+              <div className="fixtures-summary">
+                {fixtures.slice(0, 3).map((match, index) => {
+                  const matchDate = new Date(match.fixture?.date);
+                  return (
+                    <div key={match.fixture?.id} className="fixture-summary-item">
+                      <div className="fixture-date">
+                        {matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'})}
+                      </div>
+                      <div className="fixture-teams">
+                        <span className="team-short">{match.teams?.home?.name?.substring(0, 10) || 'Home'}</span>
+                        <span className="vs-small">vs</span>
+                        <span className="team-short">{match.teams?.away?.name?.substring(0, 10) || 'Away'}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                {fixtures.length === 0 && (
+                  <div className="no-data">No upcoming fixtures</div>
+                )}
               </div>
-              <div className="table-row">
-                <span className="position">2</span>
-                <span className="team-name">Arsenal</span>
-                <span className="points">42 pts</span>
-                <span className="form">+22</span>
-              </div>
-              <div className="table-row">
-                <span className="position">3</span>
-                <span className="team-name">Chelsea</span>
-                <span className="points">38 pts</span>
-                <span className="form">+18</span>
-              </div>
-              <div className="table-row">
-                <span className="position">4</span>
-                <span className="team-name">Manchester City</span>
-                <span className="points">35 pts</span>
-                <span className="form">+15</span>
-              </div>
-              <div className="table-row">
-                <span className="position">5</span>
-                <span className="team-name">Newcastle</span>
-                <span className="points">32 pts</span>
-                <span className="form">+8</span>
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="insights-section">
-            <h4 className="subsection-title">Today's Insights</h4>
+            <h4 className="subsection-title">System Status</h4>
             <div className="insight-cards">
-              <div className="insight-card insight-hot">
-                <div className="insight-icon">🔥</div>
+              <div className="insight-card">
+                <div className="insight-icon">LIVE</div>
                 <div className="insight-content">
-                  <div className="insight-title">Hot Streak</div>
-                  <div className="insight-text">Manchester United has won 5 consecutive matches</div>
+                  <div className="insight-title">Live Data</div>
+                  <div className="insight-text">{live.length > 0 ? `${live.length} matches currently live` : 'No live matches currently'}</div>
                 </div>
               </div>
-              <div className="insight-card insight-defensive">
-                <div className="insight-icon">🛡️</div>
+              <div className="insight-card">
+                <div className="insight-icon">DATA</div>
                 <div className="insight-content">
-                  <div className="insight-title">Defensive Record</div>
-                  <div className="insight-text">Arsenal hasn't conceded in last 3 games</div>
+                  <div className="insight-title">API Status</div>
+                  <div className="insight-text">{fixtures.length > 0 ? 'Connected and receiving data' : 'Loading fixture data'}</div>
                 </div>
               </div>
-              <div className="insight-card insight-accuracy">
-                <div className="insight-icon">🎯</div>
+              <div className="insight-card">
+                <div className="insight-icon">COMP</div>
                 <div className="insight-content">
-                  <div className="insight-title">Accuracy Alert</div>
-                  <div className="insight-text">87% of predictions were correct this week</div>
+                  <div className="insight-title">Coverage</div>
+                  <div className="insight-text">{leagues.length > 0 ? `Tracking ${leagues.length} competitions` : 'Loading competitions'}</div>
                 </div>
               </div>
             </div>

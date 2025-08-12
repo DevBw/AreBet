@@ -122,28 +122,24 @@ export default function MainLayout({ children }) {
           </div>
           <nav className="ab-nav" aria-label="Primary">
             <NavLink to="/dashboard" className="ab-tab" aria-label="Dashboard">
-              <span className="ab-tab-icon">📊</span>
               Dashboard
             </NavLink>
             <NavLink to="/live" className="ab-tab" aria-label="Live Matches">
-              <span className="ab-tab-icon">⚽</span>
               Matches
             </NavLink>
             <NavLink to="/teams" className="ab-tab" aria-label="Teams">
-              <span className="ab-tab-icon">👥</span>
               Teams
             </NavLink>
             <NavLink to="/statistics" className="ab-tab" aria-label="Analytics">
-              <span className="ab-tab-icon">📈</span>
               Analytics
             </NavLink>
           </nav>
           <div className="header-right">
             <button className="notification-btn" aria-label="Notifications">
-              🔔
+              Alerts
             </button>
             <button className="profile-btn" aria-label="Profile">
-              👤
+              Profile
             </button>
           </div>
         </header>
@@ -164,19 +160,15 @@ export default function MainLayout({ children }) {
         </div>
         <nav className="ab-nav" aria-label="Primary">
           <NavLink to="/dashboard" className="ab-tab" aria-label="Dashboard">
-            <span className="ab-tab-icon">📊</span>
             Dashboard
           </NavLink>
           <NavLink to="/live" className="ab-tab" aria-label="Live Matches">
-            <span className="ab-tab-icon">⚽</span>
             Matches
           </NavLink>
           <NavLink to="/teams" className="ab-tab" aria-label="Teams">
-            <span className="ab-tab-icon">👥</span>
             Teams
           </NavLink>
           <NavLink to="/statistics" className="ab-tab" aria-label="Analytics">
-            <span className="ab-tab-icon">📈</span>
             Analytics
           </NavLink>
         </nav>
@@ -195,6 +187,7 @@ export default function MainLayout({ children }) {
               <li><NavLink to="/trends" role="tab" className="ab-list-link">Trends</NavLink></li>
               <li><NavLink to="/predictions" role="tab" className="ab-list-link">Predictions</NavLink></li>
               <li><NavLink to="/statistics" role="tab" className="ab-list-link">Statistics</NavLink></li>
+              <li><NavLink to="/players" role="tab" className="ab-list-link">Players</NavLink></li>
             </ul>
           </div>
           <div className="ab-card">
@@ -310,6 +303,7 @@ export default function MainLayout({ children }) {
           <NavLink to="/live" className="ab-bottom-link">Live</NavLink>
           <NavLink to="/matches" className="ab-bottom-link">Matches</NavLink>
           <NavLink to="/leagues" className="ab-bottom-link">Leagues</NavLink>
+          <NavLink to="/players" className="ab-bottom-link">Players</NavLink>
         </nav>
       </footer>
     </div>

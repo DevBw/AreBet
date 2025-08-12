@@ -292,8 +292,13 @@
 .stat-card-orange::before { background: var(--ab-warning); }
 
 .stat-icon {
-  font-size: 2.5rem;
-  opacity: 0.9;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ab-accent);
+  background: var(--ab-accent-soft);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ab-accent);
 }
 
 .stat-content {
@@ -492,8 +497,13 @@
 }
 
 .chart-icon {
-  font-size: 3rem;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--ab-accent);
+  background: var(--ab-accent-soft);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--ab-accent);
 }
 
 .chart-text {
@@ -599,6 +609,36 @@
   font-weight: 600;
   font-size: 0.85rem;
   font-family: monospace;
+}
+
+.match-venue,
+.venue-label,
+.venue-value {
+  text-align: right;
+}
+
+.venue-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ab-muted);
+  margin-bottom: 2px;
+}
+
+.venue-value {
+  color: var(--ab-fg);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.venue {
+  color: var(--ab-muted);
+  font-size: 0.8rem;
+}
+
+.status {
+  color: var(--ab-accent);
+  font-weight: 500;
+  font-size: 0.8rem;
 }
 
 /* Right Sidebar */
@@ -825,6 +865,125 @@
   font-size: 0.75rem;
   color: var(--ab-fg);
   line-height: 1.3;
+}
+
+/* Leagues Section */
+.leagues-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.league-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 8px;
+  border: 1px solid var(--ab-border);
+  transition: all 0.2s ease;
+}
+
+.league-item:hover {
+  border-color: var(--ab-accent);
+  background: var(--ab-accent-soft);
+}
+
+.league-rank {
+  width: 24px;
+  height: 24px;
+  background: var(--ab-accent);
+  color: #08130d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.league-info {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.league-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ab-fg);
+}
+
+.league-country {
+  font-size: 0.75rem;
+  color: var(--ab-muted);
+}
+
+.league-status {
+  text-align: right;
+}
+
+.season {
+  font-size: 0.75rem;
+  color: var(--ab-accent);
+  font-weight: 500;
+}
+
+/* Fixtures Summary Section */
+.fixtures-summary {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.fixture-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--ab-bg-elev-2);
+  border-radius: 6px;
+  border: 1px solid var(--ab-border);
+  transition: all 0.2s ease;
+}
+
+.fixture-summary-item:hover {
+  border-color: var(--ab-accent);
+  background: var(--ab-accent-soft);
+}
+
+.fixture-date {
+  font-size: 0.75rem;
+  color: var(--ab-accent);
+  font-weight: 600;
+  min-width: 45px;
+}
+
+.fixture-teams {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.team-short {
+  font-size: 0.7rem;
+  color: var(--ab-fg);
+  font-weight: 500;
+}
+
+.vs-small {
+  font-size: 0.6rem;
+  color: var(--ab-muted);
+}
+
+.no-data {
+  text-align: center;
+  color: var(--ab-muted);
+  font-size: 0.8rem;
+  padding: 16px;
+  font-style: italic;
 }
 
 /* Mobile Responsiveness */
