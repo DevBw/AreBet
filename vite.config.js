@@ -51,46 +51,13 @@ export default defineConfig({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-football-cache',
-              expiration: { maxEntries: 100, maxAgeSeconds: 300 }, // 5 minutes
-              cacheKeyWillBeUsed: async ({ request }) => {
-                const url = new URL(request.url);
-                // Remove timestamp parameters for better caching
-                url.searchParams.delete('_t');
-                return url.toString();
-              }
-            },
-          },
-          {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 600 }, // 10 minutes
-            },
-          },
-          {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'images-cache',
-              expiration: { maxEntries: 200, maxAgeSeconds: 86400 }, // 24 hours
-            },
-          },
-          {
-            urlPattern: /\.(?:css|js)$/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'static-assets-cache',
-              expiration: { maxEntries: 100, maxAgeSeconds: 86400 }, // 24 hours
-            },
+              expiration: { maxEntries: 100, maxAgeSeconds: 300 }
+            }
           }
         ],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
-        // Enable offline fallback
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//],
+        skipWaiting: true
       },
       devOptions: { 
         enabled: process.env.NODE_ENV === 'development',
