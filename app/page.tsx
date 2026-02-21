@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { TierBadge } from "@/components/features/tier-badge";
+import { Card } from "@/components/ui/card";
 
 export default function HomePage() {
   return (
@@ -36,35 +38,38 @@ export default function HomePage() {
       </section>
 
       <section className="cards-grid" aria-label="Membership tiers">
-        <article className="panel">
+        <Card>
           <h2>Free</h2>
           <p className="price">$0</p>
+          <TierBadge label="Starter" />
           <ul>
             <li>Basic live scores</li>
             <li>Match information</li>
             <li>League standings</li>
           </ul>
-        </article>
-        <article className="panel panel-accent">
+        </Card>
+        <Card className="panel-accent">
           <h2>Pro</h2>
           <p className="price">$7.99/mo</p>
+          <TierBadge label="Most Popular" />
           <ul>
             <li>AI predictions</li>
             <li>Odds comparison</li>
             <li>Deep match statistics</li>
             <li>Favorites and live events</li>
           </ul>
-        </article>
-        <article className="panel">
+        </Card>
+        <Card>
           <h2>Elite</h2>
           <p className="price">$12.99/mo</p>
+          <TierBadge label="Advanced" />
           <ul>
             <li>Advanced prediction engine</li>
             <li>AI insights and bet builder</li>
             <li>Push notifications</li>
             <li>Priority support</li>
           </ul>
-        </article>
+        </Card>
       </section>
 
       <section className="quick-links" aria-label="Quick links">

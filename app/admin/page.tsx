@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
 
 type Flags = {
   compactCards: boolean;
@@ -21,7 +22,7 @@ export default function AdminPage() {
 
   return (
     <main className="page-wrap">
-      <section className="panel">
+      <Card>
         <h1>Admin Console</h1>
         <p className="muted">Feature controls for front-end behavior and visual presentation.</p>
         <div className="flag-list">
@@ -38,7 +39,7 @@ export default function AdminPage() {
             <input type="checkbox" checked={flags.highlightHighConfidence} onChange={() => toggleFlag("highlightHighConfidence")} />
           </label>
         </div>
-      </section>
+      </Card>
     </main>
   );
 }

@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SelectField } from "@/components/ui/select-field";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TextInput } from "@/components/ui/text-input";
 
 type MatchStatus = "LIVE" | "UPCOMING" | "FINISHED";
 
@@ -29,6 +36,12 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<MatchStatus | "ALL">("ALL");
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 650);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredMatches = useMemo(() => {
     let data = MATCHES.filter((match) => {
@@ -82,70 +95,87 @@ export default function DashboardPage() {
         </article>
       </section>
 
-      <section className="controls panel" aria-label="Dashboard controls">
-        <label>
-          Search teams/leagues
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Try Arsenal or La Liga"
-          />
-        </label>
-        <label>
-          Status
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as MatchStatus | "ALL")}>
-            <option value="ALL">All</option>
-            <option value="LIVE">Live</option>
-            <option value="UPCOMING">Upcoming</option>
-            <option value="FINISHED">Finished</option>
-          </select>
-        </label>
-        <label>
-          Sort by
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as "confidence" | "kickoff")}>
-            <option value="confidence">Confidence</option>
-            <option value="kickoff">Kickoff Time</option>
-          </select>
-        </label>
-      </section>
+      <Card className="controls" title="Controls">
+        <TextInput
+          label="Search teams/leagues"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Try Arsenal or La Liga"
+        />
+        <SelectField
+          label="Status"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as MatchStatus | "ALL")}
+          options={[
+            { label: "All", value: "ALL" },
+            { label: "Live", value: "LIVE" },
+            { label: "Upcoming", value: "UPCOMING" },
+            { label: "Finished", value: "FINISHED" },
+          ]}
+        />
+        <SelectField
+          label="Sort by"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "confidence" | "kickoff")}
+          options={[
+            { label: "Confidence", value: "confidence" },
+            { label: "Kickoff Time", value: "kickoff" },
+          ]}
+        />
+      </Card>
 
-      <section className="cards-grid" aria-label="Match list">
-        {filteredMatches.map((match) => (
-          <article className="panel match-card" key={match.id}>
-            <div className="match-row">
-              <p className="match-league">{match.league}</p>
-              <button
-                type="button"
-                className="favorite-btn"
-                onClick={() => toggleFavorite(match.id)}
-                aria-pressed={favorites.has(match.id)}
-                title={favorites.has(match.id) ? "Remove favorite" : "Add favorite"}
-              >
-                {favorites.has(match.id) ? "Favored" : "Favorite"}
-              </button>
-            </div>
-            <h2>
-              {match.home} vs {match.away}
-            </h2>
-            <p className="match-meta">
-              <span className={`badge badge-${match.status.toLowerCase()}`}>
-                {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
-              </span>
-              <span>Kickoff: {match.kickoff}</span>
-            </p>
-            <div className="match-row">
-              <strong className="score">{match.score}</strong>
-              <span className="confidence">{match.confidence}% confidence</span>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      {!filteredMatches.length && (
-        <section className="panel">
-          <p>No matches match your current filters.</p>
+      {loading ? (
+        <section className="cards-grid" aria-label="Loading matches">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <Card key={idx} className="match-card">
+              <Skeleton className="skeleton-line w-40" />
+              <Skeleton className="skeleton-line w-full" />
+              <Skeleton className="skeleton-line w-28" />
+              <Skeleton className="skeleton-line w-20" />
+            </Card>
+          ))}
         </section>
+      ) : (
+        <section className="cards-grid" aria-label="Match list">
+          {filteredMatches.map((match) => (
+            <Card className="match-card" key={match.id}>
+              <div className="match-row">
+                <p className="match-league">{match.league}</p>
+                <Button
+                  type="button"
+                  variant="muted"
+                  className={`favorite-btn ${favorites.has(match.id) ? "is-favorite" : ""}`}
+                  onClick={() => toggleFavorite(match.id)}
+                  aria-pressed={favorites.has(match.id)}
+                  title={favorites.has(match.id) ? "Remove favorite" : "Add favorite"}
+                >
+                  {favorites.has(match.id) ? "Favored" : "Favorite"}
+                </Button>
+              </div>
+              <h2>
+                {match.home} vs {match.away}
+              </h2>
+              <p className="match-meta">
+                <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
+                  {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
+                </Badge>
+                <span>Kickoff: {match.kickoff}</span>
+              </p>
+              <div className="match-row">
+                <strong className="score">{match.score}</strong>
+                <span className="confidence">{match.confidence}% confidence</span>
+              </div>
+            </Card>
+          ))}
+        </section>
+      )}
+
+      {!loading && !filteredMatches.length && (
+        <EmptyState
+          title="No matches found"
+          description="No matches match your current filter and search selection. Try resetting controls."
+        />
       )}
     </main>
   );

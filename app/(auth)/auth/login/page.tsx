@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { TextInput } from "@/components/ui/text-input";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,37 +21,31 @@ export default function LoginPage() {
 
   return (
     <main className="page-wrap">
-      <section className="auth-panel panel">
+      <Card className="auth-panel">
         <h1>Login</h1>
         <p className="muted">Front-end validation only. Backend auth wiring is intentionally deferred.</p>
         <form onSubmit={onSubmit} className="auth-form">
-          <label>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-            />
-          </label>
-          {!emailValid && email.length > 0 && <p className="field-error">Enter a valid email address.</p>}
-
-          <label>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-              required
-            />
-          </label>
-          {!passwordValid && password.length > 0 && <p className="field-error">Password must be at least 8 characters.</p>}
-
-          <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
+          <TextInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            error={!emailValid && email.length > 0 ? "Enter a valid email address." : undefined}
+            required
+          />
+          <TextInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="At least 8 characters"
+            error={!passwordValid && password.length > 0 ? "Password must be at least 8 characters." : undefined}
+            required
+          />
+          <Button type="submit" disabled={!canSubmit}>
             Continue
-          </button>
+          </Button>
         </form>
 
         {submitted && canSubmit && (
@@ -56,7 +53,7 @@ export default function LoginPage() {
             Form validated successfully. Auth integration is next.
           </div>
         )}
-      </section>
+      </Card>
     </main>
   );
 }

@@ -1,7 +1,15 @@
-export function Card({ title, children }: { title: string; children: React.ReactNode }) {
+import { cn } from "@/lib/utils/cn";
+
+type CardProps = {
+  title?: string;
+  className?: string;
+  children: React.ReactNode;
+};
+
+export function Card({ title, className, children }: CardProps) {
   return (
-    <section style={{ border: "1px solid rgba(255,255,255,.15)", borderRadius: 12, padding: 16 }}>
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
+    <section className={cn("panel", className)}>
+      {title ? <h3 className="card-title">{title}</h3> : null}
       {children}
     </section>
   );

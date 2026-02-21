@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { MainNav } from "@/components/layout/main-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,14 +23,14 @@ export default function RootLayout({
               <Link href="/" className="brand">
                 AreBet
               </Link>
-              <nav className="site-nav" aria-label="Primary">
-                <Link href="/">Home</Link>
-                <Link href="/dashboard">Dashboard</Link>
-                <Link href="/auth/login">Login</Link>
-                <Link href="/admin">Admin</Link>
-              </nav>
+              <MainNav />
             </div>
           </header>
+          <div className="breadcrumbs-wrap">
+            <div className="site-header-inner">
+              <Breadcrumbs />
+            </div>
+          </div>
           {children}
           <footer className="site-footer">
             <div className="site-footer-inner">
