@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+:root {
+  --ab-pitch-green: #22c55e;
+  --ab-black: #000000;
+  --ab-soft-black: #111111;
+  --ab-white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(circle at top, #133119 0%, var(--ab-black) 45%);
+  color: var(--ab-white);
+}
+
+a {
+  color: var(--ab-pitch-green);
+  text-decoration: none;
+}
+
+.ab-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.ab-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1;
+}
+
+.ab-header p {
+  margin: 8px 0 0;
+  color: #d5d5d5;
+  font-size: 1rem;
+}
+
+.ab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.ab-card {
+  background: var(--ab-soft-black);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.ab-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.ab-price {
+  color: var(--ab-pitch-green);
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.ab-description {
+  margin: 0 0 10px;
+  color: #d0d0d0;
+  font-size: 0.9rem;
+}
+
+.ab-card ul {
+  margin: 0;
+  padding-left: 16px;
+  color: #f4f4f4;
+  font-size: 0.9rem;
+}
+
+.ab-links {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ab-links a {
+  background: #0a230f;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 999px;
+  padding: 8px 12px;
+}
