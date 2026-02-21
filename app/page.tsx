@@ -1,54 +1,76 @@
 import Link from "next/link";
 
-const tiers = [
-  {
-    name: "Free",
-    price: "$0",
-    description: "Basic live scores, match information, and league standings.",
-    features: ["Basic live scores", "Match information", "League standings"],
-  },
-  {
-    name: "Pro",
-    price: "$7.99/mo",
-    description: "AI predictions and deeper betting intelligence.",
-    features: ["AI predictions", "Odds comparison", "Deep match statistics", "Favorites", "Live events", "Ad-free"],
-  },
-  {
-    name: "Elite",
-    price: "$12.99/mo",
-    description: "Advanced engine for serious bettors.",
-    features: ["Everything in Pro", "Advanced prediction engine", "AI insights", "Bet builder assistant", "Push notifications", "Priority support"],
-  },
-];
-
 export default function HomePage() {
   return (
-    <main className="ab-shell">
-      <header className="ab-header">
-        <h1>AreBet</h1>
-        <p>Smart Betting. Simple Insights.</p>
-      </header>
-
-      <section className="ab-grid" aria-label="Membership tiers">
-        {tiers.map((tier) => (
-          <article key={tier.name} className="ab-card">
-            <h2>{tier.name}</h2>
-            <p className="ab-price">{tier.price}</p>
-            <p className="ab-description">{tier.description}</p>
-            <ul>
-              {tier.features.map((feature) => (
-                <li key={feature}>{feature}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
+    <main className="page-wrap">
+      <section className="hero">
+        <p className="eyebrow">Football Betting Intelligence Platform</p>
+        <h1>Smart Betting. Simple Insights.</h1>
+        <p className="hero-copy">
+          Track live momentum, compare markets, and spot value bets with a clean,
+          responsive workflow.
+        </p>
+        <div className="hero-actions">
+          <Link href="/dashboard" className="btn btn-primary">
+            Open Dashboard
+          </Link>
+          <Link href="/auth/login" className="btn btn-muted">
+            Sign In
+          </Link>
+        </div>
       </section>
 
-      <section className="ab-links" aria-label="Application sections">
+      <section className="kpi-strip" aria-label="Platform highlights">
+        <article className="kpi">
+          <span className="kpi-label">Coverage</span>
+          <strong>Top Leagues</strong>
+        </article>
+        <article className="kpi">
+          <span className="kpi-label">Updates</span>
+          <strong>Near Real-Time</strong>
+        </article>
+        <article className="kpi">
+          <span className="kpi-label">Plans</span>
+          <strong>Free / Pro / Elite</strong>
+        </article>
+      </section>
+
+      <section className="cards-grid" aria-label="Membership tiers">
+        <article className="panel">
+          <h2>Free</h2>
+          <p className="price">$0</p>
+          <ul>
+            <li>Basic live scores</li>
+            <li>Match information</li>
+            <li>League standings</li>
+          </ul>
+        </article>
+        <article className="panel panel-accent">
+          <h2>Pro</h2>
+          <p className="price">$7.99/mo</p>
+          <ul>
+            <li>AI predictions</li>
+            <li>Odds comparison</li>
+            <li>Deep match statistics</li>
+            <li>Favorites and live events</li>
+          </ul>
+        </article>
+        <article className="panel">
+          <h2>Elite</h2>
+          <p className="price">$12.99/mo</p>
+          <ul>
+            <li>Advanced prediction engine</li>
+            <li>AI insights and bet builder</li>
+            <li>Push notifications</li>
+            <li>Priority support</li>
+          </ul>
+        </article>
+      </section>
+
+      <section className="quick-links" aria-label="Quick links">
         <Link href="/dashboard">Dashboard</Link>
-        <Link href="/auth/login">Login</Link>
-        <Link href="/admin">Admin</Link>
-        <Link href="/api/health">API Health</Link>
+        <Link href="/admin">Admin Console</Link>
+        <Link href="/api/health">API Health Route</Link>
       </section>
     </main>
   );
