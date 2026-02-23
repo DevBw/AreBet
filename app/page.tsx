@@ -1,107 +1,82 @@
 import Link from "next/link";
-import { TierBadge } from "@/components/features/tier-badge";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { listMatches } from "@/lib/services/matches";
+import type { Match } from "@/types/match";
 
-export default function HomePage() {
+function kickoffTime(match: Match) {
+  return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+export default async function HomePage() {
+  const feed = await listMatches();
+  const matches = feed.matches;
+
+  const live = matches.filter((m) => m.status === "LIVE").length;
+  const upcoming = matches.filter((m) => m.status === "UPCOMING").length;
+  const topConfidence = matches.length ? Math.max(...matches.map((m) => m.prediction.confidence)) : 0;
+  const topPicks = [...matches]
+    .sort((a, b) => b.prediction.confidence - a.prediction.confidence)
+    .slice(0, 4);
+
   return (
     <main className="page-wrap">
-      <section className="hero">
-        <p className="eyebrow">Football Betting Intelligence Platform</p>
-        <h1>Smart Betting. Simple Insights.</h1>
-        <p className="hero-copy">
-          Track live momentum, compare markets, and spot value bets with a clean,
-          responsive workflow built for confident decisions.
-        </p>
-        <div className="hero-actions">
-          <Link href="/dashboard" className="btn btn-primary">
-            Open Dashboard
-          </Link>
-          <Link href="/auth/login" className="btn btn-muted">
-            Sign In
-          </Link>
+      <section className="dashboard-head">
+        <h1>AreBet Match Board</h1>
+        <p>Live-style decision board as the default landing experience.</p>
+        <div className="meta-row">
+          <span className="meta-pill">Source: {feed.source === "demo" ? "Demo Data" : "Live API"}</span>
+          <span className="meta-pill">Last updated: {new Date(feed.updatedAtISO).toLocaleTimeString()}</span>
         </div>
       </section>
 
-      <section className="kpi-strip" aria-label="Platform highlights">
+      <section className="kpi-strip" aria-label="Board KPIs">
         <article className="kpi">
-          <span className="kpi-label">Problem Solved</span>
-          <strong>Signal Overload</strong>
+          <span className="kpi-label">Live Matches</span>
+          <strong>{live}</strong>
         </article>
         <article className="kpi">
-          <span className="kpi-label">Solution</span>
-          <strong>Prioritized Match Insights</strong>
+          <span className="kpi-label">Upcoming</span>
+          <strong>{upcoming}</strong>
         </article>
         <article className="kpi">
-          <span className="kpi-label">Current Mode</span>
-          <strong>Demo Data (API-off)</strong>
+          <span className="kpi-label">Top Confidence</span>
+          <strong>{topConfidence}%</strong>
         </article>
       </section>
 
-      <section className="cards-grid" aria-label="Value proposition">
-        <Card>
-          <h2>Who This Is For</h2>
-          <ul>
-            <li>Bettors who want fast pre-match scanning.</li>
-            <li>Users who need structured confidence signals.</li>
-            <li>Anyone comparing outcomes across leagues.</li>
-          </ul>
-        </Card>
-        <Card>
-          <h2>How It Helps</h2>
-          <ul>
-            <li>Ranked match cards with confidence score.</li>
-            <li>Filter and sort controls for focus.</li>
-            <li>Detailed match page with odds and timeline.</li>
-          </ul>
-        </Card>
-        <Card>
-          <h2>Example Insight</h2>
-          <p className="price">Leverkusen vs Mainz</p>
-          <p className="muted">
-            High confidence home trend with strong recent form and early live momentum.
-          </p>
-        </Card>
+      <section className="cards-grid" aria-label="Top opportunities">
+        {topPicks.map((match) => (
+          <Card className="match-card" key={match.id}>
+            <div className="match-row">
+              <p className="match-league">
+                {match.league} • {match.country}
+              </p>
+              <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
+                {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
+              </Badge>
+            </div>
+            <h2>
+              {match.home.name} vs {match.away.name}
+            </h2>
+            <div className="match-row">
+              <strong className="score">
+                {match.score.home}-{match.score.away}
+              </strong>
+              <span className="confidence">{match.prediction.confidence}% confidence</span>
+            </div>
+            <p className="match-advice">{match.prediction.advice}</p>
+            <p className="muted">Kickoff: {kickoffTime(match)}</p>
+            <Link href={`/dashboard/match/${match.id}`} className="detail-link">
+              Open detailed analysis
+            </Link>
+          </Card>
+        ))}
       </section>
 
-      <section className="cards-grid" aria-label="Membership tiers">
-        <Card>
-          <h2>Free</h2>
-          <p className="price">$0</p>
-          <TierBadge label="Starter" />
-          <ul>
-            <li>Basic live scores</li>
-            <li>Match information</li>
-            <li>League standings</li>
-          </ul>
-        </Card>
-        <Card className="panel-accent">
-          <h2>Pro</h2>
-          <p className="price">$7.99/mo</p>
-          <TierBadge label="Most Popular" />
-          <ul>
-            <li>AI predictions</li>
-            <li>Odds comparison</li>
-            <li>Deep match statistics</li>
-            <li>Favorites and live events</li>
-          </ul>
-        </Card>
-        <Card>
-          <h2>Elite</h2>
-          <p className="price">$12.99/mo</p>
-          <TierBadge label="Advanced" />
-          <ul>
-            <li>Advanced prediction engine</li>
-            <li>AI insights and bet builder</li>
-            <li>Push notifications</li>
-            <li>Priority support</li>
-          </ul>
-        </Card>
-      </section>
-
-      <section className="quick-links" aria-label="Quick links">
-        <Link href="/dashboard">Dashboard</Link>
-        <Link href="/admin">Admin Console</Link>
-        <Link href="/api/health">API Health Route</Link>
+      <section className="quick-links" aria-label="Board actions">
+        <Link href="/dashboard">Open full dashboard</Link>
+        <Link href="/dashboard?status=LIVE">Focus on live matches</Link>
       </section>
     </main>
   );
