@@ -24,7 +24,7 @@ export default async function MatchDetailPage({ params }: Props) {
           {match.home.name} vs {match.away.name}
         </h1>
         <p>
-          {match.league} • {match.country} • {match.venue}
+          {match.league} | {match.country} | {match.venue}
         </p>
         <div className="meta-row">
           <span className="meta-pill">Source: {result.source === "demo" ? "Demo Data" : "Live API"}</span>
@@ -64,7 +64,7 @@ export default async function MatchDetailPage({ params }: Props) {
               <li key={`${event.minute}-${event.player}-${event.type}`}>
                 <span className="timeline-minute">{event.minute}'</span>
                 <span className="timeline-body">
-                  <strong>{event.type}</strong> • {event.team} • {event.player} • {event.detail}
+                  <strong>{event.type}</strong> | {event.team} | {event.player} | {event.detail}
                 </span>
               </li>
             ))}

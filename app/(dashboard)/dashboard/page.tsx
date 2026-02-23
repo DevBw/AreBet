@@ -165,7 +165,7 @@ export default function DashboardPage() {
             <Card className="match-card" key={match.id}>
               <div className="match-row">
                 <p className="match-league">
-                  {match.league} • {match.country}
+                  {match.league} | {match.country}
                 </p>
                 <Button
                   type="button"
@@ -208,6 +208,10 @@ export default function DashboardPage() {
           description="No matches match your current filter and search selection. Try resetting controls."
         />
       ) : null}
+
+      <section className="quick-links" aria-label="Insights actions">
+        <Link href="/dashboard/insights">Open Insights Lab</Link>
+      </section>
     </main>
   );
 }

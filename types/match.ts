@@ -25,6 +25,20 @@ export type MatchOdds = {
   btts: number;
 };
 
+export type MarketPoint = {
+  label: string;
+  home: number;
+  draw: number;
+  away: number;
+};
+
+export type BookmakerOdds = {
+  bookmaker: string;
+  home: number;
+  draw: number;
+  away: number;
+};
+
 export type MatchPrediction = {
   confidence: number;
   advice: string;
@@ -51,6 +65,8 @@ export type Match = {
   away: TeamSide;
   score: Score;
   odds: MatchOdds;
+  marketHistory: MarketPoint[];
+  bookmakerOdds: BookmakerOdds[];
   prediction: MatchPrediction;
   events: MatchEvent[];
 };

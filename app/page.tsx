@@ -77,6 +77,7 @@ export default async function HomePage() {
       <section className="quick-links" aria-label="Board actions">
         <Link href="/dashboard">Open full dashboard</Link>
         <Link href="/dashboard?status=LIVE">Focus on live matches</Link>
+        <Link href="/dashboard/insights">Open insights lab</Link>
       </section>
     </main>
   );
