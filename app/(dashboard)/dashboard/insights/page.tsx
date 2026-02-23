@@ -39,21 +39,25 @@ export default function InsightsPage() {
     <main className="page-wrap">
       <section className="dashboard-head">
         <h1>Insights Lab</h1>
-        <p>Operational insights that betting platforms usually miss in one place.</p>
+        <p>Plain-language match insights. Built to be readable even if you do not bet.</p>
       </section>
 
       <section className="cards-grid">
-        <Card title="1) Value Detection">
+        <Card title="1) Is this price fair?">
+          <p className="muted">
+            We compare our model view vs market price. Positive edge means the market may be undervaluing that outcome.
+          </p>
           <ul>
             {insights.valueEdges.slice(0, 5).map((edge) => (
               <li key={`${edge.matchId}-${edge.market}`}>
-                Match {edge.matchId} {edge.market}: edge {edge.edgePct}% (model {edge.modelProbability}% vs implied {edge.impliedProbability}%)
+                Match {edge.matchId} {edge.market}: edge {edge.edgePct}% (model {edge.modelProbability}% vs market {edge.impliedProbability}%)
               </li>
             ))}
           </ul>
         </Card>
 
-        <Card title="2) Market Movement">
+        <Card title="2) Are prices moving?">
+          <p className="muted">Track if prices are rising or falling during the day.</p>
           <ul>
             {insights.marketMoves.slice(0, 5).map((move) => (
               <li key={`${move.matchId}-${move.market}`}>
@@ -63,21 +67,24 @@ export default function InsightsPage() {
           </ul>
         </Card>
 
-        <Card title="3) CLV Feedback">
-          <p className="muted">Avg CLV edge: {insights.clv.avgCLVEdgePct}%</p>
-          <p className="muted">Positive CLV rate: {insights.clv.positiveCLVPct}%</p>
+        <Card title="3) Did we beat the final price?">
+          <p className="muted">
+            If your chosen price is better than the final market close, that is a strong long-term signal.
+          </p>
+          <p className="muted">Average price edge: {insights.clv.avgCLVEdgePct}%</p>
+          <p className="muted">Times we beat close: {insights.clv.positiveCLVPct}%</p>
         </Card>
       </section>
 
       <section className="cards-grid">
-        <Card title="4) Portfolio Risk">
-          <p className="muted">Stake in market: {insights.portfolio.totalStake}</p>
-          <p className="muted">Bankroll exposure: {insights.portfolio.stakePctOfBankroll}%</p>
-          <p className="muted">Correlation risk: {insights.portfolio.correlationRisk}</p>
+        <Card title="4) Are we overexposed?">
+          <p className="muted">Total active stake: {insights.portfolio.totalStake}</p>
+          <p className="muted">Share of bankroll at risk: {insights.portfolio.stakePctOfBankroll}%</p>
+          <p className="muted">Concentration risk: {insights.portfolio.correlationRisk}</p>
         </Card>
 
-        <Card title="5) Personalized Edge Modeling">
-          <p className="muted">Best leagues:</p>
+        <Card title="5) Where do we perform best?">
+          <p className="muted">Best leagues so far:</p>
           <ul>
             {insights.personalization.strongestLeagues.map((item) => (
               <li key={item.key}>
@@ -85,7 +92,7 @@ export default function InsightsPage() {
               </li>
             ))}
           </ul>
-          <p className="muted">Best markets:</p>
+          <p className="muted">Best market types so far:</p>
           <ul>
             {insights.personalization.strongestMarkets.map((item) => (
               <li key={item.key}>
@@ -95,7 +102,10 @@ export default function InsightsPage() {
           </ul>
         </Card>
 
-        <Card title="6) Arbitrage Scanner">
+        <Card title="6) Is there a guaranteed-price gap?">
+          <p className="muted">
+            Looks for rare situations where combining best prices may reduce risk to near zero.
+          </p>
           {insights.arbitrage.length ? (
             <ul>
               {insights.arbitrage.map((arb) => (
@@ -111,7 +121,8 @@ export default function InsightsPage() {
       </section>
 
       <section className="cards-grid">
-        <Card title="7) Scenario Simulator">
+        <Card title="7) What should we do if the game changes?">
+          <p className="muted">Enter game state and get a simple suggested action.</p>
           <SelectField
             label="Match"
             value={selectedMatchId}
@@ -133,7 +144,8 @@ export default function InsightsPage() {
           <p className="match-advice">{scenarioText}</p>
         </Card>
 
-        <Card title="8) Explainable Predictions">
+        <Card title="8) Why is this prediction high or low?">
+          <p className="muted">Short reasons behind each model output.</p>
           <ul>
             {insights.explainability.slice(0, 3).map((item) => (
               <li key={item.matchId}>
@@ -143,8 +155,8 @@ export default function InsightsPage() {
           </ul>
         </Card>
 
-        <Card title="9) Post-match Analytics">
-          <p className="muted">By league:</p>
+        <Card title="9) What are we learning from results?">
+          <p className="muted">Performance by league:</p>
           <ul>
             {insights.postMatch.byLeague.map((item) => (
               <li key={item.key}>
@@ -152,7 +164,7 @@ export default function InsightsPage() {
               </li>
             ))}
           </ul>
-          <p className="muted">By market:</p>
+          <p className="muted">Performance by market type:</p>
           <ul>
             {insights.postMatch.byMarket.map((item) => (
               <li key={item.key}>
@@ -164,11 +176,11 @@ export default function InsightsPage() {
       </section>
 
       <section className="cards-grid">
-        <Card title="10) Trust and Verification">
-          <p className="muted">Sample size: {insights.trust.sampleSize} bets</p>
-          <p className="muted">Hit rate: {insights.trust.hitRatePct}%</p>
-          <p className="muted">ROI: {insights.trust.roiPct}%</p>
-          <p className="muted">Positive CLV rate: {insights.trust.clvWinRatePct}%</p>
+        <Card title="10) Can we trust these numbers?">
+          <p className="muted">Number of tracked bets: {insights.trust.sampleSize}</p>
+          <p className="muted">Win rate on settled picks: {insights.trust.hitRatePct}%</p>
+          <p className="muted">Return on stake: {insights.trust.roiPct}%</p>
+          <p className="muted">Rate of better-than-close prices: {insights.trust.clvWinRatePct}%</p>
         </Card>
       </section>
     </main>
