@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,28 +9,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SelectField } from "@/components/ui/select-field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TextInput } from "@/components/ui/text-input";
+import { listMatches } from "@/lib/services/matches";
+import type { Match, MatchFeed, MatchStatus } from "@/types/match";
 
-type MatchStatus = "LIVE" | "UPCOMING" | "FINISHED";
-
-type MatchItem = {
-  id: number;
-  league: string;
-  home: string;
-  away: string;
-  status: MatchStatus;
-  minute?: number;
-  score: string;
-  confidence: number;
-  kickoff: string;
-};
-
-const MATCHES: MatchItem[] = [
-  { id: 1, league: "Premier League", home: "Arsenal", away: "Brighton", status: "LIVE", minute: 63, score: "2-1", confidence: 76, kickoff: "19:45" },
-  { id: 2, league: "La Liga", home: "Valencia", away: "Sevilla", status: "UPCOMING", score: "-", confidence: 64, kickoff: "20:00" },
-  { id: 3, league: "Serie A", home: "Roma", away: "Torino", status: "FINISHED", score: "1-1", confidence: 58, kickoff: "17:30" },
-  { id: 4, league: "Bundesliga", home: "Leverkusen", away: "Mainz", status: "LIVE", minute: 28, score: "1-0", confidence: 71, kickoff: "18:00" },
-  { id: 5, league: "Ligue 1", home: "Lyon", away: "Nice", status: "UPCOMING", score: "-", confidence: 61, kickoff: "21:00" },
-];
+const FAVORITES_KEY = "arebet.demo.favorites";
 
 export default function DashboardPage() {
   const [query, setQuery] = useState("");
@@ -37,15 +20,38 @@ export default function DashboardPage() {
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [feed, setFeed] = useState<MatchFeed | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 650);
-    return () => clearTimeout(timer);
+    const saved = localStorage.getItem(FAVORITES_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as number[];
+      setFavorites(new Set(parsed));
+    }
   }, []);
 
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await listMatches();
+        setFeed(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load matches.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const matches = feed?.matches ?? [];
+
   const filteredMatches = useMemo(() => {
-    let data = MATCHES.filter((match) => {
-      const inSearch = `${match.home} ${match.away} ${match.league}`
+    let data = matches.filter((match) => {
+      const inSearch = `${match.home.name} ${match.away.name} ${match.league}`
         .toLowerCase()
         .includes(query.toLowerCase());
       const inStatus = statusFilter === "ALL" || match.status === statusFilter;
@@ -53,24 +59,29 @@ export default function DashboardPage() {
     });
 
     data = [...data].sort((a, b) => {
-      if (sortBy === "confidence") return b.confidence - a.confidence;
-      return a.kickoff.localeCompare(b.kickoff);
+      if (sortBy === "confidence") return b.prediction.confidence - a.prediction.confidence;
+      return a.kickoffISO.localeCompare(b.kickoffISO);
     });
     return data;
-  }, [query, statusFilter, sortBy]);
+  }, [matches, query, statusFilter, sortBy]);
 
   const kpis = useMemo(() => {
-    const live = MATCHES.filter((m) => m.status === "LIVE").length;
-    const upcoming = MATCHES.filter((m) => m.status === "UPCOMING").length;
-    const topConfidence = Math.max(...MATCHES.map((m) => m.confidence));
+    const live = matches.filter((m) => m.status === "LIVE").length;
+    const upcoming = matches.filter((m) => m.status === "UPCOMING").length;
+    const topConfidence = matches.length ? Math.max(...matches.map((m) => m.prediction.confidence)) : 0;
     return { live, upcoming, topConfidence };
-  }, []);
+  }, [matches]);
 
   function toggleFavorite(matchId: number) {
     const next = new Set(favorites);
     if (next.has(matchId)) next.delete(matchId);
     else next.add(matchId);
     setFavorites(next);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(next)));
+  }
+
+  function kickoffTime(match: Match) {
+    return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
   return (
@@ -78,6 +89,12 @@ export default function DashboardPage() {
       <section className="dashboard-head">
         <h1>Match Dashboard</h1>
         <p>Filter and prioritize opportunities with local interactive controls.</p>
+        <div className="meta-row">
+          <span className="meta-pill">Source: {feed?.source === "demo" ? "Demo Data" : "Live API"}</span>
+          <span className="meta-pill">
+            Last updated: {feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}
+          </span>
+        </div>
       </section>
 
       <section className="kpi-strip" aria-label="Dashboard KPIs">
@@ -136,12 +153,20 @@ export default function DashboardPage() {
             </Card>
           ))}
         </section>
-      ) : (
+      ) : null}
+
+      {!loading && error ? (
+        <EmptyState title="Could not load data" description={`${error} You can continue using demo mode.`} />
+      ) : null}
+
+      {!loading && !error ? (
         <section className="cards-grid" aria-label="Match list">
           {filteredMatches.map((match) => (
             <Card className="match-card" key={match.id}>
               <div className="match-row">
-                <p className="match-league">{match.league}</p>
+                <p className="match-league">
+                  {match.league} • {match.country}
+                </p>
                 <Button
                   type="button"
                   variant="muted"
@@ -154,29 +179,35 @@ export default function DashboardPage() {
                 </Button>
               </div>
               <h2>
-                {match.home} vs {match.away}
+                {match.home.name} vs {match.away.name}
               </h2>
               <p className="match-meta">
                 <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
                   {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
                 </Badge>
-                <span>Kickoff: {match.kickoff}</span>
+                <span>Kickoff: {kickoffTime(match)}</span>
               </p>
               <div className="match-row">
-                <strong className="score">{match.score}</strong>
-                <span className="confidence">{match.confidence}% confidence</span>
+                <strong className="score">
+                  {match.score.home}-{match.score.away}
+                </strong>
+                <span className="confidence">{match.prediction.confidence}% confidence</span>
               </div>
+              <p className="match-advice">Insight: {match.prediction.advice}</p>
+              <Link href={`/dashboard/match/${match.id}`} className="detail-link">
+                Open detailed analysis
+              </Link>
             </Card>
           ))}
         </section>
-      )}
+      ) : null}
 
-      {!loading && !filteredMatches.length && (
+      {!loading && !error && !filteredMatches.length ? (
         <EmptyState
           title="No matches found"
           description="No matches match your current filter and search selection. Try resetting controls."
         />
-      )}
+      ) : null}
     </main>
   );
 }

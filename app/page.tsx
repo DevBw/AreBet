@@ -10,7 +10,7 @@ export default function HomePage() {
         <h1>Smart Betting. Simple Insights.</h1>
         <p className="hero-copy">
           Track live momentum, compare markets, and spot value bets with a clean,
-          responsive workflow.
+          responsive workflow built for confident decisions.
         </p>
         <div className="hero-actions">
           <Link href="/dashboard" className="btn btn-primary">
@@ -24,17 +24,43 @@ export default function HomePage() {
 
       <section className="kpi-strip" aria-label="Platform highlights">
         <article className="kpi">
-          <span className="kpi-label">Coverage</span>
-          <strong>Top Leagues</strong>
+          <span className="kpi-label">Problem Solved</span>
+          <strong>Signal Overload</strong>
         </article>
         <article className="kpi">
-          <span className="kpi-label">Updates</span>
-          <strong>Near Real-Time</strong>
+          <span className="kpi-label">Solution</span>
+          <strong>Prioritized Match Insights</strong>
         </article>
         <article className="kpi">
-          <span className="kpi-label">Plans</span>
-          <strong>Free / Pro / Elite</strong>
+          <span className="kpi-label">Current Mode</span>
+          <strong>Demo Data (API-off)</strong>
         </article>
+      </section>
+
+      <section className="cards-grid" aria-label="Value proposition">
+        <Card>
+          <h2>Who This Is For</h2>
+          <ul>
+            <li>Bettors who want fast pre-match scanning.</li>
+            <li>Users who need structured confidence signals.</li>
+            <li>Anyone comparing outcomes across leagues.</li>
+          </ul>
+        </Card>
+        <Card>
+          <h2>How It Helps</h2>
+          <ul>
+            <li>Ranked match cards with confidence score.</li>
+            <li>Filter and sort controls for focus.</li>
+            <li>Detailed match page with odds and timeline.</li>
+          </ul>
+        </Card>
+        <Card>
+          <h2>Example Insight</h2>
+          <p className="price">Leverkusen vs Mainz</p>
+          <p className="muted">
+            High confidence home trend with strong recent form and early live momentum.
+          </p>
+        </Card>
       </section>
 
       <section className="cards-grid" aria-label="Membership tiers">
