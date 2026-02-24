@@ -7,8 +7,8 @@ export default function WidgetsPage() {
   return (
     <main className="page-wrap">
       <section className="dashboard-head">
-        <h1>Football Widgets</h1>
-        <p>Modular match widgets that feel native across the product.</p>
+        <h1>Football Hub</h1>
+        <p>Leagues, matches, standings, and match detail in one focused layout.</p>
         <div className="meta-row">
           <span className="meta-pill">Data: Live-style feed</span>
           <span className="meta-pill">Last updated: {new Date(feed.updatedAtISO).toLocaleTimeString()}</span>
@@ -16,17 +16,17 @@ export default function WidgetsPage() {
       </section>
 
       <section className="panel widgets-section">
-        <h2>Why this matters</h2>
+        <h2>How to use this page</h2>
         <ul>
-          <li>Each widget is focused, fast, and purpose-built for match days.</li>
-          <li>The layout stays consistent across the dashboard and the match detail view.</li>
-          <li>Fans can move from scores to context to decisions without switching screens.</li>
+          <li>Select a league on the left.</li>
+          <li>Pick a match in the middle to open the full detail.</li>
+          <li>Standings stay visible on the right while you explore.</li>
         </ul>
       </section>
 
       <section className="widgets-section">
-        <h2 className="widget-section-title">Widgets preview</h2>
-        <p className="muted">A preview of the match widgets as they appear to end users.</p>
+        <h2 className="widget-section-title">Live layout</h2>
+        <p className="muted">This mirrors the final product flow for football fans.</p>
         <WidgetsDemo matches={feed.matches} updatedAtISO={feed.updatedAtISO} />
       </section>
     </main>

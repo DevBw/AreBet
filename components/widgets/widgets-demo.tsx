@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Match } from "@/types/match";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,7 +16,7 @@ type StandingRow = {
   form: string;
 };
 
-const DEMO_STANDINGS: Record<string, StandingRow[]> = {
+const LEAGUE_STANDINGS: Record<string, StandingRow[]> = {
   "Premier League": [
     { rank: 1, team: "Arsenal", points: 61, form: "WWDWW" },
     { rank: 2, team: "Liverpool", points: 58, form: "WWWWW" },
@@ -62,6 +62,7 @@ function pickPlayer(match: Match) {
 }
 
 export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
+  const [selectedLeague, setSelectedLeague] = useState(matches[0]?.league ?? "");
   const [selectedMatchId, setSelectedMatchId] = useState(matches[0]?.id ?? 0);
 
   const selectedMatch = useMemo(
@@ -70,35 +71,72 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
   );
 
   const leagues = useMemo(() => {
-    const map = new Map<string, { country: string; leagues: string[] }>();
+    const map = new Map<string, { league: string; country: string }>();
     matches.forEach((match) => {
-      const entry = map.get(match.country) ?? { country: match.country, leagues: [] };
-      if (!entry.leagues.includes(match.league)) entry.leagues.push(match.league);
-      map.set(match.country, entry);
+      if (!map.has(match.league)) {
+        map.set(match.league, { league: match.league, country: match.country });
+      }
     });
     return Array.from(map.values());
   }, [matches]);
 
   const leagueMatches = useMemo(() => {
-    if (!selectedMatch) return [];
-    return matches.filter((match) => match.league === selectedMatch.league);
-  }, [matches, selectedMatch]);
+    if (!selectedLeague) return matches;
+    return matches.filter((match) => match.league === selectedLeague);
+  }, [matches, selectedLeague]);
 
-  const standings = selectedMatch ? DEMO_STANDINGS[selectedMatch.league] ?? [] : [];
+  const standings = selectedLeague ? LEAGUE_STANDINGS[selectedLeague] ?? [] : [];
+
+  useEffect(() => {
+    if (!selectedLeague && leagues.length) {
+      setSelectedLeague(leagues[0].league);
+    }
+  }, [leagues, selectedLeague]);
+
+  useEffect(() => {
+    if (!leagueMatches.length) return;
+    const exists = leagueMatches.some((match) => match.id === selectedMatchId);
+    if (!exists) setSelectedMatchId(leagueMatches[0].id);
+  }, [leagueMatches, selectedMatchId]);
 
   if (!selectedMatch) return null;
 
   return (
     <section className="widgets-layout" aria-label="Widgets preview">
-      <div className="widgets-column">
+      <div className="widgets-col widgets-col-left">
+        <article className="widget-card sticky-panel">
+          <div className="widget-title-row">
+            <h3 className="widget-title">Leagues</h3>
+            <span className="widget-pill">Browse</span>
+          </div>
+          <div className="widget-list">
+            {leagues.map((entry) => {
+              const isActive = entry.league === selectedLeague;
+              return (
+                <button
+                  key={entry.league}
+                  type="button"
+                  className={`widget-row widget-button ${isActive ? "is-active" : ""}`}
+                  onClick={() => setSelectedLeague(entry.league)}
+                >
+                  <span>{entry.league}</span>
+                  <span className="widget-meta">{entry.country}</span>
+                </button>
+              );
+            })}
+          </div>
+        </article>
+      </div>
+
+      <div className="widgets-col widgets-col-center">
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Live games</h3>
-            <span className="widget-pill">Live updates</span>
+            <h3 className="widget-title">Matches</h3>
+            <span className="widget-pill">Updated {new Date(updatedAtISO).toLocaleTimeString()}</span>
           </div>
-          <p className="widget-meta">Updated at {new Date(updatedAtISO).toLocaleTimeString()}.</p>
+          <p className="widget-meta">Showing {selectedLeague} games.</p>
           <div className="widget-list">
-            {matches.map((match) => {
+            {leagueMatches.map((match) => {
               const isActive = match.id === selectedMatchId;
               return (
                 <button
@@ -116,40 +154,9 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
             })}
           </div>
         </article>
+      </div>
 
-        <article className="widget-card">
-          <div className="widget-title-row">
-            <h3 className="widget-title">League schedule</h3>
-            <span className="widget-pill">Games and results</span>
-          </div>
-          <p className="widget-meta">Schedule for {selectedMatch.league}.</p>
-          <div className="widget-list">
-            {leagueMatches.map((match) => (
-              <div key={match.id} className="widget-row">
-                <span>
-                  {match.home.short} vs {match.away.short}
-                </span>
-                <span className="widget-meta">{formatKickoff(match.kickoffISO)}</span>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="widget-card">
-          <div className="widget-title-row">
-            <h3 className="widget-title">Leagues by country</h3>
-            <span className="widget-pill">Browse</span>
-          </div>
-          <div className="widget-list">
-            {leagues.map((entry) => (
-              <div key={entry.country} className="widget-row">
-                <span>{entry.country}</span>
-                <span className="widget-meta">{entry.leagues.join(", ")}</span>
-              </div>
-            ))}
-          </div>
-        </article>
-
+      <div className="widgets-col widgets-col-right">
         <article className="widget-card">
           <div className="widget-title-row">
             <h3 className="widget-title">Standings</h3>
@@ -170,15 +177,12 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
             <p className="widget-meta">Standings not available for this league yet.</p>
           )}
         </article>
-      </div>
 
-      <div className="widgets-column">
-        <article className="widget-card" id="details">
+        <article className="widget-card sticky-panel" id="details">
           <div className="widget-title-row">
             <h3 className="widget-title">Match detail</h3>
             <span className="widget-pill">Overview</span>
           </div>
-          <p className="widget-meta">Open a match to see the full detail.</p>
           <div className="widget-row">
             <strong>
               {selectedMatch.home.name} vs {selectedMatch.away.name}
@@ -194,66 +198,14 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
             <span className="widget-pill">Score {selectedMatch.score.home}-{selectedMatch.score.away}</span>
             <span className="widget-meta">{selectedMatch.prediction.advice}</span>
           </div>
-        </article>
-
-        <article className="widget-card">
-          <div className="widget-title-row">
-            <h3 className="widget-title">Team profile</h3>
-            <span className="widget-pill">Form</span>
-          </div>
-          <p className="widget-meta">Focused on {selectedMatch.home.name}.</p>
           <div className="widget-list">
             <div className="widget-row">
-              <span>Recent form</span>
+              <span>Team form</span>
               <span className="widget-meta">{selectedMatch.home.form.recent}</span>
             </div>
             <div className="widget-row">
-              <span>Goals for</span>
-              <span className="widget-meta">{selectedMatch.home.form.goalsFor}</span>
-            </div>
-            <div className="widget-row">
-              <span>Goals against</span>
-              <span className="widget-meta">{selectedMatch.home.form.goalsAgainst}</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="widget-card">
-          <div className="widget-title-row">
-            <h3 className="widget-title">Player spotlight</h3>
-            <span className="widget-pill">Key stats</span>
-          </div>
-          <p className="widget-meta">Spotlight: {pickPlayer(selectedMatch)}.</p>
-          <div className="widget-list">
-            <div className="widget-row">
-              <span>Season form</span>
-              <span className="widget-meta">8 goals | 4 assists</span>
-            </div>
-            <div className="widget-row">
-              <span>Fitness</span>
-              <span className="widget-meta">Available</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="widget-card">
-          <div className="widget-title-row">
-            <h3 className="widget-title">Head-to-head</h3>
-            <span className="widget-pill">History</span>
-          </div>
-          <p className="widget-meta">Historical record for {selectedMatch.home.short} vs {selectedMatch.away.short}.</p>
-          <div className="widget-list">
-            <div className="widget-row">
-              <span>Last meeting</span>
-              <span className="widget-meta">{selectedMatch.home.short} 2-1 {selectedMatch.away.short}</span>
-            </div>
-            <div className="widget-row">
-              <span>Previous</span>
-              <span className="widget-meta">{selectedMatch.home.short} 1-1 {selectedMatch.away.short}</span>
-            </div>
-            <div className="widget-row">
-              <span>Earlier</span>
-              <span className="widget-meta">{selectedMatch.home.short} 0-1 {selectedMatch.away.short}</span>
+              <span>Player to watch</span>
+              <span className="widget-meta">{pickPlayer(selectedMatch)}</span>
             </div>
           </div>
         </article>

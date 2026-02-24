@@ -8,7 +8,7 @@ const LINKS = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/insights", label: "Insights" },
-  { href: "/widgets", label: "Widgets" },
+  { href: "/widgets", label: "Football Hub" },
 ];
 
 export function MainNav() {

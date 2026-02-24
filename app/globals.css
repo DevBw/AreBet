@@ -244,13 +244,19 @@ a {
 .widgets-layout {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: minmax(220px, 0.9fr) minmax(300px, 1.4fr) minmax(260px, 1.1fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.widgets-col {
+  display: grid;
   gap: 0.9rem;
 }
 
-.widgets-column {
-  display: grid;
-  gap: 0.9rem;
+.sticky-panel {
+  position: sticky;
+  top: 84px;
 }
 
 .widget-card {
@@ -684,6 +690,14 @@ a:focus-visible {
 }
 
 @media (max-width: 760px) {
+  .widgets-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sticky-panel {
+    position: static;
+  }
+
   .site-header-inner {
     min-height: 58px;
     align-items: flex-start;
