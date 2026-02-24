@@ -50,7 +50,7 @@ export default function LoginPage() {
 
         {submitted && canSubmit && (
           <div className="notice-success" role="status">
-            Thanks. We will send a secure sign-in link to your email.
+            Thanks. Sign-in is being prepared.
           </div>
         )}
       </Card>

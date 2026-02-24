@@ -12,7 +12,7 @@ import { TextInput } from "@/components/ui/text-input";
 import { listMatches } from "@/lib/services/matches";
 import type { Match, MatchFeed, MatchStatus } from "@/types/match";
 
-const FAVORITES_KEY = "arebet.demo.favorites";
+const FAVORITES_KEY = "arebet.favorites";
 
 export default function DashboardPage() {
   const [query, setQuery] = useState("");
@@ -193,7 +193,7 @@ export default function DashboardPage() {
               </div>
               <p className="match-advice">Insight: {match.prediction.advice}</p>
               <Link href={`/dashboard/match/${match.id}`} className="detail-link">
-                Open detailed analysis
+                View match detail
               </Link>
             </Card>
           ))}

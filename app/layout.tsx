@@ -26,11 +26,7 @@ export default function RootLayout({
               <MainNav />
             </div>
           </header>
-          <div className="breadcrumbs-wrap">
-            <div className="site-header-inner">
-              <Breadcrumbs />
-            </div>
-          </div>
+          <Breadcrumbs />
           {children}
           <footer className="site-footer">
             <div className="site-footer-inner">
