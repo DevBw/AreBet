@@ -22,8 +22,8 @@ export default function LoginPage() {
   return (
     <main className="page-wrap">
       <Card className="auth-panel">
-        <h1>Login</h1>
-        <p className="muted">Front-end validation only. Backend auth wiring is intentionally deferred.</p>
+        <h1>Sign in</h1>
+        <p className="muted">Access your saved matches, alerts, and preferences.</p>
         <form onSubmit={onSubmit} className="auth-form">
           <TextInput
             label="Email"
@@ -50,7 +50,7 @@ export default function LoginPage() {
 
         {submitted && canSubmit && (
           <div className="notice-success" role="status">
-            Form validated successfully. Auth integration is next.
+            Thanks. We will send a secure sign-in link to your email.
           </div>
         )}
       </Card>

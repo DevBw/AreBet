@@ -115,7 +115,7 @@ export default function InsightsPage() {
               ))}
             </ul>
           ) : (
-            <p className="muted">No current arbitrage in demo feed.</p>
+            <p className="muted">No current arbitrage right now.</p>
           )}
         </Card>
       </section>

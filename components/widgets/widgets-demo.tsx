@@ -89,7 +89,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
   if (!selectedMatch) return null;
 
   return (
-    <section className="widgets-layout" aria-label="Widgets demo">
+    <section className="widgets-layout" aria-label="Widgets preview">
       <div className="widgets-column">
         <article className="widget-card">
           <div className="widget-title-row">
@@ -162,12 +162,12 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
                   <span>
                     {row.rank}. {row.team}
                   </span>
-                  <span className="widget-meta">{row.points} pts · {row.form}</span>
+                  <span className="widget-meta">{row.points} pts | {row.form}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="widget-meta">Standings demo not available for this league yet.</p>
+            <p className="widget-meta">Standings not available for this league yet.</p>
           )}
         </article>
       </div>
@@ -188,7 +188,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
             </Badge>
           </div>
           <p className="widget-meta">
-            Venue: {selectedMatch.venue} · Kickoff {formatKickoff(selectedMatch.kickoffISO)}
+            Venue: {selectedMatch.venue} | Kickoff {formatKickoff(selectedMatch.kickoffISO)}
           </p>
           <div className="widget-row">
             <span className="widget-pill">Score {selectedMatch.score.home}-{selectedMatch.score.away}</span>
@@ -227,7 +227,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
           <div className="widget-list">
             <div className="widget-row">
               <span>Season form</span>
-              <span className="widget-meta">8 goals · 4 assists</span>
+              <span className="widget-meta">8 goals | 4 assists</span>
             </div>
             <div className="widget-row">
               <span>Fitness</span>
