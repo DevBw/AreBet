@@ -9,11 +9,21 @@ export const metadata: Metadata = {
   description: "Smart Betting. Simple Insights.",
 };
 
+const buildInfo = {
+  sha: process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.NEXT_PUBLIC_GIT_SHA ?? "",
+  ref: process.env.VERCEL_GIT_COMMIT_REF ?? process.env.NEXT_PUBLIC_GIT_REF ?? "",
+  time: process.env.VERCEL_BUILD_TIME ?? process.env.NEXT_PUBLIC_BUILD_TIME ?? "",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shortSha = buildInfo.sha ? buildInfo.sha.slice(0, 7) : "local";
+  const buildLabel = buildInfo.ref ? `${buildInfo.ref}@${shortSha}` : shortSha;
+  const buildTime = buildInfo.time ? ` · ${buildInfo.time}` : "";
+
   return (
     <html lang="en">
       <body>
@@ -31,7 +41,8 @@ export default function RootLayout({
           <footer className="site-footer">
             <div className="site-footer-inner">
               <span>AreBet</span>
-              <span>Built for fast football betting insights</span>
+              <span className="footer-meta">Built for fast football betting insights</span>
+              <span className="footer-meta">Build {buildLabel}{buildTime}</span>
             </div>
           </footer>
         </div>
