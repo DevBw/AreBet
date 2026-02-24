@@ -88,9 +88,9 @@ export default function DashboardPage() {
     <main className="page-wrap">
       <section className="dashboard-head">
         <h1>Match Dashboard</h1>
-        <p>Filter and prioritize opportunities with local interactive controls.</p>
+        <p>Filter and prioritize matches with fast, simple controls.</p>
         <div className="meta-row">
-          <span className="meta-pill">Source: {feed?.source === "demo" ? "Demo Data" : "Live API"}</span>
+          <span className="meta-pill">Data: Live-style feed</span>
           <span className="meta-pill">
             Last updated: {feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}
           </span>
@@ -155,9 +155,7 @@ export default function DashboardPage() {
         </section>
       ) : null}
 
-      {!loading && error ? (
-        <EmptyState title="Could not load data" description={`${error} You can continue using demo mode.`} />
-      ) : null}
+      {!loading && error ? <EmptyState title="Could not load data" description={`${error} You can continue browsing.`} /> : null}
 
       {!loading && !error ? (
         <section className="cards-grid" aria-label="Match list">
@@ -210,7 +208,7 @@ export default function DashboardPage() {
       ) : null}
 
       <section className="quick-links" aria-label="Insights actions">
-        <Link href="/dashboard/insights">Open Insights Lab</Link>
+        <Link href="/dashboard/insights">Open insights</Link>
       </section>
     </main>
   );

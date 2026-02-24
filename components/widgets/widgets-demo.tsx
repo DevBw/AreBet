@@ -93,10 +93,10 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
       <div className="widgets-column">
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Games widget</h3>
-            <span className="widget-pill">data-type="games"</span>
+            <h3 className="widget-title">Live games</h3>
+            <span className="widget-pill">Live updates</span>
           </div>
-          <p className="widget-meta">Auto-refresh every 30s in production. Demo feed updated: {new Date(updatedAtISO).toLocaleTimeString()}.</p>
+          <p className="widget-meta">Updated at {new Date(updatedAtISO).toLocaleTimeString()}.</p>
           <div className="widget-list">
             {matches.map((match) => {
               const isActive = match.id === selectedMatchId;
@@ -119,12 +119,10 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">League widget</h3>
-            <span className="widget-pill">data-type="league"</span>
+            <h3 className="widget-title">League schedule</h3>
+            <span className="widget-pill">Games and results</span>
           </div>
-          <p className="widget-meta">
-            Schedule for {selectedMatch.league}. Set `data-tab="games"` or `data-tab="results"` in production.
-          </p>
+          <p className="widget-meta">Schedule for {selectedMatch.league}.</p>
           <div className="widget-list">
             {leagueMatches.map((match) => (
               <div key={match.id} className="widget-row">
@@ -139,8 +137,8 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Leagues widget</h3>
-            <span className="widget-pill">data-type="leagues"</span>
+            <h3 className="widget-title">Leagues by country</h3>
+            <span className="widget-pill">Browse</span>
           </div>
           <div className="widget-list">
             {leagues.map((entry) => (
@@ -154,8 +152,8 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Standings widget</h3>
-            <span className="widget-pill">data-type="standings"</span>
+            <h3 className="widget-title">Standings</h3>
+            <span className="widget-pill">Table</span>
           </div>
           {standings.length ? (
             <div className="widget-list">
@@ -177,12 +175,10 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
       <div className="widgets-column">
         <article className="widget-card" id="details">
           <div className="widget-title-row">
-            <h3 className="widget-title">Game widget</h3>
-            <span className="widget-pill">data-type="game"</span>
+            <h3 className="widget-title">Match detail</h3>
+            <span className="widget-pill">Overview</span>
           </div>
-          <p className="widget-meta">
-            Targeted from the Games widget using `data-target-game="#details"` in production.
-          </p>
+          <p className="widget-meta">Open a match to see the full detail.</p>
           <div className="widget-row">
             <strong>
               {selectedMatch.home.name} vs {selectedMatch.away.name}
@@ -202,12 +198,10 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Team widget</h3>
-            <span className="widget-pill">data-type="team"</span>
+            <h3 className="widget-title">Team profile</h3>
+            <span className="widget-pill">Form</span>
           </div>
-          <p className="widget-meta">
-            Focused on {selectedMatch.home.name}. Tabs like `statistics` or `squads` can be enabled in production.
-          </p>
+          <p className="widget-meta">Focused on {selectedMatch.home.name}.</p>
           <div className="widget-list">
             <div className="widget-row">
               <span>Recent form</span>
@@ -226,12 +220,10 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">Player widget</h3>
-            <span className="widget-pill">data-type="player"</span>
+            <h3 className="widget-title">Player spotlight</h3>
+            <span className="widget-pill">Key stats</span>
           </div>
-          <p className="widget-meta">
-            Demo focus: {pickPlayer(selectedMatch)}. Full profiles unlock with API player data.
-          </p>
+          <p className="widget-meta">Spotlight: {pickPlayer(selectedMatch)}.</p>
           <div className="widget-list">
             <div className="widget-row">
               <span>Season form</span>
@@ -246,8 +238,8 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
 
         <article className="widget-card">
           <div className="widget-title-row">
-            <h3 className="widget-title">H2H widget</h3>
-            <span className="widget-pill">data-type="h2h"</span>
+            <h3 className="widget-title">Head-to-head</h3>
+            <span className="widget-pill">History</span>
           </div>
           <p className="widget-meta">Historical record for {selectedMatch.home.short} vs {selectedMatch.away.short}.</p>
           <div className="widget-list">

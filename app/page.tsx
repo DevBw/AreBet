@@ -23,9 +23,9 @@ export default async function HomePage() {
     <main className="page-wrap">
       <section className="dashboard-head">
         <h1>AreBet Match Board</h1>
-        <p>Live-style decision board as the default landing experience.</p>
+        <p>Live match board with clear signals, form, and odds in one place.</p>
         <div className="meta-row">
-          <span className="meta-pill">Source: {feed.source === "demo" ? "Demo Data" : "Live API"}</span>
+          <span className="meta-pill">Data: Live-style feed</span>
           <span className="meta-pill">Last updated: {new Date(feed.updatedAtISO).toLocaleTimeString()}</span>
         </div>
       </section>
@@ -50,7 +50,7 @@ export default async function HomePage() {
           <Card className="match-card" key={match.id}>
             <div className="match-row">
               <p className="match-league">
-                {match.league} • {match.country}
+                {match.league} | {match.country}
               </p>
               <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
                 {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
@@ -68,7 +68,7 @@ export default async function HomePage() {
             <p className="match-advice">{match.prediction.advice}</p>
             <p className="muted">Kickoff: {kickoffTime(match)}</p>
             <Link href={`/dashboard/match/${match.id}`} className="detail-link">
-              Open detailed analysis
+              View match detail
             </Link>
           </Card>
         ))}
@@ -77,7 +77,7 @@ export default async function HomePage() {
       <section className="quick-links" aria-label="Board actions">
         <Link href="/dashboard">Open full dashboard</Link>
         <Link href="/dashboard?status=LIVE">Focus on live matches</Link>
-        <Link href="/dashboard/insights">Open insights lab</Link>
+        <Link href="/dashboard/insights">Open insights</Link>
       </section>
     </main>
   );

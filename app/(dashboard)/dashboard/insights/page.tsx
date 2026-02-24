@@ -38,8 +38,8 @@ export default function InsightsPage() {
   return (
     <main className="page-wrap">
       <section className="dashboard-head">
-        <h1>Insights Lab</h1>
-        <p>Plain-language match insights. Built to be readable even if you do not bet.</p>
+        <h1>Insights</h1>
+        <p>Plain-language match insights you can understand in seconds.</p>
       </section>
 
       <section className="cards-grid">

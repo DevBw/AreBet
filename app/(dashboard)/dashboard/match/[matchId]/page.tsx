@@ -27,7 +27,7 @@ export default async function MatchDetailPage({ params }: Props) {
           {match.league} | {match.country} | {match.venue}
         </p>
         <div className="meta-row">
-          <span className="meta-pill">Source: {result.source === "demo" ? "Demo Data" : "Live API"}</span>
+          <span className="meta-pill">Data: Live-style feed</span>
           <span className="meta-pill">Last updated: {new Date(result.updatedAtISO).toLocaleTimeString()}</span>
         </div>
       </section>
