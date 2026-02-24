@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { SelectField } from "@/components/ui/select-field";
 import { TextInput } from "@/components/ui/text-input";
+import { PageHeader } from "@/components/layout/page-header";
 import { listMatches } from "@/lib/services/matches";
 import { buildInsightBundle, scenarioSuggestion } from "@/lib/insights/engine";
 import { DEMO_BANKROLL, DEMO_BETS } from "@/lib/demo/bets";
@@ -37,10 +38,11 @@ export default function InsightsPage() {
 
   return (
     <main className="page-wrap">
-      <section className="dashboard-head">
-        <h1>Insights</h1>
-        <p>Plain-language match insights you can understand in seconds.</p>
-      </section>
+      <PageHeader
+        title="Insights"
+        subtitle="Plain-language guidance to explain what the numbers are saying."
+        meta={["Built from live-style match data"]}
+      />
 
       <section className="cards-grid">
         <Card title="1) Is this price fair?">

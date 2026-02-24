@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { WidgetsDemo } from "@/components/widgets/widgets-demo";
+import { PageHeader } from "@/components/layout/page-header";
 import { listMatches } from "@/lib/services/matches";
 import type { MatchFeed } from "@/types/match";
 
@@ -37,15 +39,20 @@ export function FootballHub() {
 
   return (
     <main className="page-wrap">
-      <section className="dashboard-head">
-        <h1>Football Hub</h1>
-        <p>Leagues, matches, standings, and match detail in one focused layout.</p>
-        <div className="meta-row">
-          <span className="meta-pill">Data: Live-style feed</span>
-          <span className="meta-pill">Last updated: {formatUpdatedAt(feed?.updatedAtISO)}</span>
-        </div>
-        {error ? <p className="muted">Update issue: {error}</p> : null}
-      </section>
+      <PageHeader
+        title="Football Hub"
+        subtitle="Leagues, matches, standings, and match detail in one focused layout."
+        meta={[
+          "Data: Live-style feed",
+          `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
+        ]}
+        actions={
+          <Link className="btn btn-muted" href="/dashboard">
+            Back to dashboard
+          </Link>
+        }
+      />
+      {error ? <p className="muted">Update issue: {error}</p> : null}
 
       <section className="panel widgets-section">
         <h2>How to use this page</h2>

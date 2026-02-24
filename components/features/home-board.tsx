@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/layout/page-header";
 import { listMatches } from "@/lib/services/matches";
 import type { Match, MatchFeed } from "@/types/match";
 
@@ -55,15 +56,25 @@ export function HomeBoard() {
 
   return (
     <main className="page-wrap">
-      <section className="dashboard-head">
-        <h1>AreBet Match Board</h1>
-        <p>Live match board with clear signals, form, and odds in one place.</p>
-        <div className="meta-row">
-          <span className="meta-pill">Data: Live-style feed</span>
-          <span className="meta-pill">Last updated: {formatUpdatedAt(feed?.updatedAtISO)}</span>
-        </div>
-        {error ? <p className="muted">Update issue: {error}</p> : null}
-      </section>
+      <PageHeader
+        title="Match Intelligence, Simplified"
+        subtitle="See live matches, confidence signals, and quick context in one glance."
+        meta={[
+          "Data: Live-style feed",
+          `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
+        ]}
+        actions={
+          <>
+            <Link className="btn btn-primary" href="/dashboard">
+              Open live board
+            </Link>
+            <Link className="btn btn-muted" href="/dashboard/insights">
+              See insights
+            </Link>
+          </>
+        }
+      />
+      {error ? <p className="muted">Update issue: {error}</p> : null}
 
       <section className="kpi-strip" aria-label="Board KPIs">
         <article className="kpi">
@@ -110,9 +121,9 @@ export function HomeBoard() {
       </section>
 
       <section className="quick-links" aria-label="Board actions">
-        <Link href="/dashboard">Open full dashboard</Link>
-        <Link href="/dashboard?status=LIVE">Focus on live matches</Link>
-        <Link href="/dashboard/insights">Open insights</Link>
+        <Link href="/dashboard">Full dashboard</Link>
+        <Link href="/dashboard?status=LIVE">Live only</Link>
+        <Link href="/widgets">Football hub</Link>
       </section>
     </main>
   );

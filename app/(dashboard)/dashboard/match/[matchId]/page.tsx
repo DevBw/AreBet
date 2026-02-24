@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { getMatchById } from "@/lib/services/matches";
 
@@ -19,18 +20,19 @@ export default async function MatchDetailPage({ params }: Props) {
 
   return (
     <main className="page-wrap">
-      <section className="dashboard-head">
-        <h1>
-          {match.home.name} vs {match.away.name}
-        </h1>
-        <p>
-          {match.league} | {match.country} | {match.venue}
-        </p>
-        <div className="meta-row">
-          <span className="meta-pill">Data: Live-style feed</span>
-          <span className="meta-pill">Last updated: {new Date(result.updatedAtISO).toLocaleTimeString()}</span>
-        </div>
-      </section>
+      <PageHeader
+        title={`${match.home.name} vs ${match.away.name}`}
+        subtitle={`${match.league} | ${match.country} | ${match.venue}`}
+        meta={[
+          "Data: Live-style feed",
+          `Last updated: ${new Date(result.updatedAtISO).toLocaleTimeString()}`,
+        ]}
+        actions={
+          <Link className="btn btn-muted" href="/dashboard">
+            Back to dashboard
+          </Link>
+        }
+      />
 
       <section className="cards-grid">
         <Card title="Prediction">

@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SelectField } from "@/components/ui/select-field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TextInput } from "@/components/ui/text-input";
+import { PageHeader } from "@/components/layout/page-header";
 import { listMatches } from "@/lib/services/matches";
 import type { Match, MatchFeed, MatchStatus } from "@/types/match";
 
@@ -86,16 +87,24 @@ export default function DashboardPage() {
 
   return (
     <main className="page-wrap">
-      <section className="dashboard-head">
-        <h1>Match Dashboard</h1>
-        <p>Filter and prioritize matches with fast, simple controls.</p>
-        <div className="meta-row">
-          <span className="meta-pill">Data: Live-style feed</span>
-          <span className="meta-pill">
-            Last updated: {feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}
-          </span>
-        </div>
-      </section>
+      <PageHeader
+        title="Live Match Dashboard"
+        subtitle="Filter, sort, and track the games that matter right now."
+        meta={[
+          "Data: Live-style feed",
+          `Last updated: ${feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}`,
+        ]}
+        actions={
+          <>
+            <Link className="btn btn-muted" href="/widgets">
+              Football hub
+            </Link>
+            <Link className="btn btn-primary" href="/dashboard/insights">
+              Insights
+            </Link>
+          </>
+        }
+      />
 
       <section className="kpi-strip" aria-label="Dashboard KPIs">
         <article className="kpi">
@@ -112,7 +121,7 @@ export default function DashboardPage() {
         </article>
       </section>
 
-      <Card className="controls" title="Controls">
+      <Card className="controls" title="Filters">
         <TextInput
           label="Search teams/leagues"
           type="search"

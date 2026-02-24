@@ -117,6 +117,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
                   key={entry.league}
                   type="button"
                   className={`widget-row widget-button ${isActive ? "is-active" : ""}`}
+                  aria-pressed={isActive}
                   onClick={() => setSelectedLeague(entry.league)}
                 >
                   <span>{entry.league}</span>
@@ -143,6 +144,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
                   key={match.id}
                   type="button"
                   className={`widget-row widget-button ${isActive ? "is-active" : ""}`}
+                  aria-pressed={isActive}
                   onClick={() => setSelectedMatchId(match.id)}
                 >
                   <span>
