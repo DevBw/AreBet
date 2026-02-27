@@ -40,7 +40,6 @@ export default async function AdminPage() {
       <section className="cards-grid">
         <Card title="System Health">
           <p className="muted">Status: Operational</p>
-          <p className="muted">Demo data feed: Active</p>
         </Card>
         <Card title="Moderation">
           <p className="muted">User flags: 0</p>

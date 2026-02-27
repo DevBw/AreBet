@@ -54,7 +54,6 @@ export default function InsightsPage() {
       <PageHeader
         title="Insights"
         subtitle="Plain-language guidance to explain what the numbers are saying."
-        meta={["Built from live-style match data"]}
       />
 
       <section className="cards-grid" style={{ gridColumn: "1 / -1" }}>

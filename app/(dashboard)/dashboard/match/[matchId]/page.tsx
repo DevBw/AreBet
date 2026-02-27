@@ -34,7 +34,6 @@ export default async function MatchDetailPage({ params }: Props) {
         title={`${match.home.name} vs ${match.away.name}`}
         subtitle={`${match.league} | ${match.country} | ${match.venue}`}
         meta={[
-          "Data: Live-style feed",
           `Last updated: ${new Date(result.updatedAtISO).toLocaleTimeString()}`,
         ]}
         actions={

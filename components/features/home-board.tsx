@@ -60,7 +60,6 @@ export function HomeBoard() {
         title="Match Intelligence, Simplified"
         subtitle="See live matches, confidence signals, and quick context in one glance."
         meta={[
-          "Data: Live-style feed",
           `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
         ]}
         actions={
@@ -89,32 +88,6 @@ export function HomeBoard() {
           <span className="kpi-label">Top Confidence</span>
           <strong>{topConfidence}%</strong>
         </article>
-      </section>
-
-      <section aria-label="Brand mood board">
-        <Card title="Brand Mood Board">
-          <p className="muted">Core palette derived from the AreBet logo.</p>
-          <div className="mood-grid">
-            <div className="mood-swatch" data-tone="white">
-              White
-            </div>
-            <div className="mood-swatch" data-tone="neon">
-              Neon Green
-            </div>
-            <div className="mood-swatch" data-tone="emerald">
-              Emerald
-            </div>
-            <div className="mood-swatch" data-tone="navy">
-              Navy
-            </div>
-            <div className="mood-swatch" data-tone="deep">
-              Deep Night
-            </div>
-            <div className="mood-swatch" data-tone="slate">
-              Slate Blue
-            </div>
-          </div>
-        </Card>
       </section>
 
       <section className="cards-grid" aria-label="Top opportunities">

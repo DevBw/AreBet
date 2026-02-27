@@ -43,7 +43,6 @@ export function FootballHub() {
         title="Football Hub"
         subtitle="Leagues, matches, standings, and match detail in one focused layout."
         meta={[
-          "Data: Live-style feed",
           `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
         ]}
         actions={
