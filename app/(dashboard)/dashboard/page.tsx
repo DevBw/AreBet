@@ -218,6 +218,13 @@ export default function DashboardPage() {
 
       <section className="quick-links" aria-label="Insights actions">
         <Link href="/dashboard/insights">Open insights</Link>
+        <Link href="/dashboard/live-matches">Live matches</Link>
+        <Link href="/dashboard/upcoming-matches">Upcoming matches</Link>
+        <Link href="/dashboard/predictions">Predictions</Link>
+        <Link href="/dashboard/odds-comparison">Odds comparison</Link>
+        <Link href="/dashboard/standings">Standings</Link>
+        <Link href="/dashboard/teams">Teams</Link>
+        <Link href="/dashboard/favorites">Favorites</Link>
       </section>
     </main>
   );

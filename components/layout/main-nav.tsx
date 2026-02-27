@@ -9,6 +9,8 @@ const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/insights", label: "Insights" },
   { href: "/widgets", label: "Football Hub" },
+  { href: "/user/dashboard", label: "User" },
+  { href: "/help", label: "Help" },
 ];
 
 export function MainNav() {
