@@ -9,9 +9,10 @@ import { Card } from "@/components/ui/card";
 import { TextInput } from "@/components/ui/text-input";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -19,14 +20,15 @@ export default function LoginPage() {
 
   const emailValid = useMemo(() => /\S+@\S+\.\S+/.test(email), [email]);
   const passwordValid = password.length >= 8;
-  const canSubmit = emailValid && passwordValid && !loading;
+  const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
+  const canSubmit = emailValid && passwordValid && passwordsMatch && !loading;
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -44,8 +46,8 @@ export default function LoginPage() {
     <main className="page-wrap">
       <Card className="auth-panel">
         <Image src="/arebet-logo.png" alt="AreBet" width={170} height={51} className="auth-logo" priority />
-        <h1>Sign in</h1>
-        <p className="muted">Access your saved matches, alerts, and preferences.</p>
+        <h1>Create Account</h1>
+        <p className="muted">Start tracking matches, odds, and insights.</p>
         <form onSubmit={onSubmit} className="auth-form">
           <TextInput
             label="Email"
@@ -65,8 +67,17 @@ export default function LoginPage() {
             error={!passwordValid && password.length > 0 ? "Password must be at least 8 characters." : undefined}
             required
           />
+          <TextInput
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm your password"
+            error={!passwordsMatch && confirmPassword.length > 0 ? "Passwords do not match." : undefined}
+            required
+          />
           <Button type="submit" disabled={!canSubmit}>
-            {loading ? "Signing in..." : "Continue"}
+            {loading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
 
@@ -77,7 +88,7 @@ export default function LoginPage() {
         )}
 
         <p className="muted" style={{ marginTop: "1rem", textAlign: "center" }}>
-          Don't have an account? <Link href="/auth/signup" style={{ color: "#22c55e" }}>Sign up</Link>
+          Already have an account? <Link href="/auth/login" style={{ color: "#22c55e" }}>Sign in</Link>
         </p>
       </Card>
     </main>

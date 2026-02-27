@@ -1,7 +1,22 @@
+import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  // Redirect to login if not authenticated
+  if (!session) {
+    redirect("/auth/login");
+  }
+
+  // Note: Role-based access control will be added in Phase 2
+  // For now, any authenticated user can access admin panel
+
   return (
     <main className="page-wrap">
       <PageHeader title="Admin Panel" subtitle="Operational controls and system overview." />

@@ -85,13 +85,15 @@ export default function DashboardPage() {
     return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
+  const isDev = process.env.NODE_ENV === "development";
+
   return (
     <main className="page-wrap">
       <PageHeader
         title="Live Match Dashboard"
         subtitle="Filter, sort, and track the games that matter right now."
         meta={[
-          "Data: Live-style feed",
+          ...(isDev ? ["Data: Live-style feed"] : []),
           `Last updated: ${feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}`,
         ]}
         actions={
