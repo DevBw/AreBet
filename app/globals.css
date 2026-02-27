@@ -2,15 +2,22 @@
 @import "tailwindcss";
 
 :root {
-  --ab-green: #28db76;
-  --ab-green-dark: #1ba85b;
-  --ab-black: #050607;
-  --ab-panel: #0f1411;
-  --ab-panel-soft: #131a16;
-  --ab-text: #f5f7f6;
-  --ab-muted: #b7c1bb;
-  --ab-border: rgba(255, 255, 255, 0.08);
-  --ab-glow: rgba(40, 219, 118, 0.16);
+  --brand-white: #f2f5f7;
+  --brand-neon: #08db4f;
+  --brand-emerald: #04b840;
+  --brand-navy: #061426;
+  --brand-deep: #020915;
+  --brand-slate: #0c1f34;
+
+  --ab-green: var(--brand-neon);
+  --ab-green-dark: var(--brand-emerald);
+  --ab-black: var(--brand-deep);
+  --ab-panel: #081526;
+  --ab-panel-soft: #0d1c2d;
+  --ab-text: var(--brand-white);
+  --ab-muted: #a8b6c4;
+  --ab-border: rgba(255, 255, 255, 0.12);
+  --ab-glow: rgba(8, 219, 79, 0.2);
 }
 
 * {
@@ -27,9 +34,9 @@ body {
   font-family: "Space Grotesk", "Segoe UI", Helvetica, Arial, sans-serif;
   color: var(--ab-text);
   background:
-    radial-gradient(900px 520px at 10% -20%, rgba(40, 219, 118, 0.22), transparent 65%),
-    radial-gradient(700px 480px at 88% -30%, rgba(40, 219, 118, 0.14), transparent 65%),
-    linear-gradient(180deg, rgba(10, 14, 12, 0.95), rgba(5, 6, 7, 1) 55%);
+    radial-gradient(900px 520px at 10% -20%, rgba(8, 219, 79, 0.24), transparent 65%),
+    radial-gradient(700px 480px at 88% -30%, rgba(4, 184, 64, 0.16), transparent 65%),
+    linear-gradient(180deg, rgba(7, 17, 32, 0.96), rgba(2, 9, 21, 1) 55%);
 }
 
 a {
@@ -286,6 +293,54 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 0.75rem;
+}
+
+.mood-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.7rem;
+}
+
+.mood-swatch {
+  border-radius: 12px;
+  border: 1px solid var(--ab-border);
+  min-height: 84px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0.55rem 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.mood-swatch[data-tone="white"] {
+  background: var(--brand-white);
+  color: #1f2937;
+}
+
+.mood-swatch[data-tone="neon"] {
+  background: var(--brand-neon);
+  color: #04160a;
+}
+
+.mood-swatch[data-tone="emerald"] {
+  background: var(--brand-emerald);
+  color: #041109;
+}
+
+.mood-swatch[data-tone="navy"] {
+  background: var(--brand-navy);
+  color: var(--brand-white);
+}
+
+.mood-swatch[data-tone="deep"] {
+  background: var(--brand-deep);
+  color: var(--brand-white);
+}
+
+.mood-swatch[data-tone="slate"] {
+  background: var(--brand-slate);
+  color: var(--brand-white);
 }
 
 .widgets-section {

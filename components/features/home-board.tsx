@@ -91,6 +91,32 @@ export function HomeBoard() {
         </article>
       </section>
 
+      <section aria-label="Brand mood board">
+        <Card title="Brand Mood Board">
+          <p className="muted">Core palette derived from the AreBet logo.</p>
+          <div className="mood-grid">
+            <div className="mood-swatch" data-tone="white">
+              White
+            </div>
+            <div className="mood-swatch" data-tone="neon">
+              Neon Green
+            </div>
+            <div className="mood-swatch" data-tone="emerald">
+              Emerald
+            </div>
+            <div className="mood-swatch" data-tone="navy">
+              Navy
+            </div>
+            <div className="mood-swatch" data-tone="deep">
+              Deep Night
+            </div>
+            <div className="mood-swatch" data-tone="slate">
+              Slate Blue
+            </div>
+          </div>
+        </Card>
+      </section>
+
       <section className="cards-grid" aria-label="Top opportunities">
         {topPicks.map((match) => (
           <Card className="match-card" key={match.id}>
