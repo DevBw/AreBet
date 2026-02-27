@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,6 +23,7 @@ export default function LoginPage() {
   return (
     <main className="page-wrap">
       <Card className="auth-panel">
+        <Image src="/arebet-logo.png" alt="AreBet" width={170} height={51} className="auth-logo" priority />
         <h1>Sign in</h1>
         <p className="muted">Access your saved matches, alerts, and preferences.</p>
         <form onSubmit={onSubmit} className="auth-form">

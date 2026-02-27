@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { MainNav } from "@/components/layout/main-nav";
@@ -7,6 +8,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AreBet",
   description: "Smart Betting. Simple Insights.",
+  icons: {
+    icon: "/arebet-logo.png",
+    apple: "/arebet-logo.png",
+  },
 };
 
 const buildInfo = {
@@ -31,7 +36,15 @@ export default function RootLayout({
           <header className="site-header">
             <div className="site-header-inner">
               <Link href="/" className="brand">
-                AreBet
+                <Image
+                  src="/arebet-logo.png"
+                  alt="AreBet"
+                  width={140}
+                  height={42}
+                  priority
+                  className="brand-mark"
+                />
+                <span className="sr-only">AreBet</span>
               </Link>
               <MainNav />
             </div>
@@ -40,7 +53,15 @@ export default function RootLayout({
           {children}
           <footer className="site-footer">
             <div className="site-footer-inner">
-              <span>AreBet</span>
+              <span className="footer-brand">
+                <Image
+                  src="/arebet-logo.png"
+                  alt="AreBet"
+                  width={110}
+                  height={33}
+                  className="footer-mark"
+                />
+              </span>
               <span className="footer-meta">Built for fast football betting insights</span>
               <span className="footer-meta">Build {buildLabel}{buildTime}</span>
             </div>
