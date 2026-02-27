@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const authConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   const emailValid = useMemo(() => /\S+@\S+\.\S+/.test(email), [email]);
   const passwordValid = password.length >= 8;
@@ -26,6 +26,13 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
+    if (!authConfigured) {
+      setError("Authentication is not configured yet. Please add Supabase env variables.");
+      setLoading(false);
+      return;
+    }
+
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,

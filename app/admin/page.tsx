@@ -4,6 +4,22 @@ import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminPage() {
+  const authConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  if (!authConfigured) {
+    return (
+      <main className="page-wrap">
+        <PageHeader title="Admin Panel" subtitle="Operational controls and system overview." />
+
+        <section className="cards-grid">
+          <Card title="Auth Setup Required">
+            <p className="muted">Supabase environment variables are not configured in this deployment.</p>
+            <p className="muted">Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to enable admin auth.</p>
+          </Card>
+        </section>
+      </main>
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { session },
