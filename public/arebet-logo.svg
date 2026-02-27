@@ -1,0 +1,13 @@
+<svg width="170" height="51" viewBox="0 0 170 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- "Are" text in white -->
+  <text x="0" y="35" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="700" fill="#f2f5f7">Are</text>
+
+  <!-- "Bet" text in neon green -->
+  <text x="60" y="35" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="700" fill="#08db4f">Bet</text>
+
+  <!-- Subtle accent line under "Bet" -->
+  <rect x="60" y="40" width="50" height="3" fill="#08db4f" opacity="0.6" rx="1.5"/>
+
+  <!-- Optional: Small dot accent -->
+  <circle cx="165" cy="15" r="4" fill="#08db4f"/>
+</svg>

@@ -8,6 +8,9 @@ import { PageHeader } from "@/components/layout/page-header";
 import { listMatches } from "@/lib/services/matches";
 import { buildInsightBundle, scenarioSuggestion } from "@/lib/insights/engine";
 import { DEMO_BANKROLL, DEMO_BETS } from "@/lib/demo/bets";
+import { ValueEdgeChart } from "@/components/analytics/value-edge-chart";
+import { PerformanceChart } from "@/components/analytics/performance-chart";
+import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import type { Match } from "@/types/match";
 
 export default function InsightsPage() {
@@ -36,6 +39,16 @@ export default function InsightsPage() {
     ? scenarioSuggestion(selectedMatch, Number(minute) || 0, Number(goalDiff) || 0)
     : "Select a match to simulate.";
 
+  // Sample performance trend data
+  const performanceData = [
+    { period: "Week 1", roi: 5.2, winRate: 55, clv: 1.8 },
+    { period: "Week 2", roi: 8.5, winRate: 58, clv: 2.1 },
+    { period: "Week 3", roi: 6.1, winRate: 52, clv: 1.5 },
+    { period: "Week 4", roi: 12.4, winRate: 61, clv: 2.7 },
+    { period: "Week 5", roi: 9.8, winRate: 58, clv: 2.3 },
+    { period: "Week 6", roi: 11.2, winRate: 60, clv: 2.9 },
+  ];
+
   return (
     <main className="page-wrap">
       <PageHeader
@@ -44,19 +57,30 @@ export default function InsightsPage() {
         meta={["Built from live-style match data"]}
       />
 
-      <section className="cards-grid">
+      <section className="cards-grid" style={{ gridColumn: "1 / -1" }}>
         <Card title="1) Is this price fair?">
           <p className="muted">
             We compare our model view vs market price. Positive edge means the market may be undervaluing that outcome.
           </p>
-          <ul>
-            {insights.valueEdges.slice(0, 5).map((edge) => (
-              <li key={`${edge.matchId}-${edge.market}`}>
-                Match {edge.matchId} {edge.market}: edge {edge.edgePct}% (model {edge.modelProbability}% vs market {edge.impliedProbability}%)
-              </li>
-            ))}
-          </ul>
+          <ValueEdgeChart data={insights.valueEdges} />
+          <div style={{ marginTop: "1rem" }}>
+            <p className="muted" style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
+              Top Value Opportunities:
+            </p>
+            <ul>
+              {insights.valueEdges.slice(0, 5).map((edge) => (
+                <li key={`${edge.matchId}-${edge.market}`}>
+                  Match {edge.matchId} {edge.market}:{" "}
+                  <span className="value-positive">+{edge.edgePct}% edge</span> (model {edge.modelProbability}% vs market{" "}
+                  {edge.impliedProbability}%)
+                </li>
+              ))}
+            </ul>
+          </div>
         </Card>
+      </section>
+
+      <section className="cards-grid">
 
         <Card title="2) Are prices moving?">
           <p className="muted">Track if prices are rising or falling during the day.</p>
@@ -69,12 +93,27 @@ export default function InsightsPage() {
           </ul>
         </Card>
 
-        <Card title="3) Did we beat the final price?">
+        <Card title="3) Did we beat the final price?" className="panel-accent">
           <p className="muted">
             If your chosen price is better than the final market close, that is a strong long-term signal.
           </p>
-          <p className="muted">Average price edge: {insights.clv.avgCLVEdgePct}%</p>
-          <p className="muted">Times we beat close: {insights.clv.positiveCLVPct}%</p>
+          <div className="stats-grid" style={{ marginTop: "1.25rem" }}>
+            <div className="stat-item">
+              <div className="stat-label">Average CLV Edge</div>
+              <div className="stat-value">
+                <TrendIndicator value={insights.clv.avgCLVEdgePct} />
+              </div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">Beat Closing %</div>
+              <div className="stat-value" style={{ color: "var(--ab-green)" }}>
+                {insights.clv.positiveCLVPct}%
+              </div>
+            </div>
+          </div>
+          <p className="muted" style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
+            💡 <strong>Pro Tip:</strong> Consistent positive CLV is the best predictor of long-term profitability.
+          </p>
         </Card>
       </section>
 
@@ -177,12 +216,31 @@ export default function InsightsPage() {
         </Card>
       </section>
 
-      <section className="cards-grid">
+      <section className="cards-grid" style={{ gridColumn: "1 / -1" }}>
         <Card title="10) Can we trust these numbers?">
-          <p className="muted">Number of tracked bets: {insights.trust.sampleSize}</p>
-          <p className="muted">Win rate on settled picks: {insights.trust.hitRatePct}%</p>
-          <p className="muted">Return on stake: {insights.trust.roiPct}%</p>
-          <p className="muted">Rate of better-than-close prices: {insights.trust.clvWinRatePct}%</p>
+          <div className="stats-grid">
+            <div className="stat-item">
+              <div className="stat-label">Tracked Bets</div>
+              <div className="stat-value">{insights.trust.sampleSize}</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">Win Rate</div>
+              <div className="stat-value">{insights.trust.hitRatePct}%</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">ROI</div>
+              <div className="stat-value">
+                <TrendIndicator value={insights.trust.roiPct} />
+              </div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">CLV Win Rate</div>
+              <div className="stat-value" style={{ color: "var(--ab-green)" }}>
+                {insights.trust.clvWinRatePct}%
+              </div>
+            </div>
+          </div>
+          <PerformanceChart data={performanceData} />
         </Card>
       </section>
     </main>

@@ -16,8 +16,16 @@
   --ab-panel-soft: #0d1c2d;
   --ab-text: var(--brand-white);
   --ab-muted: #a8b6c4;
-  --ab-border: rgba(255, 255, 255, 0.12);
+  --ab-border: rgba(255, 255, 255, 0.25);
   --ab-glow: rgba(8, 219, 79, 0.2);
+
+  /* Analytics-specific colors */
+  --color-positive: #10b981;
+  --color-negative: #ef4444;
+  --color-neutral: #f59e0b;
+  --color-win: #22c55e;
+  --color-loss: #f87171;
+  --color-draw: #fbbf24;
 }
 
 * {
@@ -811,6 +819,206 @@ a:focus-visible {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* ===== Analytics-Specific Styles ===== */
+
+/* Improved Typography for Data */
+.card-title {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: var(--ab-text) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.kpi strong {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ab-text);
+}
+
+.score {
+  font-size: 1.8rem !important;
+  font-weight: 700;
+}
+
+/* Value indicators with color coding */
+.value-positive {
+  color: var(--color-positive);
+  font-weight: 600;
+}
+
+.value-negative {
+  color: var(--color-negative);
+  font-weight: 600;
+}
+
+.value-neutral {
+  color: var(--color-neutral);
+  font-weight: 600;
+}
+
+/* Trend indicators */
+.trend-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.trend-up {
+  color: var(--color-positive);
+}
+
+.trend-down {
+  color: var(--color-negative);
+}
+
+.trend-neutral {
+  color: var(--color-neutral);
+}
+
+/* Stat bars for comparison */
+.stat-bar-container {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stat-bar {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.stat-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--ab-muted);
+}
+
+.stat-bar-visual {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ab-panel-soft);
+}
+
+.stat-bar-home {
+  background: var(--ab-green);
+  transition: width 0.4s ease;
+}
+
+.stat-bar-away {
+  background: rgba(239, 68, 68, 0.7);
+  transition: width 0.4s ease;
+}
+
+/* Odds comparison table */
+.odds-comparison {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 0.75rem;
+}
+
+.odds-comparison th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--ab-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--ab-border);
+}
+
+.odds-comparison td {
+  padding: 0.7rem 0.75rem;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.odds-comparison tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.odds-comparison tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.odds-best {
+  color: var(--ab-green);
+  font-weight: 700;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* Performance stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--ab-muted);
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ab-text);
+}
+
+/* Chart container */
+.chart-container {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Pulsing LIVE indicator */
+.badge-live {
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+.badge-live::before {
+  content: "●";
+  margin-right: 0.35rem;
+  color: #22c55e;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Enhanced panel styling for analytics */
+.panel {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.panel-accent {
+  outline: 1.5px solid rgba(34, 197, 94, 0.5) !important;
 }
 
 @media (max-width: 760px) {

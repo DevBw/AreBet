@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   title: "AreBet",
   description: "Smart Betting. Simple Insights.",
   icons: {
-    icon: "/arebet-logo.png",
-    apple: "/arebet-logo.png",
+    icon: "/arebet-logo.svg",
+    apple: "/arebet-logo.svg",
   },
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
               <div className="site-header-inner">
                 <Link href="/" className="brand">
                   <Image
-                    src="/arebet-logo.png"
+                    src="/arebet-logo.svg"
                     alt="AreBet"
                     width={140}
                     height={42}
@@ -59,7 +59,7 @@ export default function RootLayout({
               <div className="site-footer-inner">
                 <span className="footer-brand">
                   <Image
-                    src="/arebet-logo.png"
+                    src="/arebet-logo.svg"
                     alt="AreBet"
                     width={110}
                     height={33}

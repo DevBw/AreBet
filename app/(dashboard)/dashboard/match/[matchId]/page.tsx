@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { getMatchById } from "@/lib/services/matches";
+import { StatBar } from "@/components/analytics/stat-bar";
+import { OddsComparison } from "@/components/analytics/odds-comparison";
 
 type Props = {
   params: Promise<{ matchId: string }>;
@@ -17,6 +19,14 @@ export default async function MatchDetailPage({ params }: Props) {
   if (!result.match) notFound();
 
   const match = result.match;
+
+  // Sample odds comparison data
+  const oddsData = [
+    { bookmaker: "Bet365", home: match.odds.home + 0.05, draw: match.odds.draw, away: match.odds.away - 0.05 },
+    { bookmaker: "Betway", home: match.odds.home, draw: match.odds.draw + 0.10, away: match.odds.away },
+    { bookmaker: "1xBet", home: match.odds.home - 0.03, draw: match.odds.draw - 0.05, away: match.odds.away + 0.08 },
+    { bookmaker: "William Hill", home: match.odds.home + 0.02, draw: match.odds.draw, away: match.odds.away + 0.03 },
+  ];
 
   return (
     <main className="page-wrap">
@@ -50,14 +60,39 @@ export default async function MatchDetailPage({ params }: Props) {
           </ul>
         </Card>
         <Card title="Form Context">
-          <p className="muted">
-            {match.home.short} form: {match.home.form.recent} (GF {match.home.form.goalsFor} / GA {match.home.form.goalsAgainst})
-          </p>
-          <p className="muted">
-            {match.away.short} form: {match.away.form.recent} (GF {match.away.form.goalsFor} / GA {match.away.form.goalsAgainst})
-          </p>
+          <div className="stat-bar-container">
+            <StatBar
+              label="Goals Scored (Last 5)"
+              home={match.home.form.goalsFor}
+              away={match.away.form.goalsFor}
+              homeLabel={match.home.short}
+              awayLabel={match.away.short}
+            />
+            <StatBar
+              label="Goals Conceded (Last 5)"
+              home={match.home.form.goalsAgainst}
+              away={match.away.form.goalsAgainst}
+              homeLabel={match.home.short}
+              awayLabel={match.away.short}
+            />
+          </div>
+          <div style={{ marginTop: "1rem" }}>
+            <p className="muted">
+              {match.home.short}: {match.home.form.recent}
+            </p>
+            <p className="muted">
+              {match.away.short}: {match.away.form.recent}
+            </p>
+          </div>
         </Card>
       </section>
+
+      <Card title="Odds Comparison">
+        <p className="muted" style={{ marginBottom: "1rem" }}>
+          Compare odds across major bookmakers to find the best value. Higher odds = better potential return.
+        </p>
+        <OddsComparison odds={oddsData} homeTeam={match.home.short} awayTeam={match.away.short} />
+      </Card>
 
       <Card title="Match Timeline" className="timeline-card">
         {match.events.length ? (

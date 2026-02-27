@@ -52,7 +52,7 @@ export default function SignupPage() {
   return (
     <main className="page-wrap">
       <Card className="auth-panel">
-        <Image src="/arebet-logo.png" alt="AreBet" width={170} height={51} className="auth-logo" priority />
+        <Image src="/arebet-logo.svg" alt="AreBet" width={170} height={51} className="auth-logo" priority />
         <h1>Create Account</h1>
         <p className="muted">Start tracking matches, odds, and insights.</p>
         <form onSubmit={onSubmit} className="auth-form">
