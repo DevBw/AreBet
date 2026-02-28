@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { MainNav } from "@/components/layout/main-nav";
+import { StickinessSync } from "@/components/features/stickiness-sync";
 import { AuthProvider } from "@/lib/auth/context";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
+          <StickinessSync />
           <div className="site-shell">
             <header className="site-header">
               <div className="site-container site-header-inner">

@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<MatchStatus | "ALL">("ALL");
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
-  const { favorites, toggleFavorite } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const { feed, matches, loading, error } = useMatchFeed();
 
   const filteredMatches = useMemo(() => {
@@ -139,12 +139,18 @@ export default function DashboardPage() {
                 <Button
                   type="button"
                   variant="muted"
-                  className={`favorite-btn ${favorites.has(match.id) ? "is-favorite" : ""}`}
-                  onClick={() => toggleFavorite(match.id)}
-                  aria-pressed={favorites.has(match.id)}
-                  title={favorites.has(match.id) ? "Remove favorite" : "Add favorite"}
+                  className={`favorite-btn ${isFavorite("match", String(match.id)) ? "is-favorite" : ""}`}
+                  onClick={() =>
+                    toggleFavorite({
+                      entityType: "match",
+                      entityId: String(match.id),
+                      label: `${match.home.name} vs ${match.away.name}`,
+                    })
+                  }
+                  aria-pressed={isFavorite("match", String(match.id))}
+                  title={isFavorite("match", String(match.id)) ? "Remove favorite" : "Add favorite"}
                 >
-                  {favorites.has(match.id) ? "Favored" : "Favorite"}
+                  {isFavorite("match", String(match.id)) ? "Favored" : "Favorite"}
                 </Button>
               </div>
               <h2>
