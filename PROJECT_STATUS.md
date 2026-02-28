@@ -24,6 +24,35 @@ Last updated: 2026-02-28
 - Support pages: Subscription, Settings, Admin
 - API route: `/api/health`
 
+### End-User Visual Appearance (Current)
+- Overall look:
+  - Dark, football-themed UI with pitch-green accents (`#22c55e`) on black/charcoal backgrounds.
+  - Card-based layout with clear sections, compact spacing, and high-contrast text.
+  - Desktop-first dashboard feel, but usable on mobile with stacked sections.
+- Navigation and shell:
+  - Top navigation with Home, Football Hub, Help, and auth-aware links (Dashboard/User when logged in).
+  - AreBet logo appears in core entry/auth screens and branding touchpoints.
+- Home (`/`):
+  - Presents a “live board” summary style with KPI strip (live/upcoming/top confidence) and top picks.
+  - Uses quick action links to move users into core betting workflows quickly.
+- Dashboard (`/dashboard`):
+  - Dense control panel style: search, status filters, sort controls, KPI strip, and match cards.
+  - Match cards show score, status badge, confidence, advice, and favorite toggle.
+  - Designed for frequent scanning and quick decision support.
+- Football Hub (`/widgets`):
+  - 3-column “widget” visual layout (leagues, matches, standings/detail).
+  - Feels like a control-center panel with sticky sections and rapid switching.
+- Insights (`/dashboard/insights`):
+  - Analytics-heavy presentation with charts and stat cards.
+  - Reads as a performance/edge analysis dashboard for advanced users.
+- Match detail (`/dashboard/match/[matchId]`):
+  - Focused breakdown page with prediction, market snapshot, form context, odds comparison, and timeline.
+- Auth pages:
+  - Clean centered auth card layout with logo, simple form, and inline validation messaging.
+- Subscription page:
+  - Plan cards (Free/Pro/Elite) with pricing/features and CTA buttons.
+  - Checkout flow UI exists visually, but backend billing flow is still pending.
+
 ### Data State
 - App currently runs on demo/fallback match data (`lib/services/matches.ts`)
 - API-Football integration exists at client level but is not wired end-to-end
@@ -63,4 +92,3 @@ Last updated: 2026-02-28
 2. Stripe checkout + webhook sync + plan enforcement.
 3. Supabase persistence for favorites and insight inputs.
 4. Testing and release hardening.
-
