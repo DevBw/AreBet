@@ -39,7 +39,7 @@ export function OddsComparison({ odds, homeTeam = "Home", awayTeam = "Away" }: O
           ))}
         </tbody>
       </table>
-      <p className="muted" style={{ marginTop: "0.75rem", fontSize: "0.82rem" }}>
+      <p className="chart-caption">
         Best odds highlighted in green. Always compare before placing a bet.
       </p>
     </div>

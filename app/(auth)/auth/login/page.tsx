@@ -78,13 +78,13 @@ export default function LoginPage() {
         </form>
 
         {error && (
-          <div className="notice-error" role="alert" style={{ color: "red", marginTop: "1rem" }}>
+          <div className="auth-error" role="alert">
             {error}
           </div>
         )}
 
-        <p className="muted" style={{ marginTop: "1rem", textAlign: "center" }}>
-          Don&apos;t have an account? <Link href="/auth/signup" style={{ color: "#22c55e" }}>Sign up</Link>
+        <p className="auth-link">
+          Don&apos;t have an account? <Link href="/auth/signup">Sign up</Link>
         </p>
       </Card>
     </main>

@@ -89,13 +89,13 @@ export default function SignupPage() {
         </form>
 
         {error && (
-          <div className="notice-error" role="alert" style={{ color: "red", marginTop: "1rem" }}>
+          <div className="auth-error" role="alert">
             {error}
           </div>
         )}
 
-        <p className="muted" style={{ marginTop: "1rem", textAlign: "center" }}>
-          Already have an account? <Link href="/auth/login" style={{ color: "#22c55e" }}>Sign in</Link>
+        <p className="auth-link">
+          Already have an account? <Link href="/auth/login">Sign in</Link>
         </p>
       </Card>
     </main>

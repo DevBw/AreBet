@@ -38,7 +38,7 @@ export default function RootLayout({
         <AuthProvider>
           <div className="site-shell">
             <header className="site-header">
-              <div className="site-header-inner">
+              <div className="site-container site-header-inner">
                 <Link href="/" className="brand">
                   <Image
                     src="/arebet-logo.svg"
@@ -54,9 +54,11 @@ export default function RootLayout({
               </div>
             </header>
             <Breadcrumbs />
-            {children}
+            <main className="site-main">
+              {children}
+            </main>
             <footer className="site-footer">
-              <div className="site-footer-inner">
+              <div className="site-container site-footer-inner">
                 <span className="footer-brand">
                   <Image
                     src="/arebet-logo.svg"

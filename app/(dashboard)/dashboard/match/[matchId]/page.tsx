@@ -76,7 +76,7 @@ export default async function MatchDetailPage({ params }: Props) {
               awayLabel={match.away.short}
             />
           </div>
-          <div style={{ marginTop: "1rem" }}>
+          <div className="mt-4">
             <p className="muted">
               {match.home.short}: {match.home.form.recent}
             </p>
@@ -88,7 +88,7 @@ export default async function MatchDetailPage({ params }: Props) {
       </section>
 
       <Card title="Odds Comparison">
-        <p className="muted" style={{ marginBottom: "1rem" }}>
+        <p className="muted mb-2">
           Compare odds across major bookmakers to find the best value. Higher odds = better potential return.
         </p>
         <OddsComparison odds={oddsData} homeTeam={match.home.short} awayTeam={match.away.short} />

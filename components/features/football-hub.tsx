@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { WidgetsDemo } from "@/components/widgets/widgets-demo";
 import { PageHeader } from "@/components/layout/page-header";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
@@ -40,7 +42,16 @@ export function FootballHub() {
         {feed ? (
           <WidgetsDemo matches={feed.matches} updatedAtISO={feed.updatedAtISO} />
         ) : (
-          <p className="muted">Loading matches...</p>
+          <div className="widgets-layout">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <Card key={idx}>
+                <Skeleton className="skeleton-line w-40" />
+                <Skeleton className="skeleton-line w-full" />
+                <Skeleton className="skeleton-line w-full" />
+                <Skeleton className="skeleton-line w-28" />
+              </Card>
+            ))}
+          </div>
         )}
       </section>
     </main>

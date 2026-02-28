@@ -18,7 +18,7 @@ export function Breadcrumbs() {
 
   return (
     <div className="breadcrumbs-wrap">
-      <div className="site-header-inner">
+      <div className="site-container">
         <nav className="breadcrumbs" aria-label="Breadcrumbs">
           <Link href="/">Home</Link>
           {segments.map((segment, index) => {

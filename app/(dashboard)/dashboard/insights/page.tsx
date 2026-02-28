@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SelectField } from "@/components/ui/select-field";
 import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
@@ -16,7 +18,7 @@ export default function InsightsPage() {
   const [selectedMatchId, setSelectedMatchId] = useState<string>("");
   const [minute, setMinute] = useState("70");
   const [goalDiff, setGoalDiff] = useState("0");
-  const { matches } = useMatchFeed();
+  const { matches, loading, error } = useMatchFeed();
   const activeMatchId = selectedMatchId || (matches[0] ? String(matches[0].id) : "");
 
   const insights = useMemo(() => buildInsightBundle(matches, DEMO_BETS, DEMO_BANKROLL), [matches]);
@@ -45,14 +47,29 @@ export default function InsightsPage() {
         subtitle="Plain-language guidance to explain what the numbers are saying."
       />
 
-      <section className="cards-grid" style={{ gridColumn: "1 / -1" }}>
+      {loading ? (
+        <section className="cards-grid" aria-label="Loading insights">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <Card key={idx}>
+              <Skeleton className="skeleton-line w-40" />
+              <Skeleton className="skeleton-line w-full" />
+              <Skeleton className="skeleton-line w-full" />
+              <Skeleton className="skeleton-line w-28" />
+            </Card>
+          ))}
+        </section>
+      ) : error ? (
+        <EmptyState title="Could not load insights" description={`${error} Try refreshing the page.`} />
+      ) : (
+      <>
+      <section className="cards-grid">
         <Card title="1) Is this price fair?">
           <p className="muted">
             We compare our model view vs market price. Positive edge means the market may be undervaluing that outcome.
           </p>
           <ValueEdgeChart data={insights.valueEdges} />
-          <div style={{ marginTop: "1rem" }}>
-            <p className="muted" style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
+          <div className="mt-4">
+            <p className="muted mb-2 text-strong">
               Top Value Opportunities:
             </p>
             <ul>
@@ -85,7 +102,7 @@ export default function InsightsPage() {
           <p className="muted">
             If your chosen price is better than the final market close, that is a strong long-term signal.
           </p>
-          <div className="stats-grid" style={{ marginTop: "1.25rem" }}>
+          <div className="stats-grid">
             <div className="stat-item">
               <div className="stat-label">Average CLV Edge</div>
               <div className="stat-value">
@@ -94,12 +111,12 @@ export default function InsightsPage() {
             </div>
             <div className="stat-item">
               <div className="stat-label">Beat Closing %</div>
-              <div className="stat-value" style={{ color: "var(--ab-green)" }}>
+              <div className="stat-value text-accent">
                 {insights.clv.positiveCLVPct}%
               </div>
             </div>
           </div>
-          <p className="muted" style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
+          <p className="card-hint">
             <strong>Pro Tip:</strong> Consistent positive CLV is the best predictor of long-term profitability.
           </p>
         </Card>
@@ -204,7 +221,7 @@ export default function InsightsPage() {
         </Card>
       </section>
 
-      <section className="cards-grid" style={{ gridColumn: "1 / -1" }}>
+      <section className="cards-grid">
         <Card title="10) Can we trust these numbers?">
           <div className="stats-grid">
             <div className="stat-item">
@@ -223,7 +240,7 @@ export default function InsightsPage() {
             </div>
             <div className="stat-item">
               <div className="stat-label">CLV Win Rate</div>
-              <div className="stat-value" style={{ color: "var(--ab-green)" }}>
+              <div className="stat-value text-accent">
                 {insights.trust.clvWinRatePct}%
               </div>
             </div>
@@ -231,6 +248,8 @@ export default function InsightsPage() {
           <PerformanceChart data={performanceData} />
         </Card>
       </section>
+      </>
+      )}
     </main>
   );
 }

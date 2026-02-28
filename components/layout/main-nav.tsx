@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
@@ -21,40 +22,57 @@ const PROTECTED_LINKS = [
 export function MainNav() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const links = user ? [...PUBLIC_LINKS.slice(0, 1), ...PROTECTED_LINKS, ...PUBLIC_LINKS.slice(1)] : PUBLIC_LINKS;
 
   return (
-    <nav className="site-nav" aria-label="Primary">
-      {links.map((link) => {
-        const isActive = pathname === link.href || (link.href === "/dashboard" && pathname.startsWith("/dashboard/"));
-        return (
-          <Link key={link.href} href={link.href} className={cn(isActive ? "is-active" : undefined)} aria-current={isActive ? "page" : undefined}>
-            {link.label}
-          </Link>
-        );
-      })}
-      {!loading && (
-        <>
-          {user ? (
-            <button
-              onClick={() => signOut()}
-              className="site-nav-button"
-              style={{ marginLeft: "1rem", cursor: "pointer", border: "1px solid #22c55e", padding: "0.5rem 1rem", borderRadius: "4px", background: "transparent", color: "#22c55e" }}
-            >
-              Logout
-            </button>
-          ) : (
+    <>
+      <button
+        className="nav-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-expanded={menuOpen}
+        aria-label="Toggle navigation"
+      >
+        <span className="nav-toggle-bar" />
+      </button>
+
+      <nav className={cn("site-nav", menuOpen && "is-open")} aria-label="Primary">
+        {links.map((link) => {
+          const isActive = pathname === link.href || (link.href === "/dashboard" && pathname.startsWith("/dashboard/"));
+          return (
             <Link
-              href="/auth/login"
-              className="site-nav-button"
-              style={{ marginLeft: "1rem", padding: "0.5rem 1rem", borderRadius: "4px", background: "#22c55e", color: "black", textDecoration: "none" }}
+              key={link.href}
+              href={link.href}
+              className={cn(isActive ? "is-active" : undefined)}
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => setMenuOpen(false)}
             >
-              Login
+              {link.label}
             </Link>
-          )}
-        </>
-      )}
-    </nav>
+          );
+        })}
+        {!loading && (
+          <>
+            {user ? (
+              <button
+                onClick={() => signOut()}
+                className="nav-auth-btn nav-auth-btn--logout"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="nav-auth-btn nav-auth-btn--login"
+                onClick={() => setMenuOpen(false)}
+              >
+                Login
+              </Link>
+            )}
+          </>
+        )}
+      </nav>
+    </>
   );
 }
