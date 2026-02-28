@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { getMatchById } from "@/lib/services/matches";
 import { StatBar } from "@/components/analytics/stat-bar";
 import { OddsComparison } from "@/components/analytics/odds-comparison";
+import { formatTime } from "@/lib/utils/time";
 
 type Props = {
   params: Promise<{ matchId: string }>;
@@ -34,7 +35,7 @@ export default async function MatchDetailPage({ params }: Props) {
         title={`${match.home.name} vs ${match.away.name}`}
         subtitle={`${match.league} | ${match.country} | ${match.venue}`}
         meta={[
-          `Last updated: ${new Date(result.updatedAtISO).toLocaleTimeString()}`,
+          `Last updated: ${formatTime(result.updatedAtISO)}`,
         ]}
         actions={
           <Link className="btn btn-muted" href="/dashboard">
@@ -98,7 +99,7 @@ export default async function MatchDetailPage({ params }: Props) {
           <ul className="timeline">
             {match.events.map((event) => (
               <li key={`${event.minute}-${event.player}-${event.type}`}>
-                <span className="timeline-minute">{event.minute}'</span>
+                <span className="timeline-minute">{event.minute}&apos;</span>
                 <span className="timeline-body">
                   <strong>{event.type}</strong> | {event.team} | {event.player} | {event.detail}
                 </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,45 +10,17 @@ import { SelectField } from "@/components/ui/select-field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
-import { listMatches } from "@/lib/services/matches";
-import type { Match, MatchFeed, MatchStatus } from "@/types/match";
-
-const FAVORITES_KEY = "arebet.favorites";
+import { useFavorites } from "@/lib/hooks/use-favorites";
+import { useMatchFeed } from "@/lib/hooks/use-match-feed";
+import { formatTime } from "@/lib/utils/time";
+import type { MatchStatus } from "@/types/match";
 
 export default function DashboardPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<MatchStatus | "ALL">("ALL");
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [feed, setFeed] = useState<MatchFeed | null>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(FAVORITES_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved) as number[];
-      setFavorites(new Set(parsed));
-    }
-  }, []);
-
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await listMatches();
-        setFeed(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load matches.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
-  const matches = feed?.matches ?? [];
+  const { favorites, toggleFavorite } = useFavorites();
+  const { feed, matches, loading, error } = useMatchFeed();
 
   const filteredMatches = useMemo(() => {
     let data = matches.filter((match) => {
@@ -73,18 +45,6 @@ export default function DashboardPage() {
     return { live, upcoming, topConfidence };
   }, [matches]);
 
-  function toggleFavorite(matchId: number) {
-    const next = new Set(favorites);
-    if (next.has(matchId)) next.delete(matchId);
-    else next.add(matchId);
-    setFavorites(next);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(next)));
-  }
-
-  function kickoffTime(match: Match) {
-    return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
   const isDev = process.env.NODE_ENV === "development";
 
   return (
@@ -94,7 +54,7 @@ export default function DashboardPage() {
         subtitle="Filter, sort, and track the games that matter right now."
         meta={[
           ...(isDev ? ["Data: Live-style feed"] : []),
-          `Last updated: ${feed ? new Date(feed.updatedAtISO).toLocaleTimeString() : "--:--"}`,
+          `Last updated: ${formatTime(feed?.updatedAtISO)}`,
         ]}
         actions={
           <>
@@ -194,7 +154,7 @@ export default function DashboardPage() {
                 <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
                   {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
                 </Badge>
-                <span>Kickoff: {kickoffTime(match)}</span>
+                <span>Kickoff: {formatTime(match.kickoffISO)}</span>
               </p>
               <div className="match-row">
                 <strong className="score">

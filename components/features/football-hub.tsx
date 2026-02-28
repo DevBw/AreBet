@@ -1,41 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { WidgetsDemo } from "@/components/widgets/widgets-demo";
 import { PageHeader } from "@/components/layout/page-header";
-import { listMatches } from "@/lib/services/matches";
-import type { MatchFeed } from "@/types/match";
-
-function formatUpdatedAt(value?: string) {
-  if (!value) return "--:--";
-  return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { useMatchFeed } from "@/lib/hooks/use-match-feed";
+import { formatTime } from "@/lib/utils/time";
 
 export function FootballHub() {
-  const [feed, setFeed] = useState<MatchFeed | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | undefined;
-
-    async function load() {
-      try {
-        const data = await listMatches();
-        setFeed(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load matches.");
-      }
-    }
-
-    load();
-    timer = setInterval(load, 60000);
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, []);
+  const { feed, error } = useMatchFeed({ pollIntervalMs: 60000 });
 
   return (
     <main className="page-wrap">
@@ -43,7 +15,7 @@ export function FootballHub() {
         title="Football Hub"
         subtitle="Leagues, matches, standings, and match detail in one focused layout."
         meta={[
-          `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
+          `Last updated: ${formatTime(feed?.updatedAtISO)}`,
         ]}
         actions={
           <Link className="btn btn-muted" href="/dashboard">

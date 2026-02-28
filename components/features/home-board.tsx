@@ -1,48 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/layout/page-header";
-import { listMatches } from "@/lib/services/matches";
-import type { Match, MatchFeed } from "@/types/match";
-
-function kickoffTime(match: Match) {
-  return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function formatUpdatedAt(value?: string) {
-  if (!value) return "--:--";
-  return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { useMatchFeed } from "@/lib/hooks/use-match-feed";
+import { formatTime } from "@/lib/utils/time";
 
 export function HomeBoard() {
-  const [feed, setFeed] = useState<MatchFeed | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | undefined;
-
-    async function load() {
-      try {
-        const data = await listMatches();
-        setFeed(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load matches.");
-      }
-    }
-
-    load();
-    timer = setInterval(load, 60000);
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, []);
-
-  const matches = feed?.matches ?? [];
+  const { feed, matches, error } = useMatchFeed({ pollIntervalMs: 60000 });
   const live = matches.filter((m) => m.status === "LIVE").length;
   const upcoming = matches.filter((m) => m.status === "UPCOMING").length;
   const topConfidence = matches.length ? Math.max(...matches.map((m) => m.prediction.confidence)) : 0;
@@ -60,7 +27,7 @@ export function HomeBoard() {
         title="Match Intelligence, Simplified"
         subtitle="See live matches, confidence signals, and quick context in one glance."
         meta={[
-          `Last updated: ${formatUpdatedAt(feed?.updatedAtISO)}`,
+          `Last updated: ${formatTime(feed?.updatedAtISO)}`,
         ]}
         actions={
           <>
@@ -111,7 +78,7 @@ export function HomeBoard() {
               <span className="confidence">{match.prediction.confidence}% confidence</span>
             </div>
             <p className="match-advice">{match.prediction.advice}</p>
-            <p className="muted">Kickoff: {kickoffTime(match)}</p>
+            <p className="muted">Kickoff: {formatTime(match.kickoffISO)}</p>
             <Link href={`/dashboard/match/${match.id}`} className="detail-link">
               View match detail
             </Link>

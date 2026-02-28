@@ -1,33 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { listMatches } from "@/lib/services/matches";
-import type { Match } from "@/types/match";
-
-const FAVORITES_KEY = "arebet.favorites";
+import { useFavorites } from "@/lib/hooks/use-favorites";
+import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 
 export default function FavoritesPage() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    const saved = localStorage.getItem(FAVORITES_KEY);
-    if (saved) {
-      setFavorites(new Set(JSON.parse(saved) as number[]));
-    }
-  }, []);
-
-  useEffect(() => {
-    async function load() {
-      const feed = await listMatches();
-      setMatches(feed.matches);
-    }
-    load();
-  }, []);
+  const { favorites } = useFavorites();
+  const { matches } = useMatchFeed();
 
   const favoriteMatches = useMemo(() => matches.filter((match) => favorites.has(match.id)), [matches, favorites]);
 

@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { listMatches } from "@/lib/services/matches";
+import { formatTime } from "@/lib/utils/time";
 import type { Match, MatchStatus } from "@/types/match";
 
 type Variant = "overview" | "predictions" | "odds";
@@ -15,7 +16,7 @@ type MatchDirectoryPageProps = {
 };
 
 function kickoffTime(match: Match) {
-  return new Date(match.kickoffISO).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return formatTime(match.kickoffISO);
 }
 
 function sortMatches(matches: Match[], variant: Variant) {
@@ -41,7 +42,7 @@ export async function MatchDirectoryPage({
       <PageHeader
         title={title}
         subtitle={subtitle}
-        meta={["Data: Live-style feed", `Last updated: ${new Date(feed.updatedAtISO).toLocaleTimeString()}`]}
+        meta={["Data: Live-style feed", `Last updated: ${formatTime(feed.updatedAtISO)}`]}
         actions={
           <Link className="btn btn-muted" href="/dashboard">
             Back to dashboard

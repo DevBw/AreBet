@@ -1,39 +1,28 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { SelectField } from "@/components/ui/select-field";
 import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
-import { listMatches } from "@/lib/services/matches";
 import { buildInsightBundle, scenarioSuggestion } from "@/lib/insights/engine";
 import { DEMO_BANKROLL, DEMO_BETS } from "@/lib/demo/bets";
 import { ValueEdgeChart } from "@/components/analytics/value-edge-chart";
 import { PerformanceChart } from "@/components/analytics/performance-chart";
 import { TrendIndicator } from "@/components/analytics/trend-indicator";
-import type { Match } from "@/types/match";
+import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 
 export default function InsightsPage() {
-  const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatchId, setSelectedMatchId] = useState<string>("");
   const [minute, setMinute] = useState("70");
   const [goalDiff, setGoalDiff] = useState("0");
-
-  useEffect(() => {
-    async function load() {
-      const feed = await listMatches();
-      setMatches(feed.matches);
-      if (feed.matches.length) {
-        setSelectedMatchId(String(feed.matches[0].id));
-      }
-    }
-    load();
-  }, []);
+  const { matches } = useMatchFeed();
+  const activeMatchId = selectedMatchId || (matches[0] ? String(matches[0].id) : "");
 
   const insights = useMemo(() => buildInsightBundle(matches, DEMO_BETS, DEMO_BANKROLL), [matches]);
   const selectedMatch = useMemo(
-    () => matches.find((item) => item.id === Number(selectedMatchId)),
-    [matches, selectedMatchId]
+    () => matches.find((item) => item.id === Number(activeMatchId)),
+    [matches, activeMatchId]
   );
   const scenarioText = selectedMatch
     ? scenarioSuggestion(selectedMatch, Number(minute) || 0, Number(goalDiff) || 0)
@@ -111,7 +100,7 @@ export default function InsightsPage() {
             </div>
           </div>
           <p className="muted" style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-            💡 <strong>Pro Tip:</strong> Consistent positive CLV is the best predictor of long-term profitability.
+            <strong>Pro Tip:</strong> Consistent positive CLV is the best predictor of long-term profitability.
           </p>
         </Card>
       </section>
@@ -165,7 +154,7 @@ export default function InsightsPage() {
           <p className="muted">Enter game state and get a simple suggested action.</p>
           <SelectField
             label="Match"
-            value={selectedMatchId}
+            value={activeMatchId}
             onChange={(e) => setSelectedMatchId(e.target.value)}
             options={matches.map((m) => ({ label: `${m.home.short} vs ${m.away.short}`, value: String(m.id) }))}
           />

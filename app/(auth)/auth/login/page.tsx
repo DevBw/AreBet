@@ -84,7 +84,7 @@ export default function LoginPage() {
         )}
 
         <p className="muted" style={{ marginTop: "1rem", textAlign: "center" }}>
-          Don't have an account? <Link href="/auth/signup" style={{ color: "#22c55e" }}>Sign up</Link>
+          Don&apos;t have an account? <Link href="/auth/signup" style={{ color: "#22c55e" }}>Sign up</Link>
         </p>
       </Card>
     </main>

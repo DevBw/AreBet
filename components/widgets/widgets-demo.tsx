@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Match } from "@/types/match";
 import { Badge } from "@/components/ui/badge";
+import { formatTime } from "@/lib/utils/time";
 
 type WidgetsDemoProps = {
   matches: Match[];
@@ -45,7 +46,7 @@ const LEAGUE_STANDINGS: Record<string, StandingRow[]> = {
 };
 
 function formatKickoff(iso: string) {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return formatTime(iso);
 }
 
 function toStatusLabel(match: Match) {
@@ -65,11 +66,6 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
   const [selectedLeague, setSelectedLeague] = useState(matches[0]?.league ?? "");
   const [selectedMatchId, setSelectedMatchId] = useState(matches[0]?.id ?? 0);
 
-  const selectedMatch = useMemo(
-    () => matches.find((match) => match.id === selectedMatchId) ?? matches[0],
-    [matches, selectedMatchId]
-  );
-
   const leagues = useMemo(() => {
     const map = new Map<string, { league: string; country: string }>();
     matches.forEach((match) => {
@@ -81,23 +77,21 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
   }, [matches]);
 
   const leagueMatches = useMemo(() => {
-    if (!selectedLeague) return matches;
-    return matches.filter((match) => match.league === selectedLeague);
-  }, [matches, selectedLeague]);
+    const league = selectedLeague || leagues[0]?.league;
+    if (!league) return matches;
+    return matches.filter((match) => match.league === league);
+  }, [matches, selectedLeague, leagues]);
 
-  const standings = selectedLeague ? LEAGUE_STANDINGS[selectedLeague] ?? [] : [];
+  const activeLeague = selectedLeague || leagues[0]?.league || "";
+  const activeMatchId = leagueMatches.some((match) => match.id === selectedMatchId)
+    ? selectedMatchId
+    : (leagueMatches[0]?.id ?? 0);
+  const selectedMatch = useMemo(
+    () => matches.find((match) => match.id === activeMatchId) ?? matches[0],
+    [matches, activeMatchId]
+  );
 
-  useEffect(() => {
-    if (!selectedLeague && leagues.length) {
-      setSelectedLeague(leagues[0].league);
-    }
-  }, [leagues, selectedLeague]);
-
-  useEffect(() => {
-    if (!leagueMatches.length) return;
-    const exists = leagueMatches.some((match) => match.id === selectedMatchId);
-    if (!exists) setSelectedMatchId(leagueMatches[0].id);
-  }, [leagueMatches, selectedMatchId]);
+  const standings = activeLeague ? LEAGUE_STANDINGS[activeLeague] ?? [] : [];
 
   if (!selectedMatch) return null;
 
@@ -111,14 +105,18 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
           </div>
           <div className="widget-list">
             {leagues.map((entry) => {
-              const isActive = entry.league === selectedLeague;
+              const isActive = entry.league === activeLeague;
               return (
                 <button
                   key={entry.league}
                   type="button"
                   className={`widget-row widget-button ${isActive ? "is-active" : ""}`}
                   aria-pressed={isActive}
-                  onClick={() => setSelectedLeague(entry.league)}
+                  onClick={() => {
+                    setSelectedLeague(entry.league);
+                    const firstInLeague = matches.find((match) => match.league === entry.league);
+                    if (firstInLeague) setSelectedMatchId(firstInLeague.id);
+                  }}
                 >
                   <span>{entry.league}</span>
                   <span className="widget-meta">{entry.country}</span>
@@ -133,9 +131,9 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
         <article className="widget-card">
           <div className="widget-title-row">
             <h3 className="widget-title">Matches</h3>
-            <span className="widget-pill">Updated {new Date(updatedAtISO).toLocaleTimeString()}</span>
+            <span className="widget-pill">Updated {formatTime(updatedAtISO)}</span>
           </div>
-          <p className="widget-meta">Showing {selectedLeague} games.</p>
+          <p className="widget-meta">Showing {activeLeague || "all"} games.</p>
           <div className="widget-list">
             {leagueMatches.map((match) => {
               const isActive = match.id === selectedMatchId;
