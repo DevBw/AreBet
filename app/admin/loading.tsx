@@ -1,9 +1,9 @@
 import { SkeletonList } from "@/components/ui/skeleton";
 
-export default function Loading() {
+export default function AdminLoading() {
   return (
     <main className="page-wrap">
-      <SkeletonList rows={6} />
+      <SkeletonList rows={2} />
     </main>
   );
 }

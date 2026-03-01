@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { listMatches } from "@/lib/services/matches";
 
 export default async function TeamsPage() {
@@ -27,15 +28,23 @@ export default async function TeamsPage() {
         }
       />
 
-      <section className="cards-grid">
-        {sorted.map(([name, value]) => (
-          <Card key={name}>
-            <h2>{name}</h2>
-            <p className="muted">League: {value.league}</p>
-            <p className="muted">Recent form: {value.form}</p>
-          </Card>
-        ))}
-      </section>
+      {sorted.length === 0 ? (
+        <EmptyState
+          title="No teams available"
+          description="Teams are extracted from the match feed. When matches are loaded, every home and away team will appear here."
+          action={{ label: "View matches", href: "/dashboard/live-matches" }}
+        />
+      ) : (
+        <section className="cards-grid">
+          {sorted.map(([name, value]) => (
+            <Card key={name}>
+              <h2>{name}</h2>
+              <p className="muted">League: {value.league}</p>
+              <p className="muted">Recent form: {value.form}</p>
+            </Card>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
+import { SkeletonList } from "@/components/ui/skeleton";
 import { SelectField } from "@/components/ui/select-field";
 import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
@@ -18,7 +18,7 @@ export default function InsightsPage() {
   const [selectedMatchId, setSelectedMatchId] = useState<string>("");
   const [minute, setMinute] = useState("70");
   const [goalDiff, setGoalDiff] = useState("0");
-  const { matches, loading, error } = useMatchFeed();
+  const { matches, loading, error, reload } = useMatchFeed();
   const activeMatchId = selectedMatchId || (matches[0] ? String(matches[0].id) : "");
 
   const insights = useMemo(() => buildInsightBundle(matches, DEMO_BETS, DEMO_BANKROLL), [matches]);
@@ -48,18 +48,15 @@ export default function InsightsPage() {
       />
 
       {loading ? (
-        <section className="cards-grid" aria-label="Loading insights">
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <Card key={idx}>
-              <Skeleton className="skeleton-line w-40" />
-              <Skeleton className="skeleton-line w-full" />
-              <Skeleton className="skeleton-line w-full" />
-              <Skeleton className="skeleton-line w-28" />
-            </Card>
-          ))}
-        </section>
+        <SkeletonList rows={3} />
       ) : error ? (
-        <EmptyState title="Could not load insights" description={`${error} Try refreshing the page.`} />
+        <ErrorState
+          title="Could not load insights"
+          description={error}
+          retry={reload}
+          backHref="/dashboard"
+          backLabel="Back to dashboard"
+        />
       ) : (
       <>
       <section className="cards-grid">

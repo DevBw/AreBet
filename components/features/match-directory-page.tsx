@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { listMatches } from "@/lib/services/matches";
 import { formatTime } from "@/lib/utils/time";
 import type { Match, MatchStatus } from "@/types/match";
@@ -96,10 +97,19 @@ export async function MatchDirectoryPage({
       </section>
 
       {!matches.length ? (
-        <Card className="empty-state">
-          <h2>No matches available</h2>
-          <p>There are no matches in this section yet.</p>
-        </Card>
+        <EmptyState
+          title={status === "LIVE" ? "No live matches right now" : "No matches available"}
+          description={
+            status === "LIVE"
+              ? "Check back when fixtures are in play, or browse upcoming matches."
+              : "There are no matches in this section yet."
+          }
+          action={
+            status === "LIVE"
+              ? { label: "View upcoming", href: "/dashboard/upcoming-matches" }
+              : { label: "Back to dashboard", href: "/dashboard" }
+          }
+        />
       ) : null}
     </main>
   );

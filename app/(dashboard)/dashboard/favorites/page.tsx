@@ -12,7 +12,7 @@ import { useFavorites } from "@/lib/hooks/use-favorites";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 
 export default function FavoritesPage() {
-  const { favorites, isFavorite, toggleFavorite, loading: favsLoading } = useFavorites();
+  const { favorites, toggleFavorite, loading: favsLoading } = useFavorites();
   const { matches, loading: feedLoading } = useMatchFeed();
 
   const loading = favsLoading || feedLoading;
@@ -132,6 +132,7 @@ export default function FavoritesPage() {
         <EmptyState
           title="No favorites yet"
           description="Add favorites from the dashboard to see them here."
+          action={{ label: "Browse dashboard", href: "/dashboard" }}
         />
       ) : null}
     </main>

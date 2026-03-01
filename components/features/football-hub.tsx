@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WidgetsDemo } from "@/components/widgets/widgets-demo";
 import { PageHeader } from "@/components/layout/page-header";
@@ -9,7 +10,7 @@ import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 import { formatTime } from "@/lib/utils/time";
 
 export function FootballHub() {
-  const { feed, error } = useMatchFeed({ pollIntervalMs: 60000 });
+  const { feed, error, reload } = useMatchFeed({ pollIntervalMs: 60000 });
 
   return (
     <main className="page-wrap">
@@ -25,7 +26,16 @@ export function FootballHub() {
           </Link>
         }
       />
-      {error ? <p className="muted">Update issue: {error}</p> : null}
+      {error && !feed ? (
+        <ErrorState
+          title="Could not load Football Hub"
+          description={error}
+          retry={reload}
+          backHref="/dashboard"
+          backLabel="Back to dashboard"
+        />
+      ) : null}
+      {error && feed ? <p className="muted">Update issue: {error}</p> : null}
 
       <section className="panel widgets-section">
         <h2>How to use this page</h2>
