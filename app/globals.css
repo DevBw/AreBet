@@ -1470,3 +1470,87 @@ input::placeholder {
     opacity: 0.3;
   }
 }
+
+/* ==========================================================================
+   DENSITY: COMFORTABLE
+   ========================================================================== */
+
+.site-shell[data-density="comfortable"] .cards-grid {
+  gap: var(--space-5);
+}
+
+.site-shell[data-density="comfortable"] .panel {
+  padding: var(--space-5);
+}
+
+.site-shell[data-density="comfortable"] .match-card {
+  gap: var(--space-3);
+}
+
+.site-shell[data-density="comfortable"] .kpi-strip {
+  gap: var(--space-5);
+}
+
+.site-shell[data-density="comfortable"] .kpi {
+  padding: var(--space-4) var(--space-5);
+}
+
+/* ==========================================================================
+   FAVORITES SWITCHER
+   ========================================================================== */
+
+.fav-switcher {
+  position: relative;
+}
+
+.fav-switcher-btn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-light);
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.fav-switcher-btn:hover {
+  border-color: var(--color-primary);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.fav-switcher-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2) 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.fav-switcher-menu a {
+  display: block;
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.fav-switcher-menu a:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
+}
+
+.fav-switcher-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-1) 0;
+}

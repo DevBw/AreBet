@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 import { useAuth } from "@/lib/auth/context";
 import { signOut } from "@/lib/auth/actions";
+import { FavoritesSwitcher } from "@/components/features/favorites-switcher";
 
 const PUBLIC_LINKS = [
   { href: "/", label: "Home" },
@@ -52,6 +53,7 @@ export function MainNav() {
             </Link>
           );
         })}
+        <FavoritesSwitcher />
         {!loading && (
           <>
             {user ? (

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { MainNav } from "@/components/layout/main-nav";
+import { DensityShell } from "@/components/features/density-shell";
 import { StickinessSync } from "@/components/features/stickiness-sync";
 import { AuthProvider } from "@/lib/auth/context";
 import "./globals.css";
@@ -38,7 +39,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <StickinessSync />
-          <div className="site-shell">
+          <DensityShell>
             <header className="site-header">
               <div className="site-container site-header-inner">
                 <Link href="/" className="brand">
@@ -74,7 +75,7 @@ export default function RootLayout({
                 {isDev && <span className="footer-meta">Build {buildLabel}{buildTime}</span>}
               </div>
             </footer>
-          </div>
+          </DensityShell>
         </AuthProvider>
       </body>
     </html>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Match } from "@/types/match";
 import { Badge } from "@/components/ui/badge";
+import { readLastLeague, writeLastLeague } from "@/lib/storage/ui-state";
 import { formatTime } from "@/lib/utils/time";
 
 type WidgetsDemoProps = {
@@ -63,7 +64,12 @@ function pickPlayer(match: Match) {
 }
 
 export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
-  const [selectedLeague, setSelectedLeague] = useState(matches[0]?.league ?? "");
+  const [selectedLeague, setSelectedLeague] = useState(() => {
+    const saved = readLastLeague();
+    // Use saved league only if it exists in the current match data
+    if (saved && matches.some((m) => m.league === saved)) return saved;
+    return matches[0]?.league ?? "";
+  });
   const [selectedMatchId, setSelectedMatchId] = useState(matches[0]?.id ?? 0);
 
   const leagues = useMemo(() => {
@@ -114,6 +120,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
                   aria-pressed={isActive}
                   onClick={() => {
                     setSelectedLeague(entry.league);
+                    writeLastLeague(entry.league);
                     const firstInLeague = matches.find((match) => match.league === entry.league);
                     if (firstInLeague) setSelectedMatchId(firstInLeague.id);
                   }}
