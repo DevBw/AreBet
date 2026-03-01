@@ -1,7 +1,5 @@
 "use client";
 
-import type { Tables, TablesInsert } from "@/lib/supabase/types.generated";
-
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -27,8 +25,9 @@ export type LocalPreferences = {
 // Keys
 // ---------------------------------------------------------------------------
 
-const FAVORITES_KEY = "arebet:favorites:v1";
-const PREFERENCES_KEY = "arebet:preferences:v1";
+export const FAVORITES_KEY = "arebet:favorites:v1";
+export const PREFERENCES_KEY = "arebet:preferences:v1";
+export const MERGE_GUARD_PREFIX = "arebet:merge_done:v1:";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -95,4 +94,78 @@ export function writeLocalPreferences(prefs: LocalPreferences) {
 export function clearLocalPreferences() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(PREFERENCES_KEY);
+}
+
+// ---------------------------------------------------------------------------
+// Pure merge helpers (no side effects — used by StickinessSync and tests)
+// ---------------------------------------------------------------------------
+
+export type MergePreferencesResult = {
+  result: LocalPreferences;
+  strategy: "local_seeds_remote" | "remote_wins" | "no_merge_needed";
+};
+
+export function mergePreferences(
+  local: LocalPreferences,
+  remote: LocalPreferences
+): MergePreferencesResult {
+  const isLocalDefault = JSON.stringify(local) === JSON.stringify(DEFAULT_PREFERENCES);
+  const isRemoteDefault = JSON.stringify(remote) === JSON.stringify(DEFAULT_PREFERENCES);
+
+  if (isLocalDefault) {
+    return { result: remote, strategy: "no_merge_needed" };
+  }
+  if (isRemoteDefault) {
+    return { result: local, strategy: "local_seeds_remote" };
+  }
+  return { result: remote, strategy: "remote_wins" };
+}
+
+export function normalizeFavorite(fav: LocalFavorite): LocalFavorite {
+  return {
+    entity_type: String(fav.entity_type).trim(),
+    entity_id: String(fav.entity_id).trim(),
+    label: String(fav.label).trim(),
+    meta: fav.meta && typeof fav.meta === "object" ? fav.meta : {},
+    created_at: fav.created_at || new Date().toISOString(),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Merge guard (sessionStorage — cleared on tab close)
+// ---------------------------------------------------------------------------
+
+export function isMergeDone(userId: string): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    return sessionStorage.getItem(MERGE_GUARD_PREFIX + userId) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function markMergeDone(userId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(MERGE_GUARD_PREFIX + userId, "1");
+  } catch {
+    // ignore
+  }
+}
+
+export function clearMergeGuard(userId?: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (userId) {
+      sessionStorage.removeItem(MERGE_GUARD_PREFIX + userId);
+    } else {
+      // Clear all merge guards
+      for (let i = sessionStorage.length - 1; i >= 0; i--) {
+        const key = sessionStorage.key(i);
+        if (key?.startsWith(MERGE_GUARD_PREFIX)) sessionStorage.removeItem(key);
+      }
+    }
+  } catch {
+    // ignore
+  }
 }

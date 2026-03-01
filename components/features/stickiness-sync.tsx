@@ -9,32 +9,35 @@ import {
   readLocalPreferences,
   clearLocalFavorites,
   clearLocalPreferences,
-  DEFAULT_PREFERENCES,
+  isMergeDone,
+  markMergeDone,
+  mergePreferences,
+  normalizeFavorite,
 } from "@/lib/storage/stickiness";
 
 /**
  * Mounts globally. When user transitions from logged-out → logged-in,
  * merges local favorites/preferences into Supabase, then clears local keys.
+ *
+ * Guard: uses sessionStorage so merge runs at most once per tab per user,
+ * and does NOT re-run on page refresh within the same session.
  */
 export function StickinessSync() {
   const { user } = useAuth();
-  const prevUserRef = useRef<string | null>(null);
   const merging = useRef(false);
 
   useEffect(() => {
     const currentId = user?.id ?? null;
-    const prevId = prevUserRef.current;
-    prevUserRef.current = currentId;
 
-    // Only merge when transitioning from no-user to user
-    if (!currentId || prevId === currentId || merging.current) return;
+    // No user, or merge already done for this user in this session
+    if (!currentId || merging.current || isMergeDone(currentId)) return;
 
     merging.current = true;
 
     async function merge() {
       try {
         // ---- Favorites ----
-        const localFavs = readLocalFavorites();
+        const localFavs = readLocalFavorites().map(normalizeFavorite);
         if (localFavs.length > 0) {
           // Upsert each local favorite (duplicates ignored by unique constraint)
           await Promise.allSettled(
@@ -52,22 +55,16 @@ export function StickinessSync() {
 
         // ---- Preferences ----
         const localPrefs = readLocalPreferences();
-        const isLocalDefault =
-          JSON.stringify(localPrefs) === JSON.stringify(DEFAULT_PREFERENCES);
+        const remotePrefs = await getPreferences(currentId!);
+        const { result, strategy } = mergePreferences(localPrefs, remotePrefs);
 
-        if (!isLocalDefault) {
-          // Check if remote has custom prefs already
-          const remotePrefs = await getPreferences(currentId!);
-          const isRemoteDefault =
-            JSON.stringify(remotePrefs) === JSON.stringify(DEFAULT_PREFERENCES);
-
-          if (isRemoteDefault) {
-            // Remote is default → seed with local
-            await updatePreferences(currentId!, localPrefs);
-          }
-          // If remote has custom prefs, remote wins — don't overwrite
+        if (strategy === "local_seeds_remote") {
+          await updatePreferences(currentId!, result);
         }
         clearLocalPreferences();
+
+        // Mark merge done in sessionStorage so it won't repeat
+        markMergeDone(currentId!);
       } catch {
         // Non-critical — user can re-sync next session
       } finally {

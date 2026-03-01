@@ -10,6 +10,7 @@ import {
   DEFAULT_PREFERENCES,
   readLocalPreferences,
   writeLocalPreferences,
+  PREFERENCES_KEY,
   type LocalPreferences,
 } from "@/lib/storage/stickiness";
 
@@ -25,7 +26,35 @@ export function usePreferences() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ------------------------------------------------------------------
-  // Load
+  // Load helper (reusable for initial load + focus refetch)
+  // ------------------------------------------------------------------
+
+  const loadPreferences = useCallback(
+    async (opts?: { silent?: boolean }) => {
+      if (!opts?.silent) {
+        setLoading(true);
+        setError(null);
+      }
+      try {
+        if (userId) {
+          const remote = await fetchRemotePreferences(userId);
+          setPreferences(remote);
+        } else {
+          setPreferences(readLocalPreferences());
+        }
+      } catch (err) {
+        if (!opts?.silent) {
+          setError(err instanceof Error ? err.message : "Failed to load preferences");
+        }
+      } finally {
+        if (!opts?.silent) setLoading(false);
+      }
+    },
+    [userId]
+  );
+
+  // ------------------------------------------------------------------
+  // Initial load
   // ------------------------------------------------------------------
 
   useEffect(() => {
@@ -34,32 +63,45 @@ export function usePreferences() {
 
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        if (userId) {
-          const remote = await fetchRemotePreferences(userId);
-          if (!cancelled) setPreferences(remote);
-        } else {
-          if (!cancelled) setPreferences(readLocalPreferences());
-        }
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load preferences");
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-          loadedForRef.current = key;
-        }
-      }
-    }
+    loadPreferences().then(() => {
+      if (!cancelled) loadedForRef.current = key;
+    });
 
-    load();
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [userId, loadPreferences]);
 
   // ------------------------------------------------------------------
-  // Update (debounced remote write)
+  // Multi-tab: refetch on focus (authed) / storage event (guest)
+  // ------------------------------------------------------------------
+
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function handleVisibility() {
+      if (document.visibilityState !== "visible" || !userId) return;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        loadPreferences({ silent: true });
+      }, 500);
+    }
+
+    function handleStorage(e: StorageEvent) {
+      if (userId || e.key !== PREFERENCES_KEY) return;
+      setPreferences(readLocalPreferences());
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("storage", handleStorage);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [userId, loadPreferences]);
+
+  // ------------------------------------------------------------------
+  // Update (debounced remote write, safe rollback via re-fetch)
   // ------------------------------------------------------------------
 
   const updatePreferences = useCallback(
@@ -68,17 +110,23 @@ export function usePreferences() {
         const next = { ...prev, ...partial };
 
         if (userId) {
-          // Debounce remote writes by 500ms
           if (debounceRef.current) clearTimeout(debounceRef.current);
           debounceRef.current = setTimeout(() => {
             pushRemotePreferences(userId, partial).catch(() => {
-              // Revert on error
-              setPreferences(prev);
-              setError("Failed to save preferences");
+              // Revert: re-read from remote to get actual state (avoids stale closure)
+              fetchRemotePreferences(userId)
+                .then((remote) => setPreferences(remote))
+                .catch(() => setError("Failed to save preferences"));
             });
           }, 500);
         } else {
-          writeLocalPreferences(next);
+          try {
+            writeLocalPreferences(next);
+          } catch {
+            // Revert to last known local value
+            setPreferences(readLocalPreferences());
+            setError("Failed to save preferences locally");
+          }
         }
 
         return next;
@@ -87,5 +135,7 @@ export function usePreferences() {
     [userId]
   );
 
-  return { preferences, updatePreferences, loading, error };
+  const refetch = useCallback(() => loadPreferences({ silent: true }), [loadPreferences]);
+
+  return { preferences, updatePreferences, loading, error, refetch };
 }
