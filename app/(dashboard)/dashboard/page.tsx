@@ -1,29 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { SelectField } from "@/components/ui/select-field";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/ui/skeleton";
 import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
 import { useFavorites } from "@/lib/hooks/use-favorites";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
+import { usePreferences } from "@/lib/hooks/use-preferences";
+import { rankMatches } from "@/lib/utils/rank-matches";
 import { formatTime } from "@/lib/utils/time";
 import type { MatchStatus } from "@/types/match";
 
 export default function DashboardPage() {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [statusFilter, setStatusFilter] = useState<MatchStatus | "ALL">("ALL");
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const { feed, matches, loading, error } = useMatchFeed();
+  const { favorites, isFavorite, toggleFavorite } = useFavorites();
+  const { feed, matches, loading, error, reload } = useMatchFeed();
+  const { preferences, loading: prefsLoading } = usePreferences();
+
+  // Apply stored preferences as initial defaults (once, after prefs finish loading)
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    if (initializedRef.current || prefsLoading) return;
+    initializedRef.current = true;
+    const mapped = preferences.default_filter_status.toUpperCase();
+    setStatusFilter(mapped === "ALL" || mapped === "LIVE" || mapped === "UPCOMING" || mapped === "FINISHED" ? mapped as MatchStatus | "ALL" : "ALL");
+    setSortBy(preferences.default_sort === "kickoff" ? "kickoff" : "confidence");
+  }, [preferences, prefsLoading]);
 
   const filteredMatches = useMemo(() => {
-    let data = matches.filter((match) => {
+    const data = matches.filter((match) => {
       const inSearch = `${match.home.name} ${match.away.name} ${match.league}`
         .toLowerCase()
         .includes(query.toLowerCase());
@@ -31,12 +47,14 @@ export default function DashboardPage() {
       return inSearch && inStatus;
     });
 
-    data = [...data].sort((a, b) => {
-      if (sortBy === "confidence") return b.prediction.confidence - a.prediction.confidence;
-      return a.kickoffISO.localeCompare(b.kickoffISO);
+    return rankMatches({
+      matches: data,
+      favorites,
+      sortKey: sortBy,
+      favoritesFirst: preferences.show_favorites_first,
+      hideFinished: preferences.hide_finished,
     });
-    return data;
-  }, [matches, query, statusFilter, sortBy]);
+  }, [matches, query, statusFilter, sortBy, favorites, preferences]);
 
   const kpis = useMemo(() => {
     const live = matches.filter((m) => m.status === "LIVE").length;
@@ -113,20 +131,15 @@ export default function DashboardPage() {
         />
       </Card>
 
-      {loading ? (
-        <section className="cards-grid" aria-label="Loading matches">
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <Card key={idx} className="match-card">
-              <Skeleton className="skeleton-line w-40" />
-              <Skeleton className="skeleton-line w-full" />
-              <Skeleton className="skeleton-line w-28" />
-              <Skeleton className="skeleton-line w-20" />
-            </Card>
-          ))}
-        </section>
-      ) : null}
+      {loading ? <SkeletonList rows={3} /> : null}
 
-      {!loading && error ? <EmptyState title="Could not load data" description={`${error} You can continue browsing.`} /> : null}
+      {!loading && error ? (
+        <ErrorState
+          title="Could not load data"
+          description={error}
+          retry={reload}
+        />
+      ) : null}
 
       {!loading && !error ? (
         <section className="cards-grid" aria-label="Match list">
