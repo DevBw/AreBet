@@ -39,7 +39,7 @@ export function FavoritesSwitcher() {
 
       {open && (
         <div className="fav-switcher-menu">
-          <Link href="/dashboard/favorites" onClick={() => setOpen(false)}>
+          <Link href="/favorites" onClick={() => setOpen(false)}>
             All favorites
           </Link>
 
@@ -49,7 +49,7 @@ export function FavoritesSwitcher() {
               {teams.map((t) => (
                 <Link
                   key={t.entity_id}
-                  href={`/dashboard?q=${encodeURIComponent(t.label)}`}
+                  href={`/?q=${encodeURIComponent(t.label)}`}
                   onClick={() => setOpen(false)}
                 >
                   {t.label}
@@ -64,7 +64,7 @@ export function FavoritesSwitcher() {
               {leagues.map((l) => (
                 <Link
                   key={l.entity_id}
-                  href="/widgets"
+                  href="/"
                   onClick={() => setOpen(false)}
                 >
                   {l.label}

@@ -28,7 +28,15 @@ export async function middleware(request: NextRequest) {
 
   // Protected routes require authentication
   const isProtectedRoute =
-    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/insights") ||
+    pathname.startsWith("/favorites") ||
+    pathname.startsWith("/live-matches") ||
+    pathname.startsWith("/upcoming-matches") ||
+    pathname.startsWith("/predictions") ||
+    pathname.startsWith("/odds-comparison") ||
+    pathname.startsWith("/standings") ||
+    pathname.startsWith("/teams") ||
+    pathname.startsWith("/match/") ||
     pathname.startsWith("/user") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/admin");
@@ -40,9 +48,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect to dashboard if authenticated and trying to access login/signup
+  // Redirect to home if authenticated and trying to access login/signup
   if ((pathname === "/auth/login" || pathname === "/auth/signup") && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // Update session and continue

@@ -45,8 +45,8 @@ export async function MatchDirectoryPage({
         subtitle={subtitle}
         meta={["Data: Live-style feed", `Last updated: ${formatTime(feed.updatedAtISO)}`]}
         actions={
-          <Link className="btn btn-muted" href="/dashboard">
-            Back to dashboard
+          <Link className="btn btn-muted" href="/">
+            Back to home
           </Link>
         }
       />
@@ -89,7 +89,7 @@ export async function MatchDirectoryPage({
 
             {variant === "overview" ? <p className="match-advice">{match.prediction.advice}</p> : null}
 
-            <Link href={`/dashboard/match/${match.id}`} className="detail-link">
+            <Link href={`/match/${match.id}`} className="detail-link">
               View full match detail
             </Link>
           </Card>
@@ -106,8 +106,8 @@ export async function MatchDirectoryPage({
           }
           action={
             status === "LIVE"
-              ? { label: "View upcoming", href: "/dashboard/upcoming-matches" }
-              : { label: "Back to dashboard", href: "/dashboard" }
+              ? { label: "View upcoming", href: "/upcoming-matches" }
+              : { label: "Back to home", href: "/" }
           }
         />
       ) : null}

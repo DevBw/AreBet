@@ -40,8 +40,8 @@ export default function FavoritesPage() {
         subtitle="Your saved matches, teams, and leagues in one place."
         meta={[`Total saved: ${favorites.length}`]}
         actions={
-          <Link className="btn btn-muted" href="/dashboard">
-            Back to dashboard
+          <Link className="btn btn-muted" href="/">
+            Back to home
           </Link>
         }
       />
@@ -92,7 +92,7 @@ export default function FavoritesPage() {
                 </Badge>
               </div>
               <p className="muted">{match.prediction.advice}</p>
-              <Link href={`/dashboard/match/${match.id}`} className="detail-link">
+              <Link href={`/match/${match.id}`} className="detail-link">
                 View full match detail
               </Link>
             </Card>
@@ -131,8 +131,8 @@ export default function FavoritesPage() {
       {!loading && !favorites.length ? (
         <EmptyState
           title="No favorites yet"
-          description="Add favorites from the dashboard to see them here."
-          action={{ label: "Browse dashboard", href: "/dashboard" }}
+          description="Add favorites from the home page to see them here."
+          action={{ label: "Browse matches", href: "/" }}
         />
       ) : null}
     </main>

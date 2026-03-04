@@ -10,14 +10,15 @@ import { FavoritesSwitcher } from "@/components/features/favorites-switcher";
 
 const PUBLIC_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/widgets", label: "Football Hub" },
-  { href: "/help", label: "Help" },
 ];
 
 const PROTECTED_LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/dashboard/insights", label: "Insights" },
+  { href: "/insights", label: "Insights" },
   { href: "/user/dashboard", label: "User" },
+];
+
+const COMMON_LINKS = [
+  { href: "/help", label: "Help" },
 ];
 
 export function MainNav() {
@@ -25,7 +26,9 @@ export function MainNav() {
   const { user, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const links = user ? [...PUBLIC_LINKS.slice(0, 1), ...PROTECTED_LINKS, ...PUBLIC_LINKS.slice(1)] : PUBLIC_LINKS;
+  const links = user
+    ? [...PUBLIC_LINKS, ...PROTECTED_LINKS, ...COMMON_LINKS]
+    : [...PUBLIC_LINKS, ...COMMON_LINKS];
 
   return (
     <>
@@ -40,7 +43,7 @@ export function MainNav() {
 
       <nav className={cn("site-nav", menuOpen && "is-open")} aria-label="Primary">
         {links.map((link) => {
-          const isActive = pathname === link.href || (link.href === "/dashboard" && pathname.startsWith("/dashboard/"));
+          const isActive = pathname === link.href;
           return (
             <Link
               key={link.href}

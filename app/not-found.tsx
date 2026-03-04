@@ -10,7 +10,7 @@ export default function NotFound() {
         action={{ label: "Go home", href: "/" }}
       />
       <p className="muted" style={{ textAlign: "center", marginTop: "1rem" }}>
-        Or try the <Link href="/dashboard">Dashboard</Link> or <Link href="/help">Help / FAQ</Link>.
+        Or try <Link href="/help">Help / FAQ</Link>.
       </p>
     </main>
   );

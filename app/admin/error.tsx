@@ -15,8 +15,8 @@ export default function AdminError({
         title="Admin error"
         description={error.message || "Could not load the admin panel."}
         retry={reset}
-        backHref="/dashboard"
-        backLabel="Back to dashboard"
+        backHref="/"
+        backLabel="Back to home"
       />
     </main>
   );

@@ -23,7 +23,7 @@ export default function UserDashboardPage() {
         <Card title="Shortcuts">
           <ul>
             <li>
-              <Link href="/dashboard/favorites">Favorites</Link>
+              <Link href="/favorites">Favorites</Link>
             </li>
             <li>
               <Link href="/subscription">Subscription</Link>

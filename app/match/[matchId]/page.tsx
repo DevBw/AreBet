@@ -38,8 +38,8 @@ export default async function MatchDetailPage({ params }: Props) {
           `Last updated: ${formatTime(result.updatedAtISO)}`,
         ]}
         actions={
-          <Link className="btn btn-muted" href="/dashboard">
-            Back to dashboard
+          <Link className="btn btn-muted" href="/">
+            Back to home
           </Link>
         }
       />
@@ -112,7 +112,7 @@ export default async function MatchDetailPage({ params }: Props) {
       </Card>
 
       <section className="quick-links">
-        <Link href="/dashboard">Back to Dashboard</Link>
+        <Link href="/">Back to Home</Link>
       </section>
     </main>
   );

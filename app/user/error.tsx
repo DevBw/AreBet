@@ -15,8 +15,8 @@ export default function UserError({
         title="Account error"
         description={error.message || "Could not load your account."}
         retry={reset}
-        backHref="/dashboard"
-        backLabel="Back to dashboard"
+        backHref="/"
+        backLabel="Back to home"
       />
     </main>
   );

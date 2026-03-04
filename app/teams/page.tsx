@@ -22,8 +22,8 @@ export default async function TeamsPage() {
         subtitle="Browse teams currently tracked in the match feed."
         meta={[`Teams tracked: ${sorted.length}`]}
         actions={
-          <Link className="btn btn-muted" href="/dashboard">
-            Back to dashboard
+          <Link className="btn btn-muted" href="/">
+            Back to home
           </Link>
         }
       />
@@ -32,7 +32,7 @@ export default async function TeamsPage() {
         <EmptyState
           title="No teams available"
           description="Teams are extracted from the match feed. When matches are loaded, every home and away team will appear here."
-          action={{ label: "View matches", href: "/dashboard/live-matches" }}
+          action={{ label: "View matches", href: "/live-matches" }}
         />
       ) : (
         <section className="cards-grid">

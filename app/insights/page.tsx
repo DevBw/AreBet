@@ -54,8 +54,8 @@ export default function InsightsPage() {
           title="Could not load insights"
           description={error}
           retry={reload}
-          backHref="/dashboard"
-          backLabel="Back to dashboard"
+          backHref="/"
+          backLabel="Back to home"
         />
       ) : (
       <>

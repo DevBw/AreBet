@@ -27,8 +27,8 @@ export default function StandingsPage() {
         title="Standings"
         subtitle="Current league table snapshots."
         actions={
-          <Link className="btn btn-muted" href="/dashboard">
-            Back to dashboard
+          <Link className="btn btn-muted" href="/">
+            Back to home
           </Link>
         }
       />
