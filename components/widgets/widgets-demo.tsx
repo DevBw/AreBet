@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Match } from "@/types/match";
 import { Badge } from "@/components/ui/badge";
 import { readLastLeague, writeLastLeague } from "@/lib/storage/ui-state";
+import { statusLabel, statusTone } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
 
 type WidgetsDemoProps = {
@@ -51,10 +52,7 @@ function formatKickoff(iso: string) {
 }
 
 function toStatusLabel(match: Match) {
-  if (match.status === "LIVE" && match.minute) {
-    return `LIVE ${match.minute}'`;
-  }
-  return match.status;
+  return statusLabel(match);
 }
 
 function pickPlayer(match: Match) {
@@ -194,7 +192,7 @@ export function WidgetsDemo({ matches, updatedAtISO }: WidgetsDemoProps) {
             <strong>
               {selectedMatch.home.name} vs {selectedMatch.away.name}
             </strong>
-            <Badge tone={selectedMatch.status.toLowerCase() as "live" | "upcoming" | "finished"}>
+            <Badge tone={statusTone(selectedMatch)}>
               {toStatusLabel(selectedMatch)}
             </Badge>
           </div>

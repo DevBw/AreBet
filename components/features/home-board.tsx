@@ -1,54 +1,169 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
-import { SelectField } from "@/components/ui/select-field";
 import { SkeletonList } from "@/components/ui/skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TextInput } from "@/components/ui/text-input";
 import { PageHeader } from "@/components/layout/page-header";
-import { WidgetsDemo } from "@/components/widgets/widgets-demo";
+import { MatchInsightPanel } from "@/components/features/match-insight-panel";
 import { useFavorites } from "@/lib/hooks/use-favorites";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 import { usePreferences } from "@/lib/hooks/use-preferences";
 import { rankMatches } from "@/lib/utils/rank-matches";
+import {
+  readLastLeague,
+  writeLastLeague,
+  readLastQuickFilter,
+  writeLastQuickFilter,
+  type QuickFilter,
+} from "@/lib/storage/ui-state";
+import { statusLabel, statusTone, confTier } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
-import type { MatchStatus } from "@/types/match";
+import type { Match } from "@/types/match";
+
+const SOON_WINDOW_MS = 90 * 60 * 1000; // 90 minutes
+
+function isStartingSoon(match: Match): boolean {
+  if (match.status !== "UPCOMING") return false;
+  const diff = new Date(match.kickoffISO).getTime() - Date.now();
+  return diff >= 0 && diff <= SOON_WINDOW_MS;
+}
+
+const FILTER_LABELS: Record<QuickFilter, string> = {
+  all: "All",
+  live: "Live",
+  soon: "Starting Soon",
+  favorites: "Favorites",
+  "high-conf": "High Confidence",
+};
+
+/** Derive a compact form streak label from recent form string (e.g. "WWDWW" → "W4"). */
+function formStreak(recent: string): { label: string; type: "w" | "d" | "l" } {
+  if (!recent.length) return { label: "-", type: "d" };
+  const first = recent[0].toUpperCase();
+  let count = 1;
+  for (let i = 1; i < recent.length; i++) {
+    if (recent[i].toUpperCase() === first) count++;
+    else break;
+  }
+  const type = first === "W" ? "w" : first === "L" ? "l" : "d";
+  return { label: `${first}${count}`, type };
+}
+
+/** Derive a market movement indicator from marketHistory (placeholder). */
+function marketMovement(match: Match): "up" | "down" | "stable" {
+  if (!match.marketHistory || match.marketHistory.length < 2) return "stable";
+  const first = match.marketHistory[0].home;
+  const last = match.marketHistory[match.marketHistory.length - 1].home;
+  if (last < first - 0.05) return "up"; // odds shortened = confidence up
+  if (last > first + 0.05) return "down";
+  return "stable";
+}
 
 export function HomeBoard() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
-  const [statusFilter, setStatusFilter] = useState<MatchStatus | "ALL">("ALL");
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>(() => readLastQuickFilter());
   const [sortBy, setSortBy] = useState<"confidence" | "kickoff">("confidence");
+  const [selectedLeague, setSelectedLeague] = useState("");
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(() => {
+    const p = searchParams.get("matchId");
+    return p ? Number(p) || null : null;
+  });
+  const [insightOpen, setInsightOpen] = useState(() => !!searchParams.get("matchId"));
+
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { feed, matches, loading, error, reload } = useMatchFeed({ pollIntervalMs: 60000 });
   const { preferences, loading: prefsLoading } = usePreferences();
 
-  // Apply stored preferences as initial defaults (once, after prefs finish loading)
-  const initializedRef = useRef(false);
+  // Apply stored preferences once after loading
+  const initRef = useRef(false);
   useEffect(() => {
-    if (initializedRef.current || prefsLoading) return;
-    initializedRef.current = true;
-    const mapped = preferences.default_filter_status.toUpperCase();
-    setStatusFilter(mapped === "ALL" || mapped === "LIVE" || mapped === "UPCOMING" || mapped === "FINISHED" ? mapped as MatchStatus | "ALL" : "ALL");
+    if (initRef.current || prefsLoading) return;
+    initRef.current = true;
+    // Map preference default status to quick filter (only if no saved quick filter)
+    const saved = readLastQuickFilter();
+    if (saved === "all") {
+      const s = preferences.default_filter_status.toUpperCase();
+      if (s === "LIVE") setQuickFilter("live");
+    }
     setSortBy(preferences.default_sort === "kickoff" ? "kickoff" : "confidence");
   }, [preferences, prefsLoading]);
 
+  // Restore last league
+  useEffect(() => {
+    if (!matches.length) return;
+    const saved = readLastLeague();
+    if (saved && matches.some((m) => m.league === saved)) setSelectedLeague(saved);
+  }, [matches]);
+
+  // Leagues — sorted with favorites pinned at top when preference enabled
+  const leagues = useMemo(() => {
+    const map = new Map<string, { league: string; country: string }>();
+    matches.forEach((m) => {
+      if (!map.has(m.league)) map.set(m.league, { league: m.league, country: m.country });
+    });
+    const all = Array.from(map.values());
+    if (!preferences.show_favorites_first) return { pinned: [] as typeof all, rest: all };
+    const pinned = all.filter((l) => isFavorite("league", l.league));
+    const rest = all.filter((l) => !isFavorite("league", l.league));
+    return { pinned, rest };
+  }, [matches, favorites, preferences.show_favorites_first, isFavorite]);
+
+  // Favorite team/league sets for quick lookup
+  const favTeamNames = useMemo(() => {
+    const set = new Set<string>();
+    favorites
+      .filter((f) => f.entity_type === "team")
+      .forEach((f) => set.add(f.label.toLowerCase()));
+    return set;
+  }, [favorites]);
+
+  const favLeagueIds = useMemo(() => {
+    const set = new Set<string>();
+    favorites
+      .filter((f) => f.entity_type === "league")
+      .forEach((f) => set.add(f.entity_id));
+    return set;
+  }, [favorites]);
+
+  // Quick filter logic
+  function passesQuickFilter(m: Match): boolean {
+    switch (quickFilter) {
+      case "live":
+        return m.status === "LIVE";
+      case "soon":
+        return isStartingSoon(m);
+      case "favorites": {
+        const homeL = m.home.name.toLowerCase();
+        const awayL = m.away.name.toLowerCase();
+        return (
+          favTeamNames.has(homeL) ||
+          favTeamNames.has(awayL) ||
+          favLeagueIds.has(m.league) ||
+          isFavorite("match", String(m.id))
+        );
+      }
+      case "high-conf":
+        return m.prediction.confidence >= 70;
+      default:
+        return true;
+    }
+  }
+
+  // Filtered + ranked matches
   const filteredMatches = useMemo(() => {
-    const data = matches.filter((match) => {
-      const inSearch = `${match.home.name} ${match.away.name} ${match.league}`
+    const data = matches.filter((m) => {
+      const inSearch = `${m.home.name} ${m.away.name} ${m.league}`
         .toLowerCase()
         .includes(query.toLowerCase());
-      const inStatus = statusFilter === "ALL" || match.status === statusFilter;
-      return inSearch && inStatus;
+      const inFilter = passesQuickFilter(m);
+      const inLeague = !selectedLeague || m.league === selectedLeague;
+      return inSearch && inFilter && inLeague;
     });
-
     return rankMatches({
       matches: data,
       favorites,
@@ -56,25 +171,82 @@ export function HomeBoard() {
       favoritesFirst: preferences.show_favorites_first,
       hideFinished: preferences.hide_finished,
     });
-  }, [matches, query, statusFilter, sortBy, favorites, preferences]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matches, query, quickFilter, sortBy, selectedLeague, favorites, preferences, favTeamNames, favLeagueIds]);
 
+  // Active match — resolve from selection or default
+  const activeMatchId = useMemo(() => {
+    if (selectedMatchId != null && matches.some((m) => m.id === selectedMatchId)) {
+      return selectedMatchId;
+    }
+    return (
+      matches.find((m) => m.status === "LIVE")?.id ??
+      matches.find((m) => m.status === "UPCOMING")?.id ??
+      matches[0]?.id ??
+      null
+    );
+  }, [selectedMatchId, matches]);
+
+  const selectedMatch = useMemo(
+    () => (activeMatchId != null ? matches.find((m) => m.id === activeMatchId) ?? null : null),
+    [matches, activeMatchId]
+  );
+
+  // URL sync for matchId
+  const selectMatch = useCallback((id: number) => {
+    setSelectedMatchId(id);
+    setInsightOpen(true);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("matchId", String(id));
+      window.history.replaceState({}, "", url.toString());
+    } catch {
+      /* SSR guard */
+    }
+  }, []);
+
+  const selectLeague = useCallback(
+    (league: string) => {
+      const next = selectedLeague === league ? "" : league;
+      setSelectedLeague(next);
+      if (next) {
+        writeLastLeague(next);
+        const first = matches.find((m) => m.league === next);
+        if (first) selectMatch(first.id);
+      }
+    },
+    [selectedLeague, matches, selectMatch]
+  );
+
+  // KPIs
   const kpis = useMemo(() => {
     const live = matches.filter((m) => m.status === "LIVE").length;
     const upcoming = matches.filter((m) => m.status === "UPCOMING").length;
-    const topConfidence = matches.length ? Math.max(...matches.map((m) => m.prediction.confidence)) : 0;
-    return { live, upcoming, topConfidence };
+    const top = matches.length
+      ? Math.max(...matches.map((m) => m.prediction.confidence))
+      : 0;
+    return { live, upcoming, top };
   }, [matches]);
+
+  const toggleSelectedMatchFav = useCallback(() => {
+    if (!selectedMatch) return;
+    toggleFavorite({
+      entityType: "match",
+      entityId: String(selectedMatch.id),
+      label: `${selectedMatch.home.name} vs ${selectedMatch.away.name}`,
+    });
+  }, [selectedMatch, toggleFavorite]);
 
   const isDev = process.env.NODE_ENV === "development";
 
   return (
     <main className="page-wrap">
       <PageHeader
-        title="Live Match Dashboard"
-        subtitle="Filter, sort, and track the games that matter right now."
+        title="Command Center"
+        subtitle="Your live match workspace — filter, analyze, decide."
         meta={[
-          ...(isDev ? ["Data: Live-style feed"] : []),
-          `Last updated: ${formatTime(feed?.updatedAtISO)}`,
+          ...(isDev ? ["Data: Demo feed"] : []),
+          `Updated: ${formatTime(feed?.updatedAtISO)}`,
         ]}
         actions={
           <Link className="btn btn-primary" href="/insights">
@@ -83,9 +255,9 @@ export function HomeBoard() {
         }
       />
 
-      <section className="kpi-strip" aria-label="Dashboard KPIs">
+      <section className="kpi-strip" aria-label="KPIs">
         <article className="kpi">
-          <span className="kpi-label">Live Matches</span>
+          <span className="kpi-label">Live</span>
           <strong>{kpis.live}</strong>
         </article>
         <article className="kpi">
@@ -94,132 +266,235 @@ export function HomeBoard() {
         </article>
         <article className="kpi">
           <span className="kpi-label">Top Confidence</span>
-          <strong>{kpis.topConfidence}%</strong>
+          <strong className={`conf-heat conf-heat--${confTier(kpis.top)}`}>{kpis.top}%</strong>
         </article>
       </section>
 
-      <Card className="controls" title="Filters">
-        <TextInput
-          label="Search teams/leagues"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Try Arsenal or La Liga"
-        />
-        <SelectField
-          label="Status"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as MatchStatus | "ALL")}
-          options={[
-            { label: "All", value: "ALL" },
-            { label: "Live", value: "LIVE" },
-            { label: "Upcoming", value: "UPCOMING" },
-            { label: "Finished", value: "FINISHED" },
-          ]}
-        />
-        <SelectField
-          label="Sort by"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as "confidence" | "kickoff")}
-          options={[
-            { label: "Confidence", value: "confidence" },
-            { label: "Kickoff Time", value: "kickoff" },
-          ]}
-        />
-      </Card>
+      {loading && <SkeletonList rows={3} />}
 
-      {loading ? <SkeletonList rows={3} /> : null}
+      {!loading && error && (
+        <ErrorState title="Could not load data" description={error} retry={reload} />
+      )}
 
-      {!loading && error ? (
-        <ErrorState
-          title="Could not load data"
-          description={error}
-          retry={reload}
-        />
-      ) : null}
-
-      {!loading && !error ? (
-        <section className="cards-grid" aria-label="Match list">
-          {filteredMatches.map((match) => (
-            <Card className="match-card" key={match.id}>
-              <div className="match-row">
-                <p className="match-league">
-                  {match.league} | {match.country}
-                </p>
-                <Button
+      {!loading && !error && (
+        <>
+          <section className="cc-workspace">
+            {/* Left — Leagues */}
+            <aside className="cc-col cc-leagues">
+              <div className="cc-col-header">
+                <h3 className="cc-col-title">Leagues</h3>
+              </div>
+              <div className="cc-league-list">
+                <button
                   type="button"
-                  variant="muted"
-                  className={`favorite-btn ${isFavorite("match", String(match.id)) ? "is-favorite" : ""}`}
-                  onClick={() =>
-                    toggleFavorite({
-                      entityType: "match",
-                      entityId: String(match.id),
-                      label: `${match.home.name} vs ${match.away.name}`,
-                    })
-                  }
-                  aria-pressed={isFavorite("match", String(match.id))}
-                  title={isFavorite("match", String(match.id)) ? "Remove favorite" : "Add favorite"}
+                  className={`cc-league-btn${!selectedLeague ? " is-active" : ""}`}
+                  onClick={() => setSelectedLeague("")}
                 >
-                  {isFavorite("match", String(match.id)) ? "Favored" : "Favorite"}
-                </Button>
+                  All Leagues
+                </button>
+                {leagues.pinned.length > 0 && (
+                  <span className="cc-league-section">Favorites</span>
+                )}
+                {leagues.pinned.map((l) => (
+                  <div key={l.league} className="cc-league-row">
+                    <button
+                      type="button"
+                      className={`cc-league-btn${l.league === selectedLeague ? " is-active" : ""}`}
+                      onClick={() => selectLeague(l.league)}
+                    >
+                      <span>{l.league}</span>
+                      <span className="cc-league-country">{l.country}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cc-league-fav is-pinned"
+                      onClick={() =>
+                        toggleFavorite({
+                          entityType: "league",
+                          entityId: l.league,
+                          label: l.league,
+                        })
+                      }
+                      title="Unpin league"
+                      aria-label={`Unpin ${l.league}`}
+                    >
+                      &#9733;
+                    </button>
+                  </div>
+                ))}
+                {leagues.pinned.length > 0 && leagues.rest.length > 0 && (
+                  <span className="cc-league-section">All</span>
+                )}
+                {leagues.rest.map((l) => (
+                  <div key={l.league} className="cc-league-row">
+                    <button
+                      type="button"
+                      className={`cc-league-btn${l.league === selectedLeague ? " is-active" : ""}`}
+                      onClick={() => selectLeague(l.league)}
+                    >
+                      <span>{l.league}</span>
+                      <span className="cc-league-country">{l.country}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cc-league-fav"
+                      onClick={() =>
+                        toggleFavorite({
+                          entityType: "league",
+                          entityId: l.league,
+                          label: l.league,
+                        })
+                      }
+                      title="Pin league"
+                      aria-label={`Pin ${l.league}`}
+                    >
+                      &#9734;
+                    </button>
+                  </div>
+                ))}
               </div>
-              <h2>
-                {match.home.name} vs {match.away.name}
-              </h2>
-              <p className="match-meta">
-                <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
-                  {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
-                </Badge>
-                <span>Kickoff: {formatTime(match.kickoffISO)}</span>
-              </p>
-              <div className="match-row">
-                <strong className="score">
-                  {match.score.home}-{match.score.away}
-                </strong>
-                <span className="confidence">{match.prediction.confidence}% confidence</span>
+            </aside>
+
+            {/* Center — Matches */}
+            <section className="cc-col cc-matches">
+              <div className="cc-col-header">
+                <h3 className="cc-col-title">
+                  Matches{selectedLeague ? ` \u2014 ${selectedLeague}` : ""}
+                </h3>
+                <span className="widget-pill">{filteredMatches.length}</span>
               </div>
-              <p className="match-advice">Insight: {match.prediction.advice}</p>
-              <Link href={`/match/${match.id}`} className="detail-link">
-                View match detail
-              </Link>
-            </Card>
-          ))}
-        </section>
-      ) : null}
 
-      {!loading && !error && !filteredMatches.length ? (
-        <EmptyState
-          title="No matches found"
-          description="No matches match your current filter and search selection. Try resetting controls."
-        />
-      ) : null}
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search teams or leagues\u2026"
+                aria-label="Search teams or leagues"
+              />
 
-      {/* Football Hub — Leagues, Matches, Standings, Match Detail */}
-      <section className="widgets-section">
-        <h2 className="widget-section-title">Football Hub</h2>
-        <p className="muted">Select a league, pick a match, and explore standings and detail.</p>
-        {feed ? (
-          <WidgetsDemo matches={feed.matches} updatedAtISO={feed.updatedAtISO} />
-        ) : (
-          <div className="widgets-layout">
-            {Array.from({ length: 3 }).map((_, idx) => (
-              <Card key={idx}>
-                <Skeleton className="skeleton-line w-40" />
-                <Skeleton className="skeleton-line w-full" />
-                <Skeleton className="skeleton-line w-full" />
-                <Skeleton className="skeleton-line w-28" />
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
+              <div className="cc-filter-row">
+                {(Object.keys(FILTER_LABELS) as QuickFilter[]).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    className={`cc-filter-pill${quickFilter === f ? " is-active" : ""}`}
+                    onClick={() => {
+                      setQuickFilter(f);
+                      writeLastQuickFilter(f);
+                    }}
+                  >
+                    {FILTER_LABELS[f]}
+                  </button>
+                ))}
+                <span className="cc-sort-sep" />
+                <button
+                  type="button"
+                  className={`cc-filter-pill${sortBy === "confidence" ? " is-active" : ""}`}
+                  onClick={() => setSortBy("confidence")}
+                >
+                  Confidence
+                </button>
+                <button
+                  type="button"
+                  className={`cc-filter-pill${sortBy === "kickoff" ? " is-active" : ""}`}
+                  onClick={() => setSortBy("kickoff")}
+                >
+                  Kickoff
+                </button>
+              </div>
 
-      <section className="quick-links" aria-label="Insights actions">
+              <div className="cc-match-list">
+                {filteredMatches.map((match) => {
+                  const sel = match.id === activeMatchId;
+                  const streak = formStreak(match.home.form.recent);
+                  const movement = marketMovement(match);
+                  return (
+                    <button
+                      key={match.id}
+                      type="button"
+                      className={`cc-match-row${sel ? " is-selected" : ""}${match.status === "LIVE" ? " is-live" : ""}`}
+                      onClick={() => selectMatch(match.id)}
+                      aria-pressed={sel}
+                    >
+                      <div className="cc-match-top">
+                        <span className="cc-match-teams">
+                          {match.home.short} vs {match.away.short}
+                        </span>
+                        <Badge tone={statusTone(match)}>
+                          {statusLabel(match)}
+                        </Badge>
+                      </div>
+                      <div className="cc-match-bottom">
+                        <span className="cc-match-score">
+                          {match.score.home}-{match.score.away}
+                        </span>
+                        <span className={`conf-heat conf-heat--${confTier(match.prediction.confidence)}`}>
+                          {match.prediction.confidence}%
+                        </span>
+                        {isFavorite("match", String(match.id)) && (
+                          <span className="cc-match-fav">&#9733;</span>
+                        )}
+                      </div>
+                      <div className="cc-signals">
+                        <span className={`cc-signal cc-signal-form cc-signal-form--${streak.type}`}>
+                          {streak.label}
+                        </span>
+                        <span className={`cc-signal cc-signal-market cc-signal-market--${movement}`}>
+                          {movement === "up" ? "\u2191" : movement === "down" ? "\u2193" : "\u2194"}
+                        </span>
+                        {match.events.length > 0 && (
+                          <span className="cc-signal cc-signal-news" title="Match events">
+                            &#9888;
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {!filteredMatches.length && (
+                <EmptyState
+                  title="No matches found"
+                  description="Adjust filters or search to see matches."
+                />
+              )}
+            </section>
+
+            {/* Right — Insight Panel */}
+            <aside className={`cc-col cc-insight${insightOpen ? " is-open" : ""}`}>
+              <MatchInsightPanel
+                match={selectedMatch}
+                isFavorite={
+                  selectedMatch ? isFavorite("match", String(selectedMatch.id)) : false
+                }
+                onToggleFavorite={toggleSelectedMatchFav}
+              />
+            </aside>
+          </section>
+
+          {/* Mobile insight toggle */}
+          <button
+            type="button"
+            className="cc-insight-toggle"
+            onClick={() => setInsightOpen(!insightOpen)}
+            aria-expanded={insightOpen}
+          >
+            {insightOpen
+              ? "Hide Match Details"
+              : selectedMatch
+                ? `View ${selectedMatch.home.short} vs ${selectedMatch.away.short} Details`
+                : "Match Details"}
+          </button>
+        </>
+      )}
+
+      <section className="quick-links" aria-label="Quick links">
         <Link href="/insights">Insights</Link>
         <Link href="/live-matches">Live matches</Link>
-        <Link href="/upcoming-matches">Upcoming matches</Link>
+        <Link href="/upcoming-matches">Upcoming</Link>
         <Link href="/predictions">Predictions</Link>
-        <Link href="/odds-comparison">Odds comparison</Link>
+        <Link href="/odds-comparison">Odds</Link>
         <Link href="/standings">Standings</Link>
         <Link href="/teams">Teams</Link>
         <Link href="/favorites">Favorites</Link>

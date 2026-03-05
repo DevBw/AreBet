@@ -33,3 +33,23 @@ export function readLastLeague(): string | null {
 export function writeLastLeague(league: string) {
   safeWrite(LAST_LEAGUE_KEY, league);
 }
+
+// ---------------------------------------------------------------------------
+// Last quick filter
+// ---------------------------------------------------------------------------
+
+const QUICK_FILTER_KEY = "arebet:last_quick_filter:v1";
+
+export type QuickFilter = "all" | "live" | "soon" | "favorites" | "high-conf";
+
+const VALID_FILTERS: Set<string> = new Set(["all", "live", "soon", "favorites", "high-conf"]);
+
+export function readLastQuickFilter(): QuickFilter {
+  const val = safeRead(QUICK_FILTER_KEY);
+  if (val && VALID_FILTERS.has(val)) return val as QuickFilter;
+  return "all";
+}
+
+export function writeLastQuickFilter(filter: QuickFilter) {
+  safeWrite(QUICK_FILTER_KEY, filter);
+}

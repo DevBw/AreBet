@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listMatches } from "@/lib/services/matches";
+import { statusLabel, statusTone, confTier } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
 import type { Match, MatchStatus } from "@/types/match";
 
@@ -58,8 +59,8 @@ export async function MatchDirectoryPage({
               <p className="match-league">
                 {match.league} | {match.country}
               </p>
-              <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
-                {match.status === "LIVE" && match.minute ? `LIVE ${match.minute}'` : match.status}
+              <Badge tone={statusTone(match)}>
+                {statusLabel(match)}
               </Badge>
             </div>
             <h2>
@@ -74,7 +75,12 @@ export async function MatchDirectoryPage({
 
             {variant === "predictions" ? (
               <>
-                <p className="confidence">{match.prediction.confidence}% confidence</p>
+                <p>
+                  <span className={`conf-heat conf-heat--${confTier(match.prediction.confidence)}`}>
+                    {match.prediction.confidence}%
+                  </span>{" "}
+                  confidence
+                </p>
                 <p className="match-advice">{match.prediction.advice}</p>
               </>
             ) : null}

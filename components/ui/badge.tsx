@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils/cn";
 import type { ReactNode } from "react";
 
 type BadgeProps = {
-  tone?: "live" | "upcoming" | "finished" | "neutral";
+  tone?: "live" | "ht" | "upcoming" | "finished" | "neutral";
   children: ReactNode;
 };
 

@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavorites } from "@/lib/hooks/use-favorites";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
+import { statusLabel, statusTone } from "@/lib/utils/match-status";
 
 export default function FavoritesPage() {
   const { favorites, toggleFavorite, loading: favsLoading } = useFavorites();
@@ -87,8 +88,8 @@ export default function FavoritesPage() {
                 {match.home.name} vs {match.away.name}
               </h2>
               <div className="match-row">
-                <Badge tone={match.status.toLowerCase() as "live" | "upcoming" | "finished"}>
-                  {match.status}
+                <Badge tone={statusTone(match)}>
+                  {statusLabel(match)}
                 </Badge>
               </div>
               <p className="muted">{match.prediction.advice}</p>

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { getMatchById } from "@/lib/services/matches";
 import { StatBar } from "@/components/analytics/stat-bar";
 import { OddsComparison } from "@/components/analytics/odds-comparison";
+import { confTier } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
 
 type Props = {
@@ -46,7 +47,12 @@ export default async function MatchDetailPage({ params }: Props) {
 
       <section className="cards-grid">
         <Card title="Prediction">
-          <p className="price">{match.prediction.confidence}% confidence</p>
+          <p className="price">
+            <span className={`conf-heat insight-conf-heat conf-heat--${confTier(match.prediction.confidence)}`}>
+              {match.prediction.confidence}%
+            </span>{" "}
+            confidence
+          </p>
           <p className="muted">{match.prediction.advice}</p>
           <p className="muted">Expected goals: {match.prediction.expectedGoals.toFixed(1)}</p>
         </Card>
