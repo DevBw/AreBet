@@ -14,6 +14,7 @@ import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 import { usePreferences } from "@/lib/hooks/use-preferences";
 import { rankMatches } from "@/lib/utils/rank-matches";
 import { useToast } from "@/components/ui/toast";
+import { useMatchRatings } from "@/lib/hooks/use-match-ratings";
 import {
   readLastLeague,
   writeLastLeague,
@@ -64,6 +65,7 @@ export function HomeBoard() {
   const [insightOpen, setInsightOpen] = useState(() => !!searchParams.get("matchId"));
 
   const { addToast } = useToast();
+  const { getRating } = useMatchRatings();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { feed, matches, loading, error, reload } = useMatchFeed({ pollIntervalMs: 60000 });
   const { preferences, loading: prefsLoading } = usePreferences();
@@ -481,6 +483,11 @@ export function HomeBoard() {
                         </span>
                         {isFavorite("match", String(match.id)) && (
                           <span className="cc-match-fav">&#9733;</span>
+                        )}
+                        {getRating(match.id) > 0 && (
+                          <span className="cc-match-rating" title={`Your rating: ${getRating(match.id)}/5`}>
+                            &#9733;{getRating(match.id)}
+                          </span>
                         )}
                       </div>
                       <div className="cc-signals">

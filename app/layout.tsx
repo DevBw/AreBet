@@ -9,6 +9,7 @@ import { StickinessSync } from "@/components/features/stickiness-sync";
 import { GlobalSearch } from "@/components/features/global-search";
 import { AuthProvider } from "@/lib/auth/context";
 import { ToastProvider } from "@/components/ui/toast";
+import { BetSlipProvider, BetSlipPanel } from "@/components/features/bet-slip-panel";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ToastProvider>
+        <BetSlipProvider>
         <AuthProvider>
           <StickinessSync />
           <DensityShell>
@@ -68,6 +70,7 @@ export default function RootLayout({
               {children}
             </main>
             <MobileBottomNav />
+            <BetSlipPanel />
             <footer className="site-footer">
               <div className="site-container site-footer-inner">
                 <span className="footer-brand">
@@ -85,6 +88,7 @@ export default function RootLayout({
             </footer>
           </DensityShell>
         </AuthProvider>
+        </BetSlipProvider>
         </ToastProvider>
       </body>
     </html>

@@ -3044,3 +3044,422 @@ input::placeholder {
   color: var(--color-text-secondary);
   margin-right: 3px;
 }
+
+/* ============================================================
+   STAR RATING
+   ============================================================ */
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  line-height: 1;
+  transition: transform 0.1s, color 0.1s;
+}
+
+.star-btn.is-filled {
+  color: var(--color-draw);
+}
+
+.star-btn:not(:disabled):hover {
+  transform: scale(1.25);
+  color: var(--color-draw);
+}
+
+.star-btn:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.star-rating--sm .star-btn {
+  font-size: 0.8rem;
+  padding: 1px;
+}
+
+.cc-match-rating {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-draw);
+  letter-spacing: 0.02em;
+}
+
+.insight-rating-row {
+  align-items: center;
+  gap: 10px;
+}
+
+/* ============================================================
+   MARKET ODDS — SLIP-AWARE BUTTONS
+   ============================================================ */
+
+.insight-odd-btn {
+  position: relative;
+  cursor: pointer;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+  font-family: var(--font-family);
+}
+
+.insight-odd-btn:hover {
+  border-color: var(--color-border-hover);
+}
+
+.insight-odd-btn.is-slipped {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.insight-odd-btn.is-slipped .insight-odd-label {
+  color: var(--color-primary);
+}
+
+.insight-odd-check {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-size: 0.65rem;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.insight-odds-extra-btn {
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  font-family: var(--font-family);
+  font-weight: 500;
+}
+
+.insight-odds-extra-btn:hover {
+  border-color: var(--color-border-hover);
+}
+
+.insight-odds-extra-btn.is-slipped {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.insight-slip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.slip-market-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.slip-market-pill:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+}
+
+.slip-market-pill.is-added {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.slip-market-odds {
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   BET SLIP PANEL
+   ============================================================ */
+
+.slip-fab {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 9000;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border-hover);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.slip-fab:hover {
+  transform: scale(1.06);
+}
+
+.slip-fab.has-picks {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.slip-fab-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--color-surface-1);
+}
+
+@media (max-width: 767px) {
+  .slip-fab {
+    bottom: 74px;
+    left: auto;
+    right: 14px;
+  }
+}
+
+.slip-panel {
+  position: fixed;
+  bottom: 22px;
+  left: 78px;
+  z-index: 9001;
+  width: 340px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+  animation: slip-panel-in 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes slip-panel-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@media (max-width: 767px) {
+  .slip-panel {
+    bottom: 130px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-height: 60vh;
+  }
+}
+
+.slip-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.slip-panel-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.slip-combined-odds {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.slip-panel-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: color 0.12s;
+}
+
+.slip-panel-close:hover { color: var(--color-text); }
+
+.slip-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.slip-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.slip-picks-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.slip-row {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slip-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slip-row-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.slip-row-market {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.slip-row-match {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slip-row-odds {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.slip-row-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+
+.slip-row-remove:hover { color: var(--color-negative); }
+
+.slip-row-stake {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slip-stake-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.slip-stake-input {
+  width: 76px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-3);
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.slip-stake-input:focus {
+  border-color: var(--color-primary);
+}
+
+.slip-potential-return {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.slip-potential-return strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.slip-clear-btn {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
+  transition: color 0.12s, background 0.12s;
+}
+
+.slip-clear-btn:hover {
+  color: var(--color-negative);
+  background: rgba(239, 68, 68, 0.05);
+}

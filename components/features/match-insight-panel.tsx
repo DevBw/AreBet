@@ -5,8 +5,11 @@ import type { Match, MatchStats, H2HMatch, MatchPlayerRatings, PlayerRating } fr
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { StarRating } from "@/components/ui/star-rating";
 import { statusLabel, statusTone, confTier } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
+import { useMatchRatings } from "@/lib/hooks/use-match-ratings";
+import { useBetSlipContext } from "@/components/features/bet-slip-panel";
 
 type Props = {
   match: Match | null;
@@ -299,6 +302,9 @@ function PlayerRatingsSection({
 // ---- Main Panel ----
 
 export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props) {
+  const { getRating, rate, unrate } = useMatchRatings();
+  const { addPick, hasPick, removePickByMarket } = useBetSlipContext();
+
   if (!match) {
     return (
       <EmptyState
@@ -307,6 +313,17 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
       />
     );
   }
+
+  const matchLabel = `${match.home.short} vs ${match.away.short}`;
+  const myRating = getRating(match.id);
+
+  const SLIP_MARKETS = [
+    { market: "Home Win",  odds: match.odds.home },
+    { market: "Draw",      odds: match.odds.draw },
+    { market: "Away Win",  odds: match.odds.away },
+    { market: "Over 2.5",  odds: match.odds.over25 },
+    { market: "BTTS Yes",  odds: match.odds.btts },
+  ];
 
   return (
     <div className="insight-panel">
@@ -357,22 +374,53 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
       <div className="insight-section">
         <h4 className="insight-label">Market</h4>
         <div className="insight-odds">
-          <div className="insight-odd">
-            <span className="insight-odd-label">Home</span>
-            <span className="insight-odd-value">{match.odds.home.toFixed(2)}</span>
-          </div>
-          <div className="insight-odd">
-            <span className="insight-odd-label">Draw</span>
-            <span className="insight-odd-value">{match.odds.draw.toFixed(2)}</span>
-          </div>
-          <div className="insight-odd">
-            <span className="insight-odd-label">Away</span>
-            <span className="insight-odd-value">{match.odds.away.toFixed(2)}</span>
-          </div>
+          {[
+            { market: "Home Win", odds: match.odds.home, label: "Home" },
+            { market: "Draw",     odds: match.odds.draw, label: "Draw" },
+            { market: "Away Win", odds: match.odds.away, label: "Away" },
+          ].map(({ market, odds, label }) => {
+            const inSlip = hasPick(match.id, market);
+            return (
+              <button
+                key={market}
+                type="button"
+                className={`insight-odd insight-odd-btn${inSlip ? " is-slipped" : ""}`}
+                onClick={() =>
+                  inSlip
+                    ? removePickByMarket(match.id, market)
+                    : addPick({ matchId: match.id, matchLabel, market, odds })
+                }
+                title={inSlip ? `Remove ${market} from slip` : `Add ${market} to slip`}
+              >
+                <span className="insight-odd-label">{label}</span>
+                <span className="insight-odd-value">{odds.toFixed(2)}</span>
+                {inSlip && <span className="insight-odd-check" aria-hidden="true">\u2713</span>}
+              </button>
+            );
+          })}
         </div>
         <div className="insight-odds-extra">
-          <span>O2.5: {match.odds.over25.toFixed(2)}</span>
-          <span>BTTS: {match.odds.btts.toFixed(2)}</span>
+          {[
+            { market: "Over 2.5", odds: match.odds.over25, label: "O2.5" },
+            { market: "BTTS Yes", odds: match.odds.btts,   label: "BTTS" },
+          ].map(({ market, odds, label }) => {
+            const inSlip = hasPick(match.id, market);
+            return (
+              <button
+                key={market}
+                type="button"
+                className={`insight-odds-extra-btn${inSlip ? " is-slipped" : ""}`}
+                onClick={() =>
+                  inSlip
+                    ? removePickByMarket(match.id, market)
+                    : addPick({ matchId: match.id, matchLabel, market, odds })
+                }
+                title={inSlip ? `Remove ${market} from slip` : `Add ${market} to slip`}
+              >
+                {label}: {odds.toFixed(2)}{inSlip ? " \u2713" : ""}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -418,6 +466,47 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
         homeTeam={match.home.name}
         awayTeam={match.away.name}
       />
+
+      {/* Your Rating */}
+      <div className="insight-section">
+        <h4 className="insight-label">Your Rating</h4>
+        <div className="insight-row insight-rating-row">
+          <StarRating
+            value={myRating}
+            onChange={(stars) =>
+              stars === 0 ? unrate(match.id) : rate(match.id, stars)
+            }
+          />
+          <span className="widget-meta">
+            {myRating > 0 ? `${myRating} / 5` : "Tap to rate this match"}
+          </span>
+        </div>
+      </div>
+
+      {/* Add to Slip — quick row of all markets */}
+      <div className="insight-section">
+        <h4 className="insight-label">Add to Slip</h4>
+        <div className="insight-slip-row">
+          {SLIP_MARKETS.map(({ market, odds }) => {
+            const inSlip = hasPick(match.id, market);
+            return (
+              <button
+                key={market}
+                type="button"
+                className={`slip-market-pill${inSlip ? " is-added" : ""}`}
+                onClick={() =>
+                  inSlip
+                    ? removePickByMarket(match.id, market)
+                    : addPick({ matchId: match.id, matchLabel, market, odds })
+                }
+              >
+                {market}
+                <span className="slip-market-odds">{odds.toFixed(2)}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <Link href={`/match/${match.id}`} className="detail-link insight-detail-link">
         View full match detail
