@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Match, MatchStats } from "@/types/match";
+import type { Match, MatchStats, H2HMatch, MatchPlayerRatings, PlayerRating } from "@/types/match";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -166,6 +166,129 @@ function EventTimeline({
   );
 }
 
+// ---- H2H History ----
+
+type H2HResult = "H" | "D" | "A";
+
+function h2hResult(entry: H2HMatch, currentHomeTeam: string): H2HResult {
+  if (entry.homeScore === entry.awayScore) return "D";
+  const homeWon = entry.homeScore > entry.awayScore;
+  const currentIsHome = entry.homeTeam === currentHomeTeam;
+  if (currentIsHome) return homeWon ? "H" : "A";
+  return homeWon ? "A" : "H";
+}
+
+const H2H_DOT: Record<H2HResult, string> = {
+  H: "insight-h2h-dot--home",
+  D: "insight-h2h-dot--draw",
+  A: "insight-h2h-dot--away",
+};
+
+function H2HSection({
+  h2h,
+  homeTeam,
+  homeShort,
+  awayShort,
+}: {
+  h2h: H2HMatch[];
+  homeTeam: string;
+  homeShort: string;
+  awayShort: string;
+}) {
+  return (
+    <div className="insight-section">
+      <div className="insight-h2h-header">
+        <h4 className="insight-label">Head-to-Head</h4>
+        <div className="insight-h2h-legend">
+          <span className="insight-h2h-legend-item">
+            <span className="insight-h2h-dot insight-h2h-dot--home" />
+            {homeShort}
+          </span>
+          <span className="insight-h2h-legend-item">
+            <span className="insight-h2h-dot insight-h2h-dot--draw" />
+            Draw
+          </span>
+          <span className="insight-h2h-legend-item">
+            <span className="insight-h2h-dot insight-h2h-dot--away" />
+            {awayShort}
+          </span>
+        </div>
+      </div>
+      <div className="insight-h2h-list">
+        {h2h.map((entry, i) => {
+          const result = h2hResult(entry, homeTeam);
+          return (
+            <div key={i} className="insight-h2h-row">
+              <div className="insight-h2h-side insight-h2h-side--left">
+                <span className="insight-h2h-team">{entry.homeTeam}</span>
+              </div>
+              <div className="insight-h2h-centre">
+                <span className={`insight-h2h-dot ${H2H_DOT[result]}`} />
+                <span className="insight-h2h-scoreline">
+                  {entry.homeScore} – {entry.awayScore}
+                </span>
+                <span className="insight-h2h-date">{entry.date}</span>
+              </div>
+              <div className="insight-h2h-side insight-h2h-side--right">
+                <span className="insight-h2h-team">{entry.awayTeam}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ---- Player Ratings Grid ----
+
+function ratingTier(r: number): string {
+  if (r >= 8.5) return "insight-rating-score--gold";
+  if (r >= 7.5) return "insight-rating-score--high";
+  if (r >= 6.5) return "insight-rating-score--mid";
+  return "insight-rating-score--low";
+}
+
+function RatingsCol({ players }: { players: PlayerRating[] }) {
+  return (
+    <div className="insight-ratings-col">
+      {players.map((p, i) => (
+        <div key={i} className="insight-ratings-row">
+          <span className="insight-ratings-pos">{p.position}</span>
+          <span className="insight-ratings-name">{p.name}</span>
+          <span className={`insight-rating-score ${ratingTier(p.rating)}`}>
+            {p.rating.toFixed(1)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PlayerRatingsSection({
+  ratings,
+  homeShort,
+  awayShort,
+}: {
+  ratings: MatchPlayerRatings;
+  homeShort: string;
+  awayShort: string;
+}) {
+  return (
+    <div className="insight-section">
+      <h4 className="insight-label">Player Ratings</h4>
+      <div className="insight-ratings-header-row">
+        <span className="insight-ratings-col-header">{homeShort}</span>
+        <span className="insight-ratings-col-header">{awayShort}</span>
+      </div>
+      <div className="insight-ratings-grid">
+        <RatingsCol players={ratings.home} />
+        <RatingsCol players={ratings.away} />
+      </div>
+    </div>
+  );
+}
+
 // ---- Main Panel ----
 
 export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props) {
@@ -265,6 +388,23 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
           <FormString form={match.away.form.recent} />
         </div>
       </div>
+
+      {match.h2h && match.h2h.length > 0 && (
+        <H2HSection
+          h2h={match.h2h}
+          homeTeam={match.home.name}
+          homeShort={match.home.short}
+          awayShort={match.away.short}
+        />
+      )}
+
+      {match.playerRatings && (
+        <PlayerRatingsSection
+          ratings={match.playerRatings}
+          homeShort={match.home.short}
+          awayShort={match.away.short}
+        />
+      )}
 
       <EventTimeline
         events={match.events}

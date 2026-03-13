@@ -39,6 +39,29 @@ const DEMO_MATCHES: Match[] = [
       passAccuracy: { home: 87, away: 79 },
       corners: { home: 5, away: 2 },
     },
+    h2h: [
+      { date: "Mar 2025", homeTeam: "Arsenal", awayTeam: "Brighton", homeScore: 3, awayScore: 1 },
+      { date: "Oct 2024", homeTeam: "Brighton", awayTeam: "Arsenal", homeScore: 1, awayScore: 2 },
+      { date: "Apr 2024", homeTeam: "Arsenal", awayTeam: "Brighton", homeScore: 0, awayScore: 0 },
+      { date: "Dec 2023", homeTeam: "Brighton", awayTeam: "Arsenal", homeScore: 0, awayScore: 2 },
+      { date: "Aug 2023", homeTeam: "Arsenal", awayTeam: "Brighton", homeScore: 2, awayScore: 1 },
+    ],
+    playerRatings: {
+      home: [
+        { name: "Raya", position: "GK", rating: 7.1 },
+        { name: "White", position: "DEF", rating: 7.4 },
+        { name: "Odegaard", position: "MID", rating: 8.2 },
+        { name: "Rice", position: "MID", rating: 7.9 },
+        { name: "Saka", position: "FWD", rating: 8.5 },
+      ],
+      away: [
+        { name: "Flekken", position: "GK", rating: 6.8 },
+        { name: "Dunk", position: "DEF", rating: 6.4 },
+        { name: "Gross", position: "MID", rating: 5.8 },
+        { name: "Mitoma", position: "MID", rating: 7.0 },
+        { name: "Ferguson", position: "FWD", rating: 7.2 },
+      ],
+    },
   },
   {
     id: 102,
@@ -64,6 +87,29 @@ const DEMO_MATCHES: Match[] = [
     ],
     prediction: { confidence: 64, advice: "Under 2.5", expectedGoals: 2.1 },
     events: [],
+    h2h: [
+      { date: "May 2025", homeTeam: "Sevilla", awayTeam: "Valencia", homeScore: 1, awayScore: 1 },
+      { date: "Dec 2024", homeTeam: "Valencia", awayTeam: "Sevilla", homeScore: 0, awayScore: 2 },
+      { date: "May 2024", homeTeam: "Sevilla", awayTeam: "Valencia", homeScore: 2, awayScore: 0 },
+      { date: "Dec 2023", homeTeam: "Valencia", awayTeam: "Sevilla", homeScore: 2, awayScore: 2 },
+      { date: "May 2023", homeTeam: "Sevilla", awayTeam: "Valencia", homeScore: 3, awayScore: 1 },
+    ],
+    playerRatings: {
+      home: [
+        { name: "Mamardashvili", position: "GK", rating: 7.2 },
+        { name: "Paulista", position: "DEF", rating: 6.8 },
+        { name: "Almeida", position: "MID", rating: 6.9 },
+        { name: "Guillamón", position: "MID", rating: 6.6 },
+        { name: "Duro", position: "FWD", rating: 7.1 },
+      ],
+      away: [
+        { name: "Nyland", position: "GK", rating: 6.5 },
+        { name: "Gudelj", position: "DEF", rating: 6.9 },
+        { name: "Sow", position: "MID", rating: 7.0 },
+        { name: "Rakitic", position: "MID", rating: 7.3 },
+        { name: "Lukebakio", position: "FWD", rating: 7.2 },
+      ],
+    },
   },
   {
     id: 103,
@@ -104,6 +150,29 @@ const DEMO_MATCHES: Match[] = [
       passAccuracy: { home: 85, away: 81 },
       corners: { home: 6, away: 4 },
     },
+    h2h: [
+      { date: "Nov 2025", homeTeam: "Roma", awayTeam: "Torino", homeScore: 2, awayScore: 1 },
+      { date: "Apr 2025", homeTeam: "Torino", awayTeam: "Roma", homeScore: 0, awayScore: 0 },
+      { date: "Nov 2024", homeTeam: "Roma", awayTeam: "Torino", homeScore: 1, awayScore: 2 },
+      { date: "Apr 2024", homeTeam: "Torino", awayTeam: "Roma", homeScore: 2, awayScore: 3 },
+      { date: "Nov 2023", homeTeam: "Roma", awayTeam: "Torino", homeScore: 1, awayScore: 1 },
+    ],
+    playerRatings: {
+      home: [
+        { name: "Svilar", position: "GK", rating: 7.0 },
+        { name: "Smalling", position: "DEF", rating: 6.2 },
+        { name: "Cristante", position: "MID", rating: 7.1 },
+        { name: "Pellegrini", position: "MID", rating: 7.3 },
+        { name: "Dybala", position: "FWD", rating: 7.8 },
+      ],
+      away: [
+        { name: "Milinkovic-S.", position: "GK", rating: 7.4 },
+        { name: "Buongiorno", position: "DEF", rating: 5.9 },
+        { name: "Ricci", position: "MID", rating: 6.5 },
+        { name: "Lukic", position: "MID", rating: 6.8 },
+        { name: "Sanabria", position: "FWD", rating: 7.6 },
+      ],
+    },
   },
   {
     id: 104,
@@ -141,6 +210,29 @@ const DEMO_MATCHES: Match[] = [
       passAccuracy: { home: 89, away: 74 },
       corners: { home: 4, away: 1 },
     },
+    h2h: [
+      { date: "Sep 2025", homeTeam: "Leverkusen", awayTeam: "Mainz", homeScore: 3, awayScore: 1 },
+      { date: "Feb 2025", homeTeam: "Mainz", awayTeam: "Leverkusen", homeScore: 0, awayScore: 2 },
+      { date: "Sep 2024", homeTeam: "Leverkusen", awayTeam: "Mainz", homeScore: 4, awayScore: 0 },
+      { date: "Feb 2024", homeTeam: "Mainz", awayTeam: "Leverkusen", homeScore: 1, awayScore: 3 },
+      { date: "Sep 2023", homeTeam: "Leverkusen", awayTeam: "Mainz", homeScore: 2, awayScore: 0 },
+    ],
+    playerRatings: {
+      home: [
+        { name: "Hradecky", position: "GK", rating: 7.5 },
+        { name: "Tah", position: "DEF", rating: 7.2 },
+        { name: "Wirtz", position: "MID", rating: 8.6 },
+        { name: "Xhaka", position: "MID", rating: 7.4 },
+        { name: "Boniface", position: "FWD", rating: 7.1 },
+      ],
+      away: [
+        { name: "Zentner", position: "GK", rating: 6.7 },
+        { name: "Bell", position: "DEF", rating: 6.3 },
+        { name: "Kohr", position: "MID", rating: 5.7 },
+        { name: "Burkardt", position: "MID", rating: 6.8 },
+        { name: "Onisiwo", position: "FWD", rating: 6.4 },
+      ],
+    },
   },
   {
     id: 105,
@@ -166,6 +258,29 @@ const DEMO_MATCHES: Match[] = [
     ],
     prediction: { confidence: 61, advice: "Draw No Bet: Nice", expectedGoals: 2.4 },
     events: [],
+    h2h: [
+      { date: "Oct 2025", homeTeam: "Nice", awayTeam: "Lyon", homeScore: 2, awayScore: 0 },
+      { date: "Apr 2025", homeTeam: "Lyon", awayTeam: "Nice", homeScore: 1, awayScore: 1 },
+      { date: "Oct 2024", homeTeam: "Nice", awayTeam: "Lyon", homeScore: 3, awayScore: 1 },
+      { date: "Mar 2024", homeTeam: "Lyon", awayTeam: "Nice", homeScore: 2, awayScore: 2 },
+      { date: "Oct 2023", homeTeam: "Nice", awayTeam: "Lyon", homeScore: 1, awayScore: 0 },
+    ],
+    playerRatings: {
+      home: [
+        { name: "Lopes", position: "GK", rating: 6.8 },
+        { name: "Tagliafico", position: "DEF", rating: 6.7 },
+        { name: "Tolisso", position: "MID", rating: 7.0 },
+        { name: "Caqueret", position: "MID", rating: 6.9 },
+        { name: "Lacazette", position: "FWD", rating: 7.4 },
+      ],
+      away: [
+        { name: "Bulka", position: "GK", rating: 7.3 },
+        { name: "Dante", position: "DEF", rating: 6.9 },
+        { name: "Thuram", position: "MID", rating: 7.5 },
+        { name: "Boudaoui", position: "MID", rating: 7.1 },
+        { name: "Guessand", position: "FWD", rating: 7.2 },
+      ],
+    },
   },
 ];
 

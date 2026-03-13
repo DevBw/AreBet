@@ -62,6 +62,25 @@ export type MatchStats = {
   corners: { home: number; away: number };
 };
 
+export type H2HMatch = {
+  date: string;       // e.g. "Mar 2025"
+  homeTeam: string;   // team name as played at home in that meeting
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+};
+
+export type PlayerRating = {
+  name: string;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  rating: number; // 1.0 – 10.0
+};
+
+export type MatchPlayerRatings = {
+  home: PlayerRating[];
+  away: PlayerRating[];
+};
+
 export type Match = {
   id: number;
   league: string;
@@ -79,6 +98,8 @@ export type Match = {
   prediction: MatchPrediction;
   events: MatchEvent[];
   stats?: MatchStats;
+  h2h?: H2HMatch[];
+  playerRatings?: MatchPlayerRatings;
 };
 
 export type DataSource = "demo" | "api";
