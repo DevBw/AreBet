@@ -6,6 +6,7 @@ import { MainNav } from "@/components/layout/main-nav";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { DensityShell } from "@/components/features/density-shell";
 import { StickinessSync } from "@/components/features/stickiness-sync";
+import { GlobalSearch } from "@/components/features/global-search";
 import { AuthProvider } from "@/lib/auth/context";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
@@ -56,7 +57,10 @@ export default function RootLayout({
                   />
                   <span className="sr-only">AreBet</span>
                 </Link>
-                <MainNav />
+                <div className="site-header-actions">
+                  <GlobalSearch />
+                  <MainNav />
+                </div>
               </div>
             </header>
             <Breadcrumbs />
