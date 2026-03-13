@@ -53,6 +53,15 @@ export type MatchEvent = {
   detail: string;
 };
 
+export type MatchStats = {
+  possession: { home: number; away: number }; // must sum to 100
+  shots: { home: number; away: number };
+  shotsOnTarget: { home: number; away: number };
+  xg: { home: number; away: number };
+  passAccuracy: { home: number; away: number }; // 0-100
+  corners: { home: number; away: number };
+};
+
 export type Match = {
   id: number;
   league: string;
@@ -69,6 +78,7 @@ export type Match = {
   bookmakerOdds: BookmakerOdds[];
   prediction: MatchPrediction;
   events: MatchEvent[];
+  stats?: MatchStats;
 };
 
 export type DataSource = "demo" | "api";

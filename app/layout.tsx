@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { MainNav } from "@/components/layout/main-nav";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { DensityShell } from "@/components/features/density-shell";
 import { StickinessSync } from "@/components/features/stickiness-sync";
 import { AuthProvider } from "@/lib/auth/context";
@@ -60,6 +61,7 @@ export default function RootLayout({
             <main className="site-main">
               {children}
             </main>
+            <MobileBottomNav />
             <footer className="site-footer">
               <div className="site-container site-footer-inner">
                 <span className="footer-brand">

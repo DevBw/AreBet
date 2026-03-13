@@ -28,8 +28,17 @@ const DEMO_MATCHES: Match[] = [
     events: [
       { minute: 14, team: "Arsenal", type: "Goal", player: "Saka", detail: "Left-footed finish" },
       { minute: 38, team: "Brighton", type: "Goal", player: "Ferguson", detail: "Header from corner" },
+      { minute: 45, team: "Brighton", type: "Card", player: "Gross", detail: "Yellow Card" },
       { minute: 59, team: "Arsenal", type: "Goal", player: "Martinelli", detail: "Counter attack" },
     ],
+    stats: {
+      possession: { home: 58, away: 42 },
+      shots: { home: 9, away: 5 },
+      shotsOnTarget: { home: 5, away: 3 },
+      xg: { home: 2.1, away: 0.8 },
+      passAccuracy: { home: 87, away: 79 },
+      corners: { home: 5, away: 2 },
+    },
   },
   {
     id: 102,
@@ -81,8 +90,20 @@ const DEMO_MATCHES: Match[] = [
     prediction: { confidence: 58, advice: "BTTS Yes", expectedGoals: 2.3 },
     events: [
       { minute: 22, team: "Roma", type: "Goal", player: "Dybala", detail: "Penalty" },
+      { minute: 34, team: "Roma", type: "Card", player: "Smalling", detail: "Yellow Card" },
+      { minute: 65, team: "Torino", type: "Substitution", player: "Lukic", detail: "Replaces Ricci" },
       { minute: 71, team: "Torino", type: "Goal", player: "Sanabria", detail: "Close range finish" },
+      { minute: 78, team: "Roma", type: "Substitution", player: "Abraham", detail: "Replaces Dybala" },
+      { minute: 88, team: "Torino", type: "Card", player: "Buongiorno", detail: "Yellow Card" },
     ],
+    stats: {
+      possession: { home: 54, away: 46 },
+      shots: { home: 11, away: 8 },
+      shotsOnTarget: { home: 4, away: 3 },
+      xg: { home: 1.4, away: 1.1 },
+      passAccuracy: { home: 85, away: 81 },
+      corners: { home: 6, away: 4 },
+    },
   },
   {
     id: 104,
@@ -108,7 +129,18 @@ const DEMO_MATCHES: Match[] = [
       { bookmaker: "1xBet", home: 1.54, draw: 4.14, away: 6.3 },
     ],
     prediction: { confidence: 81, advice: "Home Win & Over 1.5", expectedGoals: 3.1 },
-    events: [{ minute: 19, team: "Leverkusen", type: "Goal", player: "Wirtz", detail: "Curling shot" }],
+    events: [
+      { minute: 19, team: "Leverkusen", type: "Goal", player: "Wirtz", detail: "Curling shot" },
+      { minute: 23, team: "Mainz", type: "Card", player: "Kohr", detail: "Yellow Card" },
+    ],
+    stats: {
+      possession: { home: 62, away: 38 },
+      shots: { home: 6, away: 2 },
+      shotsOnTarget: { home: 3, away: 1 },
+      xg: { home: 1.2, away: 0.3 },
+      passAccuracy: { home: 89, away: 74 },
+      corners: { home: 4, away: 1 },
+    },
   },
   {
     id: 105,
