@@ -13,6 +13,7 @@ import { useFavorites } from "@/lib/hooks/use-favorites";
 import { useMatchFeed } from "@/lib/hooks/use-match-feed";
 import { usePreferences } from "@/lib/hooks/use-preferences";
 import { rankMatches } from "@/lib/utils/rank-matches";
+import { useToast } from "@/components/ui/toast";
 import {
   readLastLeague,
   writeLastLeague,
@@ -40,19 +41,6 @@ const FILTER_LABELS: Record<QuickFilter, string> = {
   "high-conf": "High Confidence",
 };
 
-/** Derive a compact form streak label from recent form string (e.g. "WWDWW" → "W4"). */
-function formStreak(recent: string): { label: string; type: "w" | "d" | "l" } {
-  if (!recent.length) return { label: "-", type: "d" };
-  const first = recent[0].toUpperCase();
-  let count = 1;
-  for (let i = 1; i < recent.length; i++) {
-    if (recent[i].toUpperCase() === first) count++;
-    else break;
-  }
-  const type = first === "W" ? "w" : first === "L" ? "l" : "d";
-  return { label: `${first}${count}`, type };
-}
-
 /** Derive a market movement indicator from marketHistory (placeholder). */
 function marketMovement(match: Match): "up" | "down" | "stable" {
   if (!match.marketHistory || match.marketHistory.length < 2) return "stable";
@@ -75,6 +63,7 @@ export function HomeBoard() {
   });
   const [insightOpen, setInsightOpen] = useState(() => !!searchParams.get("matchId"));
 
+  const { addToast } = useToast();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { feed, matches, loading, error, reload } = useMatchFeed({ pollIntervalMs: 60000 });
   const { preferences, loading: prefsLoading } = usePreferences();
@@ -92,6 +81,66 @@ export function HomeBoard() {
     }
     setSortBy(preferences.default_sort === "kickoff" ? "kickoff" : "confidence");
   }, [preferences, prefsLoading]);
+
+  // Toast detection — compare previous feed vs new feed on each poll
+  const prevMatchesRef = useRef<typeof matches>([]);
+  const demoToastFiredRef = useRef(false);
+  useEffect(() => {
+    const prev = prevMatchesRef.current;
+
+    if (!prev.length && matches.length) {
+      // Initial load — fire a single demo toast after a short delay (dev + prod demo)
+      if (!demoToastFiredRef.current) {
+        demoToastFiredRef.current = true;
+        const liveMatch = matches.find((m) => m.status === "LIVE");
+        if (liveMatch) {
+          setTimeout(() => {
+            addToast(
+              `${liveMatch.home.short} ${liveMatch.score.home}\u2013${liveMatch.score.away} ${liveMatch.away.short} \u00B7 ${liveMatch.minute}\u2019 (live now)`,
+              "goal"
+            );
+          }, 1800);
+        }
+      }
+      prevMatchesRef.current = matches;
+      return;
+    }
+
+    // Subsequent polls — detect real changes
+    for (const match of matches) {
+      const old = prev.find((m) => m.id === match.id);
+      if (!old) continue;
+
+      // Goal scored
+      if (
+        match.score.home !== old.score.home ||
+        match.score.away !== old.score.away
+      ) {
+        addToast(
+          `Goal! ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}${match.minute ? ` \u00B7 ${match.minute}\u2019` : ""}`,
+          "goal"
+        );
+      }
+
+      // Match kicked off
+      if (old.status === "UPCOMING" && match.status === "LIVE") {
+        addToast(
+          `Kicked off: ${match.home.name} vs ${match.away.name}`,
+          "kickoff"
+        );
+      }
+
+      // Full time
+      if (old.status === "LIVE" && match.status === "FINISHED") {
+        addToast(
+          `Full time: ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}`,
+          "finished"
+        );
+      }
+    }
+
+    prevMatchesRef.current = matches;
+  }, [matches, addToast]);
 
   // Restore last league
   useEffect(() => {
@@ -406,7 +455,6 @@ export function HomeBoard() {
               <div className="cc-match-list">
                 {filteredMatches.map((match) => {
                   const sel = match.id === activeMatchId;
-                  const streak = formStreak(match.home.form.recent);
                   const movement = marketMovement(match);
                   return (
                     <button
@@ -436,8 +484,16 @@ export function HomeBoard() {
                         )}
                       </div>
                       <div className="cc-signals">
-                        <span className={`cc-signal cc-signal-form cc-signal-form--${streak.type}`}>
-                          {streak.label}
+                        <span className="cc-signal cc-signal-form" title={`Home form: ${match.home.form.recent}`}>
+                          {match.home.form.recent.split("").map((ch, i) => {
+                            const k = ch.toUpperCase();
+                            return (
+                              <span
+                                key={i}
+                                className={`form-block form-block--sm ${k === "W" ? "form-block--win" : k === "L" ? "form-block--loss" : "form-block--draw"}`}
+                              />
+                            );
+                          })}
                         </span>
                         <span className={`cc-signal cc-signal-market cc-signal-market--${movement}`}>
                           {movement === "up" ? "\u2191" : movement === "down" ? "\u2193" : "\u2194"}

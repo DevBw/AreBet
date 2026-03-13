@@ -14,20 +14,27 @@ type Props = {
   onToggleFavorite: () => void;
 };
 
-const FORM_COLORS: Record<string, string> = {
-  W: "var(--color-primary-light)",
-  D: "var(--color-draw)",
-  L: "var(--color-loss)",
+const FORM_BLOCK_CLASS: Record<string, string> = {
+  W: "form-block--win",
+  D: "form-block--draw",
+  L: "form-block--loss",
 };
 
-function FormString({ form }: { form: string }) {
+function FormGuide({ form }: { form: string }) {
   return (
-    <span className="insight-form-string">
-      {form.split("").map((ch, i) => (
-        <span key={i} style={{ color: FORM_COLORS[ch.toUpperCase()] ?? "inherit" }}>
-          {ch}
-        </span>
-      ))}
+    <span className="form-guide">
+      {form.split("").map((ch, i) => {
+        const key = ch.toUpperCase();
+        return (
+          <span
+            key={i}
+            className={`form-block ${FORM_BLOCK_CLASS[key] ?? "form-block--draw"}`}
+            title={key === "W" ? "Win" : key === "L" ? "Loss" : "Draw"}
+          >
+            {key}
+          </span>
+        );
+      })}
     </span>
   );
 }
@@ -381,11 +388,11 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
         <h4 className="insight-label">Form</h4>
         <div className="insight-form-row">
           <span>{match.home.short}</span>
-          <FormString form={match.home.form.recent} />
+          <FormGuide form={match.home.form.recent} />
         </div>
         <div className="insight-form-row">
           <span>{match.away.short}</span>
-          <FormString form={match.away.form.recent} />
+          <FormGuide form={match.away.form.recent} />
         </div>
       </div>
 

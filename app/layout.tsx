@@ -7,6 +7,7 @@ import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { DensityShell } from "@/components/features/density-shell";
 import { StickinessSync } from "@/components/features/stickiness-sync";
 import { AuthProvider } from "@/lib/auth/context";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ToastProvider>
         <AuthProvider>
           <StickinessSync />
           <DensityShell>
@@ -79,6 +81,7 @@ export default function RootLayout({
             </footer>
           </DensityShell>
         </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );
