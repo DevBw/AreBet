@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
-import { SkeletonList } from "@/components/ui/skeleton";
+import { SkeletonCommandCenter } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/layout/page-header";
 import { MatchInsightPanel } from "@/components/features/match-insight-panel";
 import { useFavorites } from "@/lib/hooks/use-favorites";
@@ -321,7 +321,7 @@ export function HomeBoard() {
         </article>
       </section>
 
-      {loading && <SkeletonList rows={3} />}
+      {loading && <SkeletonCommandCenter />}
 
       {!loading && error && (
         <ErrorState title="Could not load data" description={error} retry={reload} />

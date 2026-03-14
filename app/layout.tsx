@@ -7,6 +7,8 @@ import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { DensityShell } from "@/components/features/density-shell";
 import { StickinessSync } from "@/components/features/stickiness-sync";
 import { GlobalSearch } from "@/components/features/global-search";
+import { ThemeToggle } from "@/components/features/theme-toggle";
+import { PwaRegister } from "@/components/features/pwa-register";
 import { AuthProvider } from "@/lib/auth/context";
 import { ToastProvider } from "@/components/ui/toast";
 import { BetSlipProvider, BetSlipPanel } from "@/components/features/bet-slip-panel";
@@ -18,6 +20,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/arebet-logo.svg",
     apple: "/arebet-logo.svg",
+  },
+  other: {
+    "theme-color": "#22c55e",
   },
 };
 
@@ -41,9 +46,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        {/* Anti-FOUC: apply stored theme before React hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('arebet:theme:v1');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`,
+          }}
+        />
         <ToastProvider>
         <BetSlipProvider>
         <AuthProvider>
+          <PwaRegister />
           <StickinessSync />
           <DensityShell>
             <header className="site-header">
@@ -61,6 +73,7 @@ export default function RootLayout({
                 </Link>
                 <div className="site-header-actions">
                   <GlobalSearch />
+                  <ThemeToggle />
                   <MainNav />
                 </div>
               </div>

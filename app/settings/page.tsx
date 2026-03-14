@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { SelectField } from "@/components/ui/select-field";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/features/theme-toggle";
 import { usePreferences } from "@/lib/hooks/use-preferences";
 
 export default function SettingsPage() {
@@ -26,6 +27,13 @@ export default function SettingsPage() {
         </section>
       ) : (
         <section className="cards-grid">
+          <Card title="Appearance">
+            <div className="field">
+              <span className="field-label">Colour theme</span>
+              <ThemeToggle />
+            </div>
+          </Card>
+
           <Card title="Notifications">
             <p className="muted">Match alerts: Enabled</p>
             <p className="muted">Price movement alerts: Enabled</p>
