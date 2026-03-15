@@ -10,6 +10,8 @@ import { statusLabel, statusTone, confTier } from "@/lib/utils/match-status";
 import { formatTime } from "@/lib/utils/time";
 import { useMatchRatings } from "@/lib/hooks/use-match-ratings";
 import { useBetSlipContext } from "@/components/features/bet-slip-panel";
+import { Sparkline } from "@/components/ui/sparkline";
+import { getSparklineData } from "@/lib/demo/odds-history";
 
 type Props = {
   match: Match | null;
@@ -374,12 +376,13 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
       <div className="insight-section">
         <h4 className="insight-label">Market</h4>
         <div className="insight-odds">
-          {[
-            { market: "Home Win", odds: match.odds.home, label: "Home" },
-            { market: "Draw",     odds: match.odds.draw, label: "Draw" },
-            { market: "Away Win", odds: match.odds.away, label: "Away" },
-          ].map(({ market, odds, label }) => {
+          {([
+            { market: "Home Win", odds: match.odds.home,  label: "Home", histKey: "home"  as const },
+            { market: "Draw",     odds: match.odds.draw,  label: "Draw", histKey: "draw"  as const },
+            { market: "Away Win", odds: match.odds.away,  label: "Away", histKey: "away"  as const },
+          ] as Array<{ market: string; odds: number; label: string; histKey: "home" | "draw" | "away" }>).map(({ market, odds, label, histKey }) => {
             const inSlip = hasPick(match.id, market);
+            const sparkData = getSparklineData(match, histKey);
             return (
               <button
                 key={market}
@@ -393,6 +396,7 @@ export function MatchInsightPanel({ match, isFavorite, onToggleFavorite }: Props
                 title={inSlip ? `Remove ${market} from slip` : `Add ${market} to slip`}
               >
                 <span className="insight-odd-label">{label}</span>
+                <Sparkline data={sparkData} width={44} height={18} />
                 <span className="insight-odd-value">{odds.toFixed(2)}</span>
                 {inSlip && <span className="insight-odd-check" aria-hidden="true">\u2713</span>}
               </button>

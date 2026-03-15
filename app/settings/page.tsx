@@ -6,9 +6,18 @@ import { SelectField } from "@/components/ui/select-field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/features/theme-toggle";
 import { usePreferences } from "@/lib/hooks/use-preferences";
+import { usePushNotifications } from "@/lib/hooks/use-push-notifications";
+
+const PERMISSION_LABEL: Record<string, string> = {
+  default:     "Not set",
+  granted:     "Enabled",
+  denied:      "Blocked",
+  unsupported: "Not supported",
+};
 
 export default function SettingsPage() {
   const { preferences, updatePreferences, loading, error } = usePreferences();
+  const { permission, requestPermission, sendNotification } = usePushNotifications();
 
   return (
     <main className="page-wrap">
@@ -35,8 +44,41 @@ export default function SettingsPage() {
           </Card>
 
           <Card title="Notifications">
-            <p className="muted">Match alerts: Enabled</p>
-            <p className="muted">Price movement alerts: Enabled</p>
+            <div className="field">
+              <span className="field-label">Browser notifications</span>
+              <span className={`notif-status notif-status--${permission}`}>
+                {PERMISSION_LABEL[permission] ?? permission}
+              </span>
+            </div>
+            {permission === "denied" && (
+              <p className="muted mt-4">
+                Notifications are blocked. Enable them in your browser site settings.
+              </p>
+            )}
+            {(permission === "default" || permission === "unsupported") && (
+              <button
+                type="button"
+                className="notif-enable-btn"
+                disabled={permission === "unsupported"}
+                onClick={requestPermission}
+              >
+                {permission === "unsupported" ? "Not supported in this browser" : "Enable notifications"}
+              </button>
+            )}
+            {permission === "granted" && (
+              <button
+                type="button"
+                className="notif-test-btn"
+                onClick={() =>
+                  sendNotification(
+                    "AreBet — Test notification",
+                    "Goal alerts, kick-offs, and half-time updates will appear like this."
+                  )
+                }
+              >
+                Send test notification
+              </button>
+            )}
           </Card>
 
           <Card title="Display">

@@ -15,6 +15,7 @@ import { usePreferences } from "@/lib/hooks/use-preferences";
 import { rankMatches } from "@/lib/utils/rank-matches";
 import { useToast } from "@/components/ui/toast";
 import { useMatchRatings } from "@/lib/hooks/use-match-ratings";
+import { usePushNotifications } from "@/lib/hooks/use-push-notifications";
 import {
   readLastLeague,
   writeLastLeague,
@@ -66,6 +67,7 @@ export function HomeBoard() {
 
   const { addToast } = useToast();
   const { getRating } = useMatchRatings();
+  const { sendNotification } = usePushNotifications();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { feed, matches, loading, error, reload } = useMatchFeed({ pollIntervalMs: 60000 });
   const { preferences, loading: prefsLoading } = usePreferences();
@@ -118,31 +120,27 @@ export function HomeBoard() {
         match.score.home !== old.score.home ||
         match.score.away !== old.score.away
       ) {
-        addToast(
-          `Goal! ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}${match.minute ? ` \u00B7 ${match.minute}\u2019` : ""}`,
-          "goal"
-        );
+        const goalMsg = `Goal! ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}${match.minute ? ` \u00B7 ${match.minute}\u2019` : ""}`;
+        addToast(goalMsg, "goal");
+        sendNotification("\u26BD Goal!", `${match.home.name} ${match.score.home}–${match.score.away} ${match.away.name}${match.minute ? ` · ${match.minute}'` : ""}`);
       }
 
       // Match kicked off
       if (old.status === "UPCOMING" && match.status === "LIVE") {
-        addToast(
-          `Kicked off: ${match.home.name} vs ${match.away.name}`,
-          "kickoff"
-        );
+        addToast(`Kicked off: ${match.home.name} vs ${match.away.name}`, "kickoff");
+        sendNotification("\u25CF Kick-off", `${match.home.name} vs ${match.away.name} has started`);
       }
 
       // Full time
       if (old.status === "LIVE" && match.status === "FINISHED") {
-        addToast(
-          `Full time: ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}`,
-          "finished"
-        );
+        const ftMsg = `Full time: ${match.home.short} ${match.score.home}\u2013${match.score.away} ${match.away.short}`;
+        addToast(ftMsg, "finished");
+        sendNotification("\u2713 Full Time", `${match.home.name} ${match.score.home}–${match.score.away} ${match.away.name}`);
       }
     }
 
     prevMatchesRef.current = matches;
-  }, [matches, addToast]);
+  }, [matches, addToast, sendNotification]);
 
   // Restore last league
   useEffect(() => {

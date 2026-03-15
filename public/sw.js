@@ -25,6 +25,39 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Push event — display the notification
+self.addEventListener("push", (event) => {
+  const data = event.data?.json() ?? {};
+  const title = data.title ?? "AreBet";
+  const body  = data.body  ?? "You have a new update.";
+  const icon  = data.icon  ?? "/arebet-logo.svg";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon,
+      badge: "/arebet-logo.svg",
+      tag: data.tag ?? "arebet-general",
+      renotify: true,
+    })
+  );
+});
+
+// Notification click — focus existing tab or open a new one
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clients) => {
+        const focused = clients.find((c) => "focus" in c);
+        if (focused) return focused.focus();
+        return self.clients.openWindow("/");
+      })
+  );
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
