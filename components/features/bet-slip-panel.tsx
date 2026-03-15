@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 import { readSlip, writeSlip, type SlipPick } from "@/lib/storage/bet-slip";
+import { usePredictions } from "@/lib/hooks/use-predictions";
+import { useToast } from "@/components/ui/toast";
 
 // ============================================================
 // Context
@@ -170,6 +172,8 @@ function SlipPickRow({
 
 export function BetSlipPanel() {
   const { picks, removePick, updateStake, clearSlip } = useBetSlipContext();
+  const { addFromPicks } = usePredictions();
+  const { addToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
   const combinedOdds = picks.reduce((acc, p) => acc * p.odds, 1);
@@ -246,13 +250,30 @@ export function BetSlipPanel() {
                     />
                   ))}
                 </div>
-                <button
-                  type="button"
-                  className="slip-clear-btn"
-                  onClick={clearSlip}
-                >
-                  Clear all picks
-                </button>
+                <div className="slip-actions">
+                  <button
+                    type="button"
+                    className="slip-track-btn"
+                    onClick={() => {
+                      const added = addFromPicks(picks);
+                      addToast(
+                        added > 0
+                          ? `${added} pick${added !== 1 ? "s" : ""} added to tracker`
+                          : "Picks already tracked — visit Predictions",
+                        "info",
+                      );
+                    }}
+                  >
+                    Track Picks
+                  </button>
+                  <button
+                    type="button"
+                    className="slip-clear-btn"
+                    onClick={clearSlip}
+                  >
+                    Clear all
+                  </button>
+                </div>
               </>
             )}
           </div>

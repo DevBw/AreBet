@@ -9,6 +9,7 @@ import { StickinessSync } from "@/components/features/stickiness-sync";
 import { GlobalSearch } from "@/components/features/global-search";
 import { ThemeToggle } from "@/components/features/theme-toggle";
 import { PwaRegister } from "@/components/features/pwa-register";
+import { OnboardingModal } from "@/components/features/onboarding-modal";
 import { AuthProvider } from "@/lib/auth/context";
 import { ToastProvider } from "@/components/ui/toast";
 import { BetSlipProvider, BetSlipPanel } from "@/components/features/bet-slip-panel";
@@ -56,6 +57,7 @@ export default function RootLayout({
         <BetSlipProvider>
         <AuthProvider>
           <PwaRegister />
+          <OnboardingModal />
           <StickinessSync />
           <DensityShell>
             <header className="site-header">
